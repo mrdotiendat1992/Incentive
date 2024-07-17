@@ -1,0 +1,11 @@
+__pycache__/
+
+test.py
+
+*.log*
+
+nhapxuat/nhap/*.xlsx
+nhapxuat/xuat/*.xlsx
+
+instance/db.sqlite
+

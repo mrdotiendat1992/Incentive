@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>NAM THUAN INCENTIVE SYSTEM</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <style>
+            /* Mặc định cho mobile */
+            body {
+                font-size: 16px;
+            }
+
+            .container {
+                width: 100%;
+            }
+
+            /* Màn hình lớn hơn 600px */
+            @media (min-width: 600px) {
+                body {
+                    font-size: 18px;
+                }
+
+                .container {
+                    width: 80%;
+                }
+            }
+
+            /* Màn hình lớn hơn 992px */
+            @media (min-width: 992px) {
+                body {
+                    font-size: 20px;
+                }
+
+                .container {
+                    width: 60%;
+                }
+            }
+            input {
+                width: auto;
+            }
+            .inline {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div class="inline">
+            <input type="text" name="chuyen" id="chuyen" readonly value={{notice['line']}}>
+            <input type="date" name="ngay" id="ngay" >
+            <input type="text" name="style" id="style">
+        </div>
+        <script>
+
+        </script>
+    </body>
+</html>
