@@ -105,7 +105,6 @@ def page_not_found(e):
     return render_template_string("Trang không tìm thấy, vui lòng <a href='/'>quay lại</a> trang chủ"), 404
 
 @app.route("/login", methods=["GET", "POST"])
-@login_required
 def login():
     if request.method == "POST":
         try:
