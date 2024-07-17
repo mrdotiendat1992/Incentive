@@ -12,7 +12,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import numpy as np
 import urllib.parse
-
+from waitress import serve
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
 
 params = urllib.parse.quote_plus(
@@ -139,4 +139,7 @@ def home():
     if request.method == "GET":
         flash(f"Xin chào {current_user.hoten} !!!")
         return render_template("home.html")
+    
+if __name__ == "__main__":
+    serve(app, host="0.0.0.0", port=83)
     
