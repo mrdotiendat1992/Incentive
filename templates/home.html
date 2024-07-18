@@ -139,8 +139,8 @@
                                     {% for tnc in danhsach_tnc %}
                                     <form action="/nhantnclenchuyen" method="POST">
                                         <tr>
+                                            <td>{{ tnc[1] }}</td>
                                             <td>{{ tnc[2] }}</td>
-                                            <td>{{ tnc[3] }}</td>
                                             <td>
                                                 <input type="hidden" name="chuyen_nhan_tnc" value="{{ g.notice['line'] }}">
                                                 <input type="hidden" name="id_tnc" value="{{ tnc[0] }}">
