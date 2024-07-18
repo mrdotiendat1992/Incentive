@@ -1,70 +1,124 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>NAM THUAN INCENTIVE SYSTEM</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-        <style>
-            /* Mặc định cho mobile */
-            body {
-                font-size: 16px;
-            }
-
-            .container {
-                width: 100%;
-            }
-
-            /* Màn hình lớn hơn 600px */
-            @media (min-width: 600px) {
-                body {
-                    font-size: 18px;
-                }
-
-                .container {
-                    width: 80%;
-                }
-            }
-
-            /* Màn hình lớn hơn 992px */
-            @media (min-width: 992px) {
-                body {
-                    font-size: 20px;
-                }
-
-                .container {
-                    width: 60%;
-                }
-            }
-            input {
-                width: auto;
-            }
-            .inline {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-            }
-        </style>
-    </head>
-    <body>
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-        <h1>Hệ thống tính thưởng</h1>
-        <div class="inline">
-            <input type="text" name="chuyen" id="chuyen" readonly value={{notice['line']}}>
-            <input type="date" name="ngay" id="ngay" >
-            <input type="text" name="style" id="style">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Hệ thống tính thưởng</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .table td, .table th {
+            vertical-align: middle;
+        }
+        th {
+            text-align: center;
+            color: white;
+        }
+        .table {
+            width: 100%;
+          }
+          .table input {
+            width: 100%;
+            box-sizing: border-box;
+          }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+        <div class="form-group">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Đăng xuất</a>
         </div>
-        <script>
+        <div class="form-group">
+            <button type="button" class="btn btn-info mt-3" data-toggle="modal" data-target="#infoModal">
+                Thêm người đi hỗ trợ
+            </button>
+        </div>
+        <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="infoModalLabel">Đi hỗ trợ</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="infoForm">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ g.notice['line'] }}" readonly>
+                                <label for="info">Người đi hỗ trợ</label>
+                                <select class="form-control" id="nguoiduocdieuchuyen" name="nguoiduocdieuchuyen">
+                                    {% for nguoi in danhsachnguoicothedieuchuyen %}
+                                        <option value='{{ nguoi.masothe }}-{{ nguoi.hovaten }}'>{{ nguoi.masothe }} - {{ nguoi.hovaten }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="chuyenhotro">Chuyền hỗ trợ</label>
+                                <input type="text" class="form-control" id="chuyenhotro" name="chuyenhotro">
+                                <label for="ngaydieuchuyendi">Ngày đi hỗ trợ</label>
+                                <input type="date" class="form-control" id="ngaydieuchuyendi" name="ngaydieuchuyendi">
+                                <label for="giodieuchuyendi">Giờ đi hỗ trợ</label>
+                                <input type="time" class="form-control" id="giodieuchuyendi" name="giodieuchuyendi">
+                                <label for="sogiohotro">Số giờ đi hỗ trợ</label>
+                                <input type="number" class="form-control" id="sogiohotro" name="sogiohotro">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form method="GET">
+            <div class="form-group">
+                <input type="text" class="form-control" id="chuyen" name="chuyen" readonly value="{{ g.notice['line'] }}">
+            </div>
+            <div class="form-group">
+                <input type="date" class="form-control" id="ngay" name="ngay" onchange="form.submit()" value="{{ request.args.get('ngay') }}">
+            </div>
+            <div class="form-group">
+                <select class="form-control" id="style" name="style">
+                    {% for style in styles %}
+                        <option value='{{ style }}'>{{ style }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+        <hr/>
+        <table class="table table-bordered table-sm">
+            <thead>
+                <tr class="bg-primary">
+                    <th>MST</th>
+                    <th>Họ tên</th>
+                    <th>Mã công đoạn</th>
+                    <th>Sản lượng cá nhân</th>
+                </tr>
+            </thead>
+            <tbody> 
+                {% for row in danhsach %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>{{ row[1] }}</td>
+                        <td><input type="number" value='{{ row[5] }}'></td>
+                        <td><input type="number" value='{{ row[6] }}'></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <hr/>
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-        </script>
-    </body>
+    <script>
+      $(document).ready(function() {
+        $('#infoForm').on('submit', function(event) {
+          event.preventDefault();
+          var info = $('#info').val();
+          // Here you can add the code to handle the information submitted
+          alert('Information submitted: ' + info);
+          $('#infoModal').modal('hide');
+        });
+      });
+    </script>
+  </body>
 </html>

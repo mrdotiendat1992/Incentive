@@ -75,8 +75,27 @@ def get_line(masothe,macongty):
     result = cursor.fetchone()
     close_db(conn)
     return result[0]
+
+def get_all_styles(ngay:None, chuyen:None):
+    conn = connect_db() 
+    if ngay:
+        cursor = execute_query(conn, f"SELECT Distinct STYLE FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE NGAY='{ngay}' AND CHUYEN='{chuyen}'")
+        result = cursor.fetchall()
+        close_db(conn)
+        return [style[0] for style in result]
+    else:
+        return []
     
-        
+def lay_danhsach_sanluong(ngay, chuyen, style):
+    conn = connect_db()
+    if style:
+        cursor = execute_query(conn, f"SELECT * FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE NGAY='{ngay}' AND CHUYEN='{chuyen}' AND STYLE='{style}'") 
+    else:
+        return []
+    result = cursor.fetchall()
+    close_db(conn)
+    return list(result)
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -114,31 +133,38 @@ def login():
             user = Nhanvien.query.filter_by(masothe=masothe, macongty=macongty).first()    
             if user and user.matkhau == matkhau:
                 if login_user(user):    
-                    app.logger.info(f"Nguoi dung {masothe} o {macongty} vua  dang nhap thanh cong !!!")
+                    app.logger.info(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang nhap !!!")
                     return redirect(url_for('home'))
             return redirect(url_for("login"))
         except Exception as e:
             app.logger.error(f'Nguoi dung {masothe} o {macongty} dang nhap that bai: {e} !!!')
             return redirect(url_for("login"))
-    return render_template("login.html")
+    else:
+        danhsachcongty = ["NT1","NT2"]
+        return render_template("login.html", danhsachcongty=danhsachcongty)
 
-@app.route("/logout", methods=["POST"])
+@app.route("/logout", methods=["GET","POST"])
 def logout():
     try:
         app.logger.info(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang xuat !!!")
         logout_user()
     except Exception as e:
         app.logger.error(f'Không thế đăng xuất {e} !!!')
-        flash(f'Không thế đăng xuất {e} !!!')
     return redirect("/")
 
 @app.route("/", methods=['GET','POST'])
 @login_required
 def home():
     if request.method == "GET":
-        flash(f"Xin chào {current_user.hoten} !!!")
-        return render_template("home.html")
+        ngay = request.args.get("ngay")   
+        chuyen = request.args.get("chuyen")
+        styles = get_all_styles(ngay, chuyen)
+        if styles:
+            style = styles[0]
+        else: 
+            style= None
+        danhsach = lay_danhsach_sanluong(ngay, chuyen, style)
+        return render_template("home.html",styles=styles,danhsach=danhsach)
     
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=83)
-    
+    app.run(debug=True, host="0.0.0.0", port=80)
