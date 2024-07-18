@@ -1,18 +1,52 @@
 from flask import Flask, render_template, request, url_for, redirect, g, flash, jsonify, send_file, session, flash, get_flashed_messages, render_template_string
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
-from flask_paginate import Pagination, get_page_parameter
 import pyodbc
-import openpyxl
-import pandas as pd
-from datetime import datetime, timedelta
 import os
 from functools import wraps
 import logging
 from logging.handlers import RotatingFileHandler
-import numpy as np
 import urllib.parse
-from waitress import serve
+
+DANH_SACH_TO_TRUONG = [
+    {"NT1":{
+        "11S01":"7721",
+        "11S03":"2540",
+        "11S05":"398",
+        "11S07":"7146",
+        "11S09":"115",
+        "11S11":"2340",
+        "11S13":"3943",
+        "12S01":"233",
+        "12S03":"385",
+        "12S05":"1163",
+        "12S07":"6318",
+        "12S09":"12756",
+        "12S11":"1192",
+    },
+    "NT2":{
+        "21S01":"262",
+        "21S03":"828",
+        "21S05":"4727",
+        "21S07":"152",
+        "21S09":"4531",
+        "21S11":"2565",
+        "21S13":"3494",
+        "22S01":"83",
+        "22S03":"1162",
+        "22S05":"1152",
+        "22S07":"1657",
+        "22S09":"376",
+        "22S11":"4952",
+        "22S13":"3590",
+        "23S01":"4726",
+        "23S07":"4882",
+        "23S09":"2576",
+        "25S09":"669",
+        "25S11":"4706"
+    }}
+]
+
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
 
 params = urllib.parse.quote_plus(
@@ -96,6 +130,26 @@ def lay_danhsach_sanluong(ngay, chuyen, style):
     close_db(conn)
     return list(result)
 
+def capnhat_sanluong(mst,hoten,chuyen,ngay,style,macongdoan,sanluong):
+    conn = connect_db()
+    execute_query(conn, f"INSERT INTO [INCENTIVE].[dbo].[SL_CA_NHAN] VALUES('{mst}', N'{hoten}', '{chuyen}', '{ngay}', '{style}', '{macongdoan}', '{sanluong}',NULL)")
+    try:
+        conn.commit()
+        close_db(conn)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+def lay_tencongdoan(thongtin):
+    macongdoan = thongtin.split("_")[0]
+    style = thongtin.split("_")[1]
+    conn = connect_db()
+    cursor = execute_query(conn, f"SELECT TEN_CONG_DOAN FROM [INCENTIVE].[dbo].[SAM_SEW] WHERE STYLE='{style}' AND MA_CONG_DOAN='{macongdoan}'")
+    result = cursor.fetchone()
+    close_db(conn)
+    return result[0]
+ 
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -158,13 +212,30 @@ def home():
     if request.method == "GET":
         ngay = request.args.get("ngay")   
         chuyen = request.args.get("chuyen")
+        style = request.args.get("style")
         styles = get_all_styles(ngay, chuyen)
-        if styles:
+        if not style and styles:
             style = styles[0]
-        else: 
-            style= None
         danhsach = lay_danhsach_sanluong(ngay, chuyen, style)
         return render_template("home.html",styles=styles,danhsach=danhsach)
+    
+@app.route("/nhapsanluongcanhan", methods=["POST"])
+def nhapsanluongcanhan():
+    if request.method == "POST":
+        ngay = request.form.get("ngay")   
+        chuyen = request.form.get("chuyen")
+        style = request.form.get("style")
+        mst = request.form.get("mst")
+        hoten = request.form.get("hoten")
+        macongdoan = request.form.get("macongdoan")
+        sanluong = request.form.get("sanluong")
+        capnhat_sanluong(mst,hoten,chuyen,ngay,style,macongdoan,sanluong)   
+        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+
+@app.route('/xemtencongdoan', methods=["GET","POST"])
+def xemtencongdoan():
+    thongtin = request.args.get("thongtin")
+    return jsonify(lay_tencongdoan(thongtin))
     
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)

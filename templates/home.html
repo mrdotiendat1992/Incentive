@@ -5,30 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Hệ thống tính thưởng</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        .table td, .table th {
-            vertical-align: middle;
-        }
-        th {
-            text-align: center;
-            color: white;
-        }
         .table {
             width: 100%;
           }
-          .table input {
+          .table th, .table td {
+            white-space: nowrap;
+            word-wrap: break-word;
+          }
+          .table .input-container {
+            display: flex;
+            align-items: center;
+          }
+          .table .input-container input {
             width: 100%;
             box-sizing: border-box;
+            border: none;
+            background-color: #f8f9fa;
+            padding: 5px;
+            margin-right: 5px;
+          }
+          .table .input-container input:focus {
+            outline: none;
+            border: 1px solid #007bff;
+            background-color: #fff;
+          }
+          .bg-primary th {
+            color: #fff;
+          }
+          .icon-btn {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            padding: 0;
+            font: inherit;
+            outline: inherit;
+          }
+          .icon-btn i {
+            font-size: 1.2em;
           }
     </style>
   </head>
   <body>
     <div class="container mt-5">
         <div class="form-group">
-            <a href="{{ url_for('logout') }}" class="btn btn-danger">Đăng xuất</a>
-        </div>
-        <div class="form-group">
-            <button type="button" class="btn btn-info mt-3" data-toggle="modal" data-target="#infoModal">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Đăng xuất</a>
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#infoModal">
                 Thêm người đi hỗ trợ
             </button>
         </div>
@@ -74,14 +98,19 @@
                 <input type="date" class="form-control" id="ngay" name="ngay" onchange="form.submit()" value="{{ request.args.get('ngay') }}">
             </div>
             <div class="form-group">
-                <select class="form-control" id="style" name="style">
+                <select class="form-control" id="style" name="style" onchange="form.submit()">
                     {% for style in styles %}
-                        <option value='{{ style }}'>{{ style }}</option>
+                        {% if style == request.args.get('style') %}
+                            <option value='{{ style }}' selected>{{ style }}</option>
+                        {% else %}
+                            <option value='{{ style }}'>{{ style }}</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
             </div>
         </form>
         <hr/>
+        <div class="table-responsive mt-3">
         <table class="table table-bordered table-sm">
             <thead>
                 <tr class="bg-primary">
@@ -92,33 +121,77 @@
                 </tr>
             </thead>
             <tbody> 
-                {% for row in danhsach %}
-                    <tr>
-                        <td>{{ row[0] }}</td>
-                        <td>{{ row[1] }}</td>
-                        <td><input type="number" value='{{ row[5] }}'></td>
-                        <td><input type="number" value='{{ row[6] }}'></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    {% for row in danhsach %}
+                    <form method="POST" action="/nhapsanluongcanhan">
+                        <tr>
+                            <input type="hidden" name="chuyen" value={{ request.args.get('chuyen') }}>
+                            <input type="hidden" name="ngay" value={{ request.args.get('ngay') }}>
+                            <input type="hidden" name="style" value={{ request.args.get('ngay') }}>
+                            <td><input type="text" name="mst" readonly value={{ row[0] }}></td>
+                            <td><input type="text" name="hoten" readonly value='{{ row[1] }}'></td>
+                            <td>
+                                <div class="input-container">
+                                    <input type="number" name="macongdoan" value="{{ row[5] }}" onchange="form.submit()">
+                                    <a class="fas fa-fw fa-eye xemcongdoan" href="#" data-toggle="modal" data-target="#congdoanModal" data-info="{{ row[5] }}_{{ request.args.get('style') }}"></a>
+                                </div>
+                            </td>
+                            <td><input type="number" name="sanluong" value={{ row[6] }} onchange="form.submit()"></td>
+                        </tr>
+                    </form>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <hr/>
         <button type="submit" class="btn btn-primary">Cập nhật</button>
     </div>
+     <!-- Modal for Cong Doan Information -->
+     <div class="modal fade" id="congdoanModal" tabindex="-1" role="dialog" aria-labelledby="congdoanModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="congdoanModalLabel">Tên công đoạn</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p id="congdoanInfo"></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <script>
-      $(document).ready(function() {
-        $('#infoForm').on('submit', function(event) {
-          event.preventDefault();
-          var info = $('#info').val();
-          // Here you can add the code to handle the information submitted
-          alert('Information submitted: ' + info);
-          $('#infoModal').modal('hide');
-        });
-      });
+        $(document).ready(function() {
+            $('#infoForm').on('submit', function(event) {
+              event.preventDefault();
+              var info = $('#info').val();
+              // Here you can add the code to handle the information submitted
+              alert('Information submitted: ' + info);
+              $('#infoModal').modal('hide');
+            });
+    
+            $('#congdoanModal').on('show.bs.modal', function (event) {
+              var button = $(event.relatedTarget); // Button that triggered the modal
+              var info = button.data('info'); // Extract info from data-* attributes
+              var modal = $(this);
+              axios.get('/xemtencongdoan?thongtin=' + info)
+                .then(function (response) {
+                  modal.find('.modal-body p').text(response.data);
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
+            });
+          });
     </script>
   </body>
 </html>
