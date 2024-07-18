@@ -104,35 +104,86 @@ def execute_query(conn, query):
     return cursor
 
 def get_line(masothe,macongty):
-    conn = connect_db()
-    cursor = execute_query(conn, f"select Line from Danh_sach_CBCNV where MST='{masothe}' and Factory='{macongty}'")
-    result = cursor.fetchone()
-    close_db(conn)
-    return result[0]
-
-def get_all_styles(ngay:None, chuyen:None):
-    conn = connect_db() 
-    if ngay:
-        cursor = execute_query(conn, f"SELECT Distinct STYLE FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE NGAY='{ngay}' AND CHUYEN='{chuyen}'")
-        result = cursor.fetchall()
+    try:
+        conn = connect_db()
+        cursor = execute_query(conn, f"select Line from Danh_sach_CBCNV where The_cham_cong='{masothe}' and Factory='{macongty}'")
+        result = cursor.fetchone()
         close_db(conn)
-        return [style[0] for style in result]
-    else:
-        return []
+        return result[0]
+    except:
+        return None
     
-def lay_danhsach_sanluong(ngay, chuyen, style):
+def get_all_styles(ngay, chuyen):
+    try:
+        if ngay:
+            conn = connect_db()
+            cursor = execute_query(conn, f"SELECT Distinct STYLE FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE NGAY='{ngay}' AND CHUYEN='{chuyen}'")
+            result = cursor.fetchall()
+            close_db(conn)
+            return [style[0] for style in result]
+        else:
+            return []
+    except:
+        return []
+
+def lay_danhsach_congnhan_trongchuyen(chuyen):
     conn = connect_db()
-    if style:
-        cursor = execute_query(conn, f"SELECT * FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE NGAY='{ngay}' AND CHUYEN='{chuyen}' AND STYLE='{style}'") 
+    query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_CN_MAY_THEO_HC_CHUYEN] WHERE Chuyen='{chuyen}'"
+    cursor = execute_query(conn, query) 
+    result = cursor.fetchall()
+    close_db(conn)
+    return list(result)
+    
+def lay_danhsach_chuyen_hotro(chuyen):
+    conn = connect_db()
+    query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_CHUYEN_MAY] WHERE LINE LIKE '{chuyen[0]}%' ORDER BY LINE"
+    cursor = execute_query(conn, query) 
+    result = cursor.fetchall()
+    close_db(conn)
+    return [line[0] for line in result]
+  
+def lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan):
+    conn = connect_db()
+    query = f"SELECT * FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE 1=1 "
+    if ngay:
+        query += f"AND NGAY='{ngay}' "
     else:
         return []
+    if chuyen:
+        query += f"AND CHUYEN='{chuyen}' "
+    if style:
+        query += f"AND STYLE='{style}' "
+    else:
+        return []
+    if mst:
+        query += f"AND MST='{mst}' "
+    if hoten:
+        query += f"AND HO_TEN=N'{hoten}' "
+    if macongdoan:
+        query += f"AND MA_CONG_DOAN='{macongdoan}' "
+    query += "ORDER BY NGAY DESC, MST, MA_CONG_DOAN"
+    cursor = execute_query(conn, query) 
     result = cursor.fetchall()
     close_db(conn)
     return list(result)
 
 def capnhat_sanluong(mst,hoten,chuyen,ngay,style,macongdoan,sanluong):
     conn = connect_db()
-    execute_query(conn, f"INSERT INTO [INCENTIVE].[dbo].[SL_CA_NHAN] VALUES('{mst}', N'{hoten}', '{chuyen}', '{ngay}', '{style}', '{macongdoan}', '{sanluong}',NULL)")
+    query = f"INSERT INTO [INCENTIVE].[dbo].[SL_CA_NHAN] (MST,HO_TEN,CHUYEN,NGAY,STYLE,MA_CONG_DOAN,SL_CA_NHAN) VALUES('{mst}', N'{hoten}', '{chuyen}', '{ngay}', '{style}', '{macongdoan}', '{sanluong}')"
+    print(query)
+    execute_query(conn, query)
+    try:
+        conn.commit()
+        close_db(conn)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+def xoa_sanluong(id):
+    conn = connect_db()
+    query = f"DELETE FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE ID='{id}'"
+    execute_query(conn, query)
     try:
         conn.commit()
         close_db(conn)
@@ -142,14 +193,74 @@ def capnhat_sanluong(mst,hoten,chuyen,ngay,style,macongdoan,sanluong):
         return False
 
 def lay_tencongdoan(thongtin):
-    macongdoan = thongtin.split("_")[0]
-    style = thongtin.split("_")[1]
-    conn = connect_db()
-    cursor = execute_query(conn, f"SELECT TEN_CONG_DOAN FROM [INCENTIVE].[dbo].[SAM_SEW] WHERE STYLE='{style}' AND MA_CONG_DOAN='{macongdoan}'")
-    result = cursor.fetchone()
-    close_db(conn)
-    return result[0]
+    try:
+        macongdoan = thongtin.split("_")[0]
+        style = thongtin.split("_")[1]
+        conn = connect_db()
+        cursor = execute_query(conn, f"SELECT TEN_CONG_DOAN FROM [INCENTIVE].[dbo].[SAM_SEW] WHERE STYLE='{style}' AND MA_CONG_DOAN='{macongdoan}'")
+        result = cursor.fetchone()
+        close_db(conn)
+        return result[0]
+    except:
+        return None
+
+def them_nguoi_di_hotro(nhamay,chuyen,mst,hoten,chucdanh,chuyendihotro,ngaydieuchuyendi,giodieuchuyendi,sogiohotro):
+    try:
+        conn = connect_db()
+        query = f"insert into [INCENTIVE].[dbo].[CN_MAY_DI_HO_TRO] values ('{nhamay}','{mst}',N'{hoten}',N'{chucdanh}','{chuyen}','{chuyendihotro}','{ngaydieuchuyendi}','{giodieuchuyendi}','{sogiohotro}')"
+        print(query)
+        execute_query(conn, query)
+        conn.commit()
+        close_db(conn)
+        return True
+    except:
+        return False
+
+def lay_danhsach_di_hotro(chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[CN_MAY_DI_HO_TRO] WHERE CHUYEN='{chuyen}'"
+        cursor = execute_query(conn, query)
+        result = cursor.fetchall()
+        close_db(conn)
+        return list(result)
+    except:
+        return []
  
+def lay_danhsach_tnc_chua_lenchuyen(chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[CN_TNC_CHUA_NGOI_CHUYEN] WHERE CHUYEN LIKE '{chuyen[0]}TNC%' ORDER BY MST ASC"
+        cursor = execute_query(conn, query)
+        result = cursor.fetchall()
+        close_db(conn)
+        return list(result)
+    except:
+        return []
+    
+def nhan_tnc_len_chuyen(id,chuyen):
+    try:
+        conn = connect_db()
+        query = f"update [INCENTIVE].[dbo].[CN_TNC_NGOI_CHUYEN] SET CHUYEN_NGOI_LV='{chuyen}' WHERE ID='{id}'"
+        execute_query(conn, query)
+        conn.commit()
+        close_db(conn)
+        return True
+    except:
+        return False
+    
+def capnhat_sogio_hotro(id,sogio):
+    try:
+        conn = connect_db()
+        query = f"update [INCENTIVE].[dbo].[CN_MAY_DI_HO_TRO] SET SO_GIO_HO_TRO='{sogio}' WHERE ID='{id}'"
+        print(query)
+        execute_query(conn, query)
+        conn.commit()
+        close_db(conn)
+        return True
+    except:
+        return False
+    
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -160,9 +271,12 @@ def login_required(f):
 
 @app.before_request
 def before_request():
-    if current_user.is_authenticated:
-        g.notice = {"line":get_line(current_user.masothe, current_user.macongty)}
-    else:
+    try:
+        if current_user.is_authenticated:
+            g.notice = {"line":get_line(current_user.masothe, current_user.macongty)}
+        else:
+            g.notice = {"line":None}
+    except:
         g.notice = {"line":None}
         
 @app.context_processor
@@ -198,6 +312,7 @@ def login():
         return render_template("login.html", danhsachcongty=danhsachcongty)
 
 @app.route("/logout", methods=["GET","POST"])
+@login_required
 def logout():
     try:
         app.logger.info(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang xuat !!!")
@@ -211,15 +326,24 @@ def logout():
 def home():
     if request.method == "GET":
         ngay = request.args.get("ngay")   
-        chuyen = request.args.get("chuyen")
+        chuyen = g.notice['line']
         style = request.args.get("style")
+        mst = request.args.get("mst")
+        hoten = request.args.get("hoten")
+        macongdoan = request.args.get("search_macongdoan")
         styles = get_all_styles(ngay, chuyen)
-        if not style and styles:
-            style = styles[0]
-        danhsach = lay_danhsach_sanluong(ngay, chuyen, style)
-        return render_template("home.html",styles=styles,danhsach=danhsach)
+        danhsach_congnhan_hotro = lay_danhsach_congnhan_trongchuyen(chuyen)
+        danhsach_chuyen = lay_danhsach_chuyen_hotro(chuyen)
+        danhsach_sanluong = lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan)
+        danhsach_tnc = lay_danhsach_tnc_chua_lenchuyen(chuyen)
+        danhsach_di_hotro = lay_danhsach_di_hotro(chuyen)
+        return render_template("home.html",styles=styles,danhsach_sanluong=danhsach_sanluong,
+                               danhsach_congnhan_hotro=danhsach_congnhan_hotro,
+                               danhsach_chuyen=danhsach_chuyen,danhsach_tnc=danhsach_tnc,
+                               danhsach_di_hotro=danhsach_di_hotro)
     
 @app.route("/nhapsanluongcanhan", methods=["POST"])
+@login_required
 def nhapsanluongcanhan():
     if request.method == "POST":
         ngay = request.form.get("ngay")   
@@ -233,9 +357,66 @@ def nhapsanluongcanhan():
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
 @app.route('/xemtencongdoan', methods=["GET","POST"])
+@login_required
 def xemtencongdoan():
     thongtin = request.args.get("thongtin")
-    return jsonify(lay_tencongdoan(thongtin))
+    tencongdoan = lay_tencongdoan(thongtin)
+    if tencongdoan:
+        return jsonify(tencongdoan)
+    else:
+        return jsonify("Không tìm thấy")
     
+@app.route("/themnguoidihotro", methods=["POST"])
+@login_required
+def themnguoidihotro():
+    if request.method == "POST":
+        chuyen = request.form.get("line_dieuchuyendi")
+        mst = request.form.get("nguoiduocdieuchuyen").split("_")[0]
+        hoten = request.form.get("nguoiduocdieuchuyen").split("_")[1]
+        chucdanh = 'Công nhân may công nghiệp'
+        chuyendihotro = request.form.get("chuyenhotro")
+        ngaydieuchuyendi = request.form.get("ngaydieuchuyendi")
+        giodieuchuyendi = request.form.get("giodieuchuyendi")
+        sogiohotro = request.form.get("sogiohotro")
+        nhamay = 'NT1' if chuyen[0]=="1" else 'NT2'
+        them_nguoi_di_hotro(nhamay,chuyen,mst,hoten,chucdanh,chuyendihotro,ngaydieuchuyendi,giodieuchuyendi,sogiohotro)
+        ngay = request.form.get("ngay")   
+        chuyen = g.notice['line']
+        style = request.form.get("style")
+        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+
+@app.route("/nhantnclenchuyen", methods=["POST"])
+@login_required
+def nhantnclenchuyen():
+    if request.method == "POST":
+        id = request.form.get("id_tnc")
+        chuyen = request.form.get("chuyen_nhan_tnc")
+        nhan_tnc_len_chuyen(id,chuyen)
+        ngay = request.form.get("ngay")   
+        chuyen = g.notice['line']
+        style = request.form.get("style")
+        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+
+@app.route("/xoasanluongcanhan", methods=["POST"])
+def xoasanluongcanhan():
+    if request.method == "POST":
+        id = request.form.get("id_xoa")
+        xoa_sanluong(id)
+        ngay = request.form.get("ngay")   
+        chuyen = g.notice['line']
+        style = request.form.get("style")
+        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+    
+@app.route("/capnhatsogiohotro", methods=["POST"])
+def capnhatsogiohotro():
+    if request.method == "POST":
+        id = request.form.get("id_hotro")
+        sogio = request.form.get("sogio")
+        capnhat_sogio_hotro(id,sogio)
+        ngay = request.form.get("ngay")   
+        chuyen = g.notice['line']
+        style = request.form.get("style")
+        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)
