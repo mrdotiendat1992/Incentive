@@ -10,10 +10,6 @@
         .table {
             width: 100%;
           }
-          .table th, .table td {
-            white-space: normal;
-            word-wrap: break-word;
-          }
           .table .input-container {
             display: flex;
             align-items: center;
@@ -32,8 +28,10 @@
           .table input[readonly] {
               pointer-events: none;
           }
-          .bg-primary th {
+          th {
             color: #fff;
+            text-align: center;
+            vertical-align: middle;
           }
           .icon-btn {
             background: none;
@@ -232,18 +230,40 @@
                     <th></th>
                 </tr>
                 <tr>
-                    <th><input type="text" id="mst" name="mst" value="{{ request.args.get('mst','') }}" onkeyup="form.submit()"></th>
-                    <th><input type="text" id="hoten" name="hoten" value="{{ request.args.get('hoten','') }}" onkeyup="form.submit()"></th>
-                    <th><input type="text" id="search_macongdoan" name="search_macongdoan" value="{{ request.args.get('search_macongdoan','') }}" onkeyup="form.submit()"></th>
+                    <th>
+                        <select id="mst" name="mst" onchange="form.submit()">
+                            <option value=''></option>
+                            {% for row in danhsach_sanluong %}
+                            {% if row[0] == request.args.get('mst') %}
+                                <option value='{{ row[0] }}' selected>{{ row[0] }}</option>
+                            {% else %}
+                                <option value='{{ row[0] }}'>{{ row[0] }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </th>
+                    <th>
+                        <select id="hoten" name="hoten" onchange="form.submit()">
+                            <option value=''></option>
+                            {% for row in danhsach_sanluong %}
+                            {% if row[1] == request.args.get('hoten') %}
+                                <option value='{{ row[1] }}' selected>{{ row[1] }}</option>
+                            {% else %}
+                                <option value='{{ row[1] }}'>{{ row[1] }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </th>
+                    <th><input type="text" id="search_macongdoan" name="search_macongdoan" value="{{ request.args.get('search_macongdoan','') }}" onchange="form.submit()"></th>
                     <th></th>
-                    <th></th>
+                    <th><a class="fas fa-search"></a></th>
                 </tr>
             </form>
             </thead>
             <tbody> 
                     {% for row in danhsach_sanluong %}
-                    <form method="POST" action="/nhapsanluongcanhan">
-                        <tr>
+                    <tr class="cd_{{ row[5] }}">
+                        <form method="POST" action="/nhapsanluongcanhan">
                             <input type="hidden" name="chuyen" value={{ request.args.get('chuyen') }}>
                             <input type="hidden" name="ngay" value={{ request.args.get('ngay') }}>
                             <input type="hidden" name="style" value={{ request.args.get('style') }}>
@@ -251,19 +271,60 @@
                             <td><input type="text" name="hoten" readonly value='{{ row[1] }}'></td>
                             <td>
                                 <div class="input-container">
-                                    <input type="number" name="macongdoan" value="{{ row[5] }}">
-                                    <a class="fas fa-fw fa-eye xemcongdoan" href="#" data-toggle="modal" data-target="#congdoanModal" data-info="{{ row[5] }}_{{ request.args.get('style') }}"></a>
+                                    <input type="number" name="macongdoan" value="{{ row[5] }}" class="macongdoan_tong">
+                                    <a class="fas fa-fw fa-eye" href="#" data-toggle="modal" data-target="#congdoanModal" data-info="{{ row[5] }}_{{ request.args.get('style') }}"></a>
                                 </div>
                             </td>
-                            <td><input type="number" name="sanluong" value={{ row[6] }} onkeyup="form.submit()"></td>
+                            <td><input type="number" name="sanluong" value={{ row[6] }} onkeyup="form.submit()"  class="sanluong_tong"></td>
                         </form>
-                        <form method="POST" action="/xoasanluongcanhan">
-                            <input type="hidden" name="style" value={{ request.args.get('style','') }}>
-                            <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
-                            <input type="hidden" name="id_xoa" value={{ row[-1] }}>
-                            <td><input type="submit" class="btn btn-danger btn-sm" value="-"></input></td>
-                        </tr>
-                        </form>
+                        <td>
+                            <a class="fas fa-fw fa-plus" data-toggle="modal" data-target="#themcongdoanModal"></a>
+                        </td>
+                        <div class="modal fade" id="themcongdoanModal" tabindex="-1" role="dialog" aria-labelledby="themcongdoanModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="themcongdoanModalLabel">Thêm công đoạn cá nhân</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="/nhapsanluongcanhan" method="POST">
+                                        <div class="form-group">
+                                            <input class="form-control" name="chuyen" readonly value={{ request.args.get('chuyen') }}>
+                                        </div>
+                                        <div class="form-group">
+                                            <input class="form-control" name="ngay" readonly value={{ request.args.get('ngay') }}>
+                                        </div>
+                                        <div class="form-group">
+                                            <input class="form-control" name="style" readonly value={{ request.args.get('style') }}>
+                                        </div>
+                                        <div class="form-group">
+                                            <input class="form-control" type="text" name="mst" readonly value={{ row[0] }}>
+                                        </div>
+                                        <div class="form-group">
+                                            <input class="form-control" type="text" name="hoten" readonly value='{{ row[1] }}'>
+                                        </div>
+                                        <div class="form-group">
+                                            <input class="form-control" type="number" name="macongdoan">
+                                        </div>
+                                        <div class="form-group">
+                                            <input class="form-control" type="number" name="sanluong">
+                                        </div>
+                                        <div class="form-group">
+                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Lưu</button>
+                                </form>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </tr>
+                    <div hidden class="tong_sanluong_congdoan">{{ row[5]}}_{{row[6] }}</div>
                     {% endfor %}
                 </tbody>
             </table>
@@ -288,6 +349,7 @@
           </div>
         </div>
       </div>
+      
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -331,11 +393,60 @@
             } catch {
                 return "";    
         }}
+
         document.addEventListener('DOMContentLoaded', (event) => {
             document.querySelectorAll('.date_en').forEach((element) => {
                 element.textContent = changeFormatDate(element.textContent);
             });
-        });
+            var ketqua_sanluong = []
+            var tongsanluong_congdoan = document.querySelectorAll('.tong_sanluong_congdoan');
+            tongsanluong_congdoan.forEach((element) => {
+                if (element.textContent.split("_")[0] != '') {
+                    ketqua_sanluong.push(element.textContent)
+                }
+            });
+            const result = {};
+            ketqua_sanluong.forEach(item => {
+            const [code, amount] = item.split('_');
+                if (result[code]) {
+                    result[code] += parseInt(amount, 10);
+                } else {
+                    result[code] = parseInt(amount, 10);
+                }
+            });
+            const ngay = "{{ request.args.get('ngay') }}";
+            const chuyen = "{{ request.args.get('chuyen') }}";
+            const style = "{{ request.args.get('style') }}";
+            axios({
+                method: 'post',
+                url: '/laytongsanluongtheocongdoan?ngay=' + ngay + '&chuyen=' + chuyen + '&style=' + style,
+            })
+            .then(function (response) {
+                var tonghop_congdoan_nhapsai = []
+                var congdoan_nhapsai = []
+                var data = response.data;
+                data.forEach(element => {
+                    tonghop_congdoan_nhapsai.push([parseInt(element[0]), element[1], result[element[0]]])
+                })
+                tonghop_congdoan_nhapsai.forEach(element => {
+                    if (element[2] != element[1]) {
+                        congdoan_nhapsai.push(element)
+                    }
+                })
+                congdoan_nhapsai.forEach(element => {
+                    console.log(element)
+                    document.querySelectorAll('.cd_'+element).forEach((element) => {
+                        element.style.backgroundColor = 'yellow';
+                    })
+                })
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        })
+
+
+
 
     </script>
   </body>

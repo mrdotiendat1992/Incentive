@@ -161,7 +161,7 @@ def lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan):
         query += f"AND HO_TEN=N'{hoten}' "
     if macongdoan:
         query += f"AND MA_CONG_DOAN='{macongdoan}' "
-    query += "ORDER BY NGAY DESC, MST, MA_CONG_DOAN"
+    query += "ORDER BY CAST(MST as INT) ASC"
     cursor = execute_query(conn, query) 
     result = cursor.fetchall()
     close_db(conn)
@@ -230,7 +230,7 @@ def lay_danhsach_di_hotro(chuyen):
 def lay_danhsach_tnc_chua_lenchuyen(chuyen):
     try:
         conn = connect_db()
-        query = f"SELECT * FROM [INCENTIVE].[dbo].[CN_TNC_CHUA_NGOI_CHUYEN] WHERE CHUYEN LIKE '{chuyen[0]}TNC%' ORDER BY MST ASC"
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[CN_TNC_CHUA_NGOI_CHUYEN] WHERE CHUYEN LIKE '{chuyen[0]}TNC%' ORDER BY CAST(MST as INT) ASC"
         cursor = execute_query(conn, query)
         result = cursor.fetchall()
         close_db(conn)
@@ -260,6 +260,20 @@ def capnhat_sogio_hotro(id,sogio):
         return True
     except:
         return False
+    
+def laytongsanluongtheocongdoan(ngay,chuyen,style):
+    try:
+        conn = connect_db()
+        query = f"select MA_CONG_DOAN,TONG_SL from [INCENTIVE].[dbo].[TONG_SL_CONG_DOAN] where NGAY='{ngay}' and CHUYEN='{chuyen}' and STYLE='{style}' group by MA_CONG_DOAN,TONG_SL"
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        result=[]
+        for row in rows:
+            if row[0]:
+                result.append([row[0],row[1]])
+        return result
+    except:
+        return []
     
 def login_required(f):
     @wraps(f)
@@ -397,15 +411,14 @@ def nhantnclenchuyen():
         style = request.form.get("style")
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
-@app.route("/xoasanluongcanhan", methods=["POST"])
+@app.route("/laytongsanluongtheocongdoan", methods=["POST"])
 def xoasanluongcanhan():
     if request.method == "POST":
-        id = request.form.get("id_xoa")
-        xoa_sanluong(id)
-        ngay = request.form.get("ngay")   
-        chuyen = g.notice['line']
-        style = request.form.get("style")
-        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+        ngay = request.args.get("ngay")
+        chuyen = request.args.get("chuyen")
+        style = request.args.get("style")
+        data = laytongsanluongtheocongdoan(ngay,chuyen,style)
+        return jsonify(data)
     
 @app.route("/capnhatsogiohotro", methods=["POST"])
 def capnhatsogiohotro():
