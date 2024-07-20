@@ -98,7 +98,7 @@
                                                     <input type="hidden" name="id_hotro" value="{{ nguoi[-1] }}">
                                                     <input type="hidden" name="chuyen" value={{ request.args.get('chuyen','') }}>
                                                     <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
-                                                    <input type="number" name="sogio" value="{{ nguoi[8] }}" onkeyup="form.submit()">
+                                                    <input type="number" name="sogio" value="{{ nguoi[8] }}" onchange="form.submit()">
                                                 </form>
                                             </td>
                                         </tr>
@@ -275,7 +275,7 @@
                                     <a class="fas fa-fw fa-eye" href="#" data-toggle="modal" data-target="#congdoanModal" data-info="{{ row[5] }}_{{ request.args.get('style') }}"></a>
                                 </div>
                             </td>
-                            <td><input type="number" name="sanluong" value={{ row[6] }} onkeyup="form.submit()"  class="sanluong_tong"></td>
+                            <td><input type="number" name="sanluong" value={{ row[6] }} onchange="form.submit()"  class="sanluong_tong"></td>
                         </form>
                         <td>
                             <a class="fas fa-fw fa-plus" data-toggle="modal" data-target="#themcongdoanModal"></a>
