@@ -264,7 +264,7 @@ def capnhat_sogio_hotro(id,sogio):
 def laytongsanluongtheocongdoan(ngay,chuyen,style):
     try:
         conn = connect_db()
-        query = f"select MA_CONG_DOAN,TONG_SL from [INCENTIVE].[dbo].[TONG_SL_CONG_DOAN] where NGAY='{ngay}' and CHUYEN='{chuyen}' and STYLE='{style}' group by MA_CONG_DOAN,TONG_SL"
+        query = f"select MA_CONG_DOAN,QTY from [INCENTIVE].[dbo].[TONG_SL_CONG_DOAN] where NGAY='{ngay}' and CHUYEN='{chuyen}' and STYLE='{style}' group by MA_CONG_DOAN,QTY"
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         result=[]

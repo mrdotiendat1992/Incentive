@@ -54,11 +54,11 @@
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#hotroModal">
                 Thêm người đi hỗ trợ
             </button>
-            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#tncModal">
-                Nhận công nhân TNC
-            </button>
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#tncchualenchuyenModal">
                 DS đi hỗ trợ
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#tncModal">
+                Nhận công nhân TNC
             </button>
         </div>
         <div class="modal fade" id="tncchualenchuyenModal" tabindex="-1" role="dialog" aria-labelledby="tncchualenchuyenModalLabel" aria-hidden="true">
@@ -275,16 +275,16 @@
                                     <a class="fas fa-fw fa-eye" href="#" data-toggle="modal" data-target="#congdoanModal" data-info="{{ row[5] }}_{{ request.args.get('style') }}"></a>
                                 </div>
                             </td>
-                            <td><input type="number" name="sanluong" value={{ row[6] }} onchange="form.submit()"  class="sanluong_tong"></td>
+                            <td><input type="number" name="sanluong" value={{ row[6] }} onmouseout="form.submit()"  class="sanluong_tong"></td>
                         </form>
                         <td>
-                            <a class="fas fa-fw fa-plus" data-toggle="modal" data-target="#themcongdoanModal"></a>
+                            <a class="fas fa-fw fa-plus" data-toggle="modal" data-target="#themcongdoanModal_{{ row[0] }}"></a>
                         </td>
-                        <div class="modal fade" id="themcongdoanModal" tabindex="-1" role="dialog" aria-labelledby="themcongdoanModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="themcongdoanModal_{{ row[0] }}" tabindex="-1" role="dialog" aria-labelledby="themcongdoanModal_{{ row[0] }}Label" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="themcongdoanModalLabel">Thêm công đoạn cá nhân</h5>
+                                    <h5 class="modal-title" id="themcongdoanModal_{{ row[0] }}Label">Thêm công đoạn cá nhân</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                     </button>
@@ -422,6 +422,7 @@
                 url: '/laytongsanluongtheocongdoan?ngay=' + ngay + '&chuyen=' + chuyen + '&style=' + style,
             })
             .then(function (response) {
+                console.log(response.data);
                 var tonghop_congdoan_nhapsai = []
                 var congdoan_nhapsai = []
                 var data = response.data;
@@ -435,7 +436,7 @@
                 })
                 congdoan_nhapsai.forEach(element => {
                     console.log(element)
-                    document.querySelectorAll('.cd_'+element).forEach((element) => {
+                    document.querySelectorAll('.cd_'+element[0]).forEach((element) => {
                         element.style.backgroundColor = 'yellow';
                     })
                 })
