@@ -404,7 +404,7 @@
                 var masothe = "{{ current_user.masothe }}";
                 var macongty = "{{ current_user.macongty }}";
                 if (response.data[macongty] && typeof response.data[macongty] === 'object') {
-                    if (!(chuyen in response.data[macongty])) {
+                    if (!(chuyen in response.data[macongty]["Tổ trưởng"])) {
                         console.log("Không phải chuyền may");
                         document.querySelectorAll('input').forEach((element) => {
                             element.setAttribute('disabled', 'disabled');
