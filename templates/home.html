@@ -223,6 +223,7 @@
         <table class="table table-bordered table-sm">
             <thead>
                 <tr class="bg-primary">
+                    <th></th>
                     <th>MST</th>
                     <th>Họ tên</th>
                     <th>Mã công đoạn</th>
@@ -230,6 +231,7 @@
                     <th></th>
                 </tr>
                 <tr>
+                    <th></th>
                     <th>
                         <select id="mst" name="mst" onchange="form.submit()">
                             <option value=''></option>
@@ -263,6 +265,16 @@
             <tbody> 
                     {% for row in danhsach_sanluong %}
                     <tr class="cd_{{ row[5] }}">
+                        <td>
+                            <form action="/xoasanluongcanhan" method="POST">
+                                <input type="hidden" name="chuyen" value={{ request.args.get('chuyen') }}>
+                                <input type="hidden" name="ngay" value={{ request.args.get('ngay') }}>
+                                <input type="hidden" name="style" value={{ request.args.get('style') }}>
+                                <input type="hidden" name="mst" value={{ request.args.get('mst') }}>
+                                <input type="hidden" name="id_xoasanluong" value={{ row[-1]}}>
+                                <button type="submit" onclick="return xoasanluongcanhan()" class="btn btn-danger btn-sm"><i class="fas fa-fw fa-trash" ></i></button>
+                            </form>
+                        </td>
                         <form method="POST" action="/nhapsanluongcanhan">
                             <input type="hidden" name="chuyen" value={{ request.args.get('chuyen') }}>
                             <input type="hidden" name="ngay" value={{ request.args.get('ngay') }}>
@@ -290,7 +302,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="/nhapsanluongcanhan" method="POST">
+                                    <form action="/nhapsanluong_congdoanmoi" method="POST">
                                         <div class="form-group">
                                             <input class="form-control" name="chuyen" readonly value={{ request.args.get('chuyen') }}>
                                         </div>
@@ -393,6 +405,13 @@
             } catch {
                 return "";    
         }}
+
+        function xoasanluongcanhan() {
+            if (confirm("Bạn muốn xoá sản lượng của công nhân này?")){
+                return true;
+            } 
+            return false;
+        }
 
         document.addEventListener('DOMContentLoaded', (event) => {
             axios({

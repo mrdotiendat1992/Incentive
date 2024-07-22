@@ -157,7 +157,7 @@ def lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan):
         query += f"AND HO_TEN=N'{hoten}' "
     if macongdoan:
         query += f"AND MA_CONG_DOAN='{macongdoan}' "
-    query += "ORDER BY CAST(MST as INT) ASC"
+    query += "ORDER BY CAST(MST as INT) ASC, MA_CONG_DOAN ASC"
     cursor = execute_query(conn, query) 
     result = cursor.fetchall()
     close_db(conn)
@@ -392,6 +392,20 @@ def nhapsanluongcanhan():
         sanluong = request.form.get("sanluong")
         capnhat_sanluong(mst,hoten,chuyen,ngay,style,macongdoan,sanluong)   
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+    
+@app.route("/nhapsanluong_congdoanmoi", methods=["POST"])
+@login_required
+def nhapsanluong_congdoanmoi():
+    if request.method == "POST":
+        ngay = request.form.get("ngay")   
+        chuyen = request.form.get("chuyen")
+        style = request.form.get("style")
+        mst = request.form.get("mst")
+        hoten = request.form.get("hoten")
+        macongdoan = request.form.get("macongdoan")
+        sanluong = request.form.get("sanluong")
+        capnhat_sanluong(mst,hoten,chuyen,ngay,style,macongdoan,sanluong)   
+        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}&mst={mst}")
 
 @app.route('/xemtencongdoan', methods=["GET","POST"])
 @login_required
@@ -435,7 +449,7 @@ def nhantnclenchuyen():
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
 @app.route("/laytongsanluongtheocongdoan", methods=["POST"])
-def xoasanluongcanhan():
+def laytongsanluong():
     if request.method == "POST":
         ngay = request.args.get("ngay")
         chuyen = request.args.get("chuyen")
@@ -460,5 +474,17 @@ def danhsach_totruong():
         danhsach = laydachsachtotruong()
         return jsonify(danhsach)
 
+@app.route("/xoasanluongcanhan", methods=["POST"])
+def xoasanluongcanhan():
+    if request.method == "POST":
+        id = request.form.get("id_xoasanluong")
+        print(id)
+        ngay = request.form.get("ngay")   
+        chuyen = g.notice['line']
+        style = request.form.get("style")
+        mst = request.form.get("mst")
+        xoa_sanluong(id)
+        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}&mst={mst}")
+    
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)
