@@ -275,7 +275,7 @@
                                     <a class="fas fa-fw fa-eye" href="#" data-toggle="modal" data-target="#congdoanModal" data-info="{{ row[5] }}_{{ request.args.get('style') }}"></a>
                                 </div>
                             </td>
-                            <td><input type="number" name="sanluong" value={{ row[6] }} onmouseout="form.submit()"  class="sanluong_tong"></td>
+                            <td><input type="number" name="sanluong" value={{ row[6] }} onchange="form.submit()"  class="sanluong_tong"></td>
                         </form>
                         <td>
                             <a class="fas fa-fw fa-plus" data-toggle="modal" data-target="#themcongdoanModal_{{ row[0] }}"></a>

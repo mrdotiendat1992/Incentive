@@ -276,14 +276,26 @@ def laydachsachtotruong():
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_TO_TRUONG]"
         cursor = execute_query(conn, query)
-        result = {"NT1":{},"NT2":{}}
+        result = {"NT1":{
+                "Tổ trưởng": {},
+                "IE" : []
+            },"NT2":{
+                "Tổ trưởng": {},
+                "IE" : []
+            }}
         rows = cursor.fetchall()
         for row in rows:
-            if (row[2][2]=="S" and row[2][1].isdigit()) and (row[1] not in result[row[0]]):
-                result[row[0]][row[2]] = row[1]      
+            # print(row)
+            if (row[2][2]=="S" and row[2][1].isdigit()) and (row[1] not in result[row[0]]["Tổ trưởng"]):
+                result[row[0]]["Tổ trưởng"][row[2]] = row[1]   
+                # print(result)
+            else:
+                result[row[0]]["IE"].append(int(row[1]))
+        # print(result)
         close_db(conn)
         return result
-    except:
+    except Exception as e:
+        print(e)
         return []
 
 def login_required(f):
@@ -326,7 +338,7 @@ def login():
             user = Nhanvien.query.filter_by(masothe=masothe, macongty=macongty).first()    
             if user and user.matkhau == matkhau:
                 if login_user(user):    
-                    app.logger.info(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang nhap !!!")
+                    print(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang nhap !!!")
                     return redirect(url_for('home'))
             return redirect(url_for("login"))
         except Exception as e:
@@ -340,7 +352,7 @@ def login():
 @login_required
 def logout():
     try:
-        app.logger.info(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang xuat !!!")
+        print(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang xuat !!!")
         logout_user()
     except Exception as e:
         app.logger.error(f'Không thế đăng xuất {e} !!!')
