@@ -8,44 +8,40 @@ import logging
 from logging.handlers import RotatingFileHandler
 import urllib.parse
 
-DANH_SACH_TO_TRUONG = [
-    {"NT1":{
-        "11S01":"7721",
-        "11S03":"2540",
-        "11S05":"398",
-        "11S07":"7146",
-        "11S09":"115",
-        "11S11":"2340",
-        "11S13":"3943",
-        "12S01":"233",
-        "12S03":"385",
-        "12S05":"1163",
-        "12S07":"6318",
-        "12S09":"12756",
-        "12S11":"1192",
-    },
-    "NT2":{
-        "21S01":"262",
-        "21S03":"828",
-        "21S05":"4727",
-        "21S07":"152",
-        "21S09":"4531",
-        "21S11":"2565",
-        "21S13":"3494",
-        "22S01":"83",
-        "22S03":"1162",
-        "22S05":"1152",
-        "22S07":"1657",
-        "22S09":"376",
-        "22S11":"4952",
-        "22S13":"3590",
-        "23S01":"4726",
-        "23S07":"4882",
-        "23S09":"2576",
-        "25S09":"669",
-        "25S11":"4706"
-    }}
-]
+# DANH_SACH_TO_TRUONG = {
+#     "11S01":"7721",
+#     "11S03":"2540",
+#     "11S05":"398",
+#     "11S07":"7146",
+#     "11S09":"115",
+#     "11S11":"2340",
+#     "11S13":"3943",
+#     "12S01":"233",
+#     "12S03":"385",
+#     "12S05":"1163",
+#     "12S07":"6318",
+#     "12S09":"12756",
+#     "12S11":"1192",
+#     "21S01":"262",
+#     "21S03":"828",
+#     "21S05":"4727",
+#     "21S07":"152",
+#     "21S09":"4531",
+#     "21S11":"2565",
+#     "21S13":"3494",
+#     "22S01":"83",
+#     "22S03":"1162",
+#     "22S05":"1152",
+#     "22S07":"1657",
+#     "22S09":"376",
+#     "22S11":"4952",
+#     "22S13":"3590",
+#     "23S01":"4726",
+#     "23S07":"4882",
+#     "23S09":"2576",
+#     "25S09":"669",
+#     "25S11":"4706"
+# }
 
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
 
@@ -275,6 +271,21 @@ def laytongsanluongtheocongdoan(ngay,chuyen,style):
     except:
         return []
     
+def laydachsachtotruong():
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_TO_TRUONG]"
+        cursor = execute_query(conn, query)
+        result = {"NT1":{},"NT2":{}}
+        rows = cursor.fetchall()
+        for row in rows:
+            if (row[2][2]=="S" and row[2][1].isdigit()) and (row[1] not in result[row[0]]):
+                result[row[0]][row[2]] = row[1]      
+        close_db(conn)
+        return result
+    except:
+        return []
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -430,6 +441,12 @@ def capnhatsogiohotro():
         chuyen = g.notice['line']
         style = request.form.get("style")
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+    
+@app.route("/danhsach_totruong", methods=["POST"])
+def danhsach_totruong():
+    if request.method == "POST":
+        danhsach = laydachsachtotruong()
+        return jsonify(danhsach)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)

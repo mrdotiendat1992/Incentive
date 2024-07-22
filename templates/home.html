@@ -395,6 +395,52 @@
         }}
 
         document.addEventListener('DOMContentLoaded', (event) => {
+            axios({
+                method: 'post',
+                url: '/danhsach_totruong',
+            })
+            .then(function (response) {
+                var chuyen = "{{ g.notice['line'] }}";
+                var masothe = "{{ current_user.masothe }}";
+                var macongty = "{{ current_user.macongty }}";
+                if (response.data[macongty] && typeof response.data[macongty] === 'object') {
+                    if (!(chuyen in response.data[macongty])) {
+                        console.log("Không phải chuyền may");
+                        document.querySelectorAll('input').forEach((element) => {
+                            element.setAttribute('disabled', 'disabled');
+                        })
+                        document.querySelectorAll('select').forEach((element) => {
+                            element.setAttribute('disabled', 'disabled');
+                        })
+                        document.querySelectorAll('button').forEach((element) => {
+                            element.setAttribute('disabled', 'disabled');
+                        })
+                    } else {
+                        console.log("Chuyền may");
+                    
+                        if (!(parseInt(masothe) == response.data[macongty][chuyen])) {
+                            console.log("Không phải tổ trưởng chuyển may");
+                            document.querySelectorAll('input').forEach((element) => {
+                                element.setAttribute('disabled', 'disabled');
+                            })
+                            document.querySelectorAll('select').forEach((element) => {
+                                element.setAttribute('disabled', 'disabled');
+                            })
+                            document.querySelectorAll('button').forEach((element) => {
+                                element.setAttribute('disabled', 'disabled');
+                            })
+                        } else {
+                            console.log("Tổ trưởng chuyển may");
+                        }
+                    }
+                } else {
+                    console.log("Data loi")
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
             document.querySelectorAll('.date_en').forEach((element) => {
                 element.textContent = changeFormatDate(element.textContent);
             });
@@ -422,7 +468,6 @@
                 url: '/laytongsanluongtheocongdoan?ngay=' + ngay + '&chuyen=' + chuyen + '&style=' + style,
             })
             .then(function (response) {
-                console.log(response.data);
                 var tonghop_congdoan_nhapsai = []
                 var congdoan_nhapsai = []
                 var data = response.data;
@@ -435,7 +480,6 @@
                     }
                 })
                 congdoan_nhapsai.forEach(element => {
-                    console.log(element)
                     document.querySelectorAll('.cd_'+element[0]).forEach((element) => {
                         element.style.backgroundColor = 'yellow';
                     })
