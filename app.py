@@ -478,7 +478,8 @@ def taidulieuxuong():
                 })
             data_frame = DataFrame(data)
             ngay = ngay.split("-")[2]+ngay.split("-")[1]+ngay.split("-")[0]
-            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/{ngay}_{chuyen}_{style}.xlsx")
+            giotai = datetime.datetime.now().strftime("%H%M%S")
+            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/{ngay}_{chuyen}_{style}_{giotai}.xlsx")
             data_frame.to_excel(excel_path, index=False)
             # Mở tệp Excel để chỉnh độ rộng cột
             # wb = load_workbook(excel_path)
@@ -502,32 +503,42 @@ def taidulieuxuong():
             # wb.close()
             return send_file(excel_path, as_attachment=True)
         except Exception as e:
-            return str(e)
+            print(e)
+        finally:
+            ngay = request.form.get("ngay")   
+            chuyen = request.args.get['chuyen']
+            style = request.form.get("style")
+            return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+        
 @app.route("/taidulieulen", methods=["POST"])
 def taidulieulen():
     if request.method == "POST":
-        file = request.files["file"]
-        if not file:
-            print("No file")
-            return redirect("/")
-        thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
-        filepath = f"tailen/data_{thoigian}.xlsx"
-        file.save(filepath)
-        data = read_excel(filepath).to_dict(orient="records")
-        for row in data:
-            capnhat_sanluong(
-                row["Mã số thẻ"],
-                row["Họ tên"],
-                row["Chuyền"],
-                row["Ngày"],
-                row["Style"],
-                row["Mã công đoạn"],
-                row["Sản lượng cá nhân"]
-            )
-        ngay = request.form.get("ngay")   
-        chuyen = request.args.get['chuyen']
-        style = request.form.get("style")
-        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
-    
+        try:
+            file = request.files["file"]
+            if not file:
+                print("No file")
+                return redirect("/")
+            thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            filepath = f"tailen/data_{thoigian}.xlsx"
+            file.save(filepath)
+            data = read_excel(filepath).to_dict(orient="records")
+            for row in data:
+                capnhat_sanluong(
+                    row["Mã số thẻ"],
+                    row["Họ tên"],
+                    row["Chuyền"],
+                    row["Ngày"],
+                    row["Style"],
+                    row["Mã công đoạn"],
+                    row["Sản lượng cá nhân"]
+                )
+        except Exception as e:
+            print(e)
+        finally:
+            ngay = request.form.get("ngay")   
+            chuyen = request.args.get['chuyen']
+            style = request.form.get("style")
+            return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+        
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)
