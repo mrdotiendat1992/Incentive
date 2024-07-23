@@ -107,7 +107,7 @@ def get_line(masothe,macongty):
         close_db(conn)
         return result[0]
     except:
-        return None
+        return ""
     
 def get_all_styles(ngay, chuyen):
     try:

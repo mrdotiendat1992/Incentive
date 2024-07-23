@@ -114,7 +114,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="tncModalLabel">Thử việc may chưa lên chuyền</h5>
+                        <h5 class="modal-title" id="tncModalLabel">Công nhân may chưa tính SAH</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -429,6 +429,13 @@
                 if (response.data[macongty] && typeof response.data[macongty] === 'object') {
                     if (!(chuyen in response.data[macongty]["Tổ trưởng"])) {
                         console.log("Không phải chuyền may");
+                        console.log("Danh sách IE: ",response.data[macongty]["IE"])
+                        for (let j = 0; j < response.data[macongty]["IE"].length; j++) {
+                            if (response.data[macongty]["IE"][j] == masothe) {
+                                console.log("Bạn là IE")
+                                return
+                            }
+                        }
                         document.querySelectorAll('input').forEach((element) => {
                             element.setAttribute('disabled', 'disabled');
                         })
@@ -446,6 +453,15 @@
                                 console.log("Bạn là tổ trưởng chuyền", chuyen, "!!!")
                                 return
                         }
+                        document.querySelectorAll('input').forEach((element) => {
+                            element.setAttribute('disabled', 'disabled');
+                        })
+                        document.querySelectorAll('select').forEach((element) => {
+                            element.setAttribute('disabled', 'disabled');
+                        })
+                        document.querySelectorAll('button').forEach((element) => {
+                            element.setAttribute('disabled', 'disabled');
+                        })
                     }}
                 }
             })
