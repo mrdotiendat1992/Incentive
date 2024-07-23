@@ -525,10 +525,9 @@ def taidulieulen():
                 row["Sản lượng cá nhân"]
             )
         ngay = request.form.get("ngay")   
-        chuyen = request.args.get['line']
+        chuyen = request.args.get['chuyen']
         style = request.form.get("style")
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
-        
     
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)
