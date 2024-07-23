@@ -422,6 +422,7 @@
                 var chuyen = "{{ g.notice['line'] }}";
                 var masothe = "{{ current_user.masothe }}";
                 var macongty = "{{ current_user.macongty }}";
+                console.log(response.data)
                 if (response.data[macongty] && typeof response.data[macongty] === 'object') {
                     if (!(chuyen in response.data[macongty]["Tổ trưởng"])) {
                         console.log("Không phải chuyền may");
@@ -439,15 +440,15 @@
                     
                         if (!(parseInt(masothe) == response.data[macongty]["Tổ trưởng"][chuyen])) {
                             console.log("Không phải tổ trưởng chuyển may");
-                            document.querySelectorAll('input').forEach((element) => {
-                                element.setAttribute('disabled', 'disabled');
-                            })
-                            document.querySelectorAll('select').forEach((element) => {
-                                element.setAttribute('disabled', 'disabled');
-                            })
-                            document.querySelectorAll('button').forEach((element) => {
-                                element.setAttribute('disabled', 'disabled');
-                            })
+                            // document.querySelectorAll('input').forEach((element) => {
+                             //   element.setAttribute('disabled', 'disabled');
+                            //})
+                           // document.querySelectorAll('select').forEach((element) => {
+                             //   element.setAttribute('disabled', 'disabled');
+                            //})
+                            //document.querySelectorAll('button').forEach((element) => {
+                           //     element.setAttribute('disabled', 'disabled');
+                            //})
                         } else {
                             console.log("Tổ trưởng chuyển may");
                         }
