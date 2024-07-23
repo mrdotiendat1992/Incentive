@@ -497,7 +497,7 @@ def taidulieuxuong():
 
         # Lưu lại tệp Excel đã chỉnh sửa
         wb.save(excel_path)
-        return send_file(f"data_{thoigian}.xlsx")
+        return send_file(f"data_{thoigian}.xlsx", as_attachment=True)
 
 @app.route("/taidulieulen", methods=["POST"])
 def taidulieulen():
