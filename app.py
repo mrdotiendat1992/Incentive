@@ -499,6 +499,7 @@ def taidulieuxuong():
 
             # Lưu lại tệp Excel đã chỉnh sửa
             wb.save(excel_path)
+            wb.close()
             return send_file(excel_path, as_attachment=True)
         except Exception as e:
             return str(e)
