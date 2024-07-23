@@ -286,9 +286,12 @@ def laydachsachtotruong():
         rows = cursor.fetchall()
         for row in rows:
             # print(row)
-            if (row[2][2]=="S" and row[2][1].isdigit()) and (row[1] not in result[row[0]]["Tổ trưởng"]):
-                result[row[0]]["Tổ trưởng"][row[2]] = row[1]   
-                # print(result)
+            if (row[2][2]=="S" and row[2][1].isdigit()):
+                if (row[2] in result[row[0]]["Tổ trưởng"]):
+                    if row[1] not in result[row[0]]["Tổ trưởng"][row[2]]:
+                        result[row[0]]["Tổ trưởng"][row[2]].append(int(row[1]))
+                else:
+                    result[row[0]]["Tổ trưởng"][row[2]] = [int(row[1])]
             else:
                 result[row[0]]["IE"].append(int(row[1]))
         # print(result)

@@ -200,6 +200,9 @@
         </div>
         <form method="GET">
             <div class="form-group">
+                <p>{{ current_user.masothe}} - {{ current_user.hoten}}</p>
+            </div>
+            <div class="form-group">
                 <input type="text" class="form-control" id="chuyen" name="chuyen" readonly value="{{ g.notice['line'] }}">
             </div>
             <div class="form-group">
@@ -436,30 +439,21 @@
                             element.setAttribute('disabled', 'disabled');
                         })
                     } else {
-                        console.log("Chuyền may");
-                    
-                        if (!(parseInt(masothe) == parseInt(response.data[macongty]["Tổ trưởng"][chuyen]))) {
-                            console.log("Không phải tổ trưởng chuyển may");
-                            // document.querySelectorAll('input').forEach((element) => {
-                             //   element.setAttribute('disabled', 'disabled');
-                            //})
-                           // document.querySelectorAll('select').forEach((element) => {
-                             //   element.setAttribute('disabled', 'disabled');
-                            //})
-                            //document.querySelectorAll('button').forEach((element) => {
-                           //     element.setAttribute('disabled', 'disabled');
-                            //})
-                        } else {
-                            console.log("Tổ trưởng chuyển may");
+                        console.log("Danh sách tổ trưởng của chuyền: ",chuyen,":", response.data[macongty]["Tổ trưởng"][chuyen]);
+                        console.log("Mã số thẻ đăng nhập: ",masothe)
+                        for (let i = 0; i < response.data[macongty]["Tổ trưởng"][chuyen].length; i++) {
+                            if (response.data[macongty]["Tổ trưởng"][chuyen][i] == masothe) {
+                                console.log("Bạn là tổ trưởng chuyền", chuyen, "!!!")
+                                return
                         }
-                    }
-                } else {
-                    console.log("Data loi")
+                    }}
                 }
             })
             .catch(function (error) {
                 console.log(error);
             });
+            
+
 
             document.querySelectorAll('.date_en').forEach((element) => {
                 element.textContent = changeFormatDate(element.textContent);
