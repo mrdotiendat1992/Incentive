@@ -476,7 +476,7 @@ def taidulieuxuong():
             })
         data_frame = DataFrame(data)
         thoigian = datetime.datetime.now().strftime("%d%m%Y_%H%M%S")
-        excel_path = f"data_{thoigian}.xlsx"
+        excel_path = f"taixuong/data_{thoigian}.xlsx"
         data_frame.to_excel(excel_path, index=False)
         # Mở tệp Excel để chỉnh độ rộng cột
         wb = load_workbook(excel_path)
@@ -507,7 +507,7 @@ def taidulieulen():
             print("No file")
             return redirect("/")
         thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
-        filepath = f"tailen_{thoigian}.xlsx"
+        filepath = f"tailen/data_{thoigian}.xlsx"
         file.save(filepath)
         data = read_excel(filepath).to_dict(orient="records")
         for row in data:
