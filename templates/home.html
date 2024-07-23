@@ -70,7 +70,7 @@
                             <form action="/themnguoidihotro" method="POST">
                                 <div class="form-group">
                                     <label for="line_dieuchuyendi">Chuyền đi hỗ trợ</label>
-                                    <select class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}">
+                                    <select class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" onchange="form.submit()">
                                         <option value=''></option>
                                         {% for chuyen in g.notice['line'] %}
                                         {% if chuyen == request.args.get('chuyen') %}
@@ -124,16 +124,8 @@
                         <div class="modal-body">
                             
                                 <div class="form-group">
-                                    <select class="form-control" id="line" name="line" value="{{ request.args.get('chuyen') }}" readonly>
-                                        <option value=''></option>
-                                        {% for chuyen in g.notice['line'] %}
-                                        {% if chuyen == request.args.get('chuyen') %}
-                                            <option value='{{ chuyen }}' selected>{{ chuyen }}</option>
-                                        {% else %}
-                                            <option value='{{ chuyen }}'>{{ chuyen }}</option>
-                                        {% endif %}    
-                                        {% endfor %}
-                                    <select>
+                                    <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" readonly>
+        
                                 </div>
                                 <table class="table table-bordered table-sm">
                                     <thead>
@@ -184,17 +176,7 @@
                         <div class="modal-body">
                             
                                 <div class="form-group">
-                                    <label for="line_dieuchuyendi">Chuyền đi hỗ trợ</label>
-                                    <select class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" readonly>
-                                        <option value=''></option>
-                                        {% for chuyen in g.notice['line'] %}
-                                        {% if chuyen == request.args.get('chuyen') %}
-                                            <option value='{{ chuyen }}' selected>{{ chuyen }}</option>
-                                        {% else %}
-                                            <option value='{{ chuyen }}'>{{ chuyen }}</option>
-                                        {% endif %}    
-                                        {% endfor %}
-                                    <select>
+                                    <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" readonly>
         
                                 </div>
                                 <table class="table table-bordered table-sm">
