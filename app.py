@@ -477,7 +477,7 @@ def taidulieuxuong():
                     "Sản lượng cá nhân": int(row[6]) if row[6] else 0,
                 })
             data_frame = DataFrame(data)
-            ngay = ngay.split("/")[2]+ngay.split("/")[1]+ngay.split("/")[0]
+            ngay = ngay.split("-")[2]+ngay.split("-")[1]+ngay.split("-")[0]
             excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/{ngay}_{chuyen}_{style}.xlsx")
             data_frame.to_excel(excel_path, index=False)
             # Mở tệp Excel để chỉnh độ rộng cột
