@@ -481,25 +481,25 @@ def taidulieuxuong():
             excel_path = os.path.join(os.path.dirname(__file__),f"taixuong\data_{thoigian}.xlsx")
             data_frame.to_excel(excel_path, index=False)
             # Mở tệp Excel để chỉnh độ rộng cột
-            wb = load_workbook(excel_path)
-            ws = wb.active
+            # wb = load_workbook(excel_path)
+            # ws = wb.active
 
-            # Chỉnh độ rộng cột theo độ rộng dữ liệu
-            for column in ws.columns:
-                max_length = 0
-                column_letter = column[0].column_letter  # Lấy tên cột (ví dụ: 'A', 'B')
-                for cell in column:
-                    try:
-                        if len(str(cell.value)) > max_length:
-                            max_length = len(cell.value)
-                    except:
-                        pass
-                adjusted_width = max_length + 2
-                ws.column_dimensions[column_letter].width = adjusted_width
+            # # Chỉnh độ rộng cột theo độ rộng dữ liệu
+            # for column in ws.columns:
+            #     max_length = 0
+            #     column_letter = column[0].column_letter  # Lấy tên cột (ví dụ: 'A', 'B')
+            #     for cell in column:
+            #         try:
+            #             if len(str(cell.value)) > max_length:
+            #                 max_length = len(cell.value)
+            #         except:
+            #             pass
+            #     adjusted_width = max_length + 2
+            #     ws.column_dimensions[column_letter].width = adjusted_width
 
-            # Lưu lại tệp Excel đã chỉnh sửa
-            wb.save(excel_path)
-            wb.close()
+            # # Lưu lại tệp Excel đã chỉnh sửa
+            # wb.save(excel_path)
+            # wb.close()
             return send_file(excel_path, as_attachment=True)
         except Exception as e:
             return str(e)
