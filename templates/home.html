@@ -69,15 +69,10 @@
                         <div class="modal-body">
                             <form action="/themnguoidihotro" method="POST">
                                 <div class="form-group">
-                                    <label for="line_dieuchuyendi">Chuyền đi hỗ trợ</label>
-                                    <select class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}">
-                                        <option value=''></option>
-                                        {% for chuyen in g.notice['line'] %}
-                                        {% if chuyen != request.args.get('chuyen') %}
-                                            <option value='{{ chuyen }}'>{{ chuyen }}</option>
-                                        {% endif %}    
-                                        {% endfor %}
-                                    <select>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" readonly>
+            
+                                    </div>
                                     <label for="info">Người đi hỗ trợ</label>
                                     <select class="form-control" id="nguoiduocdieuchuyen" name="nguoiduocdieuchuyen">
                                         {% for nguoi in danhsach_congnhan_hotro %}

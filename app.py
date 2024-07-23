@@ -420,7 +420,7 @@ def themnguoidihotro():
         nhamay = 'NT1' if chuyen[0]=="1" else 'NT2'
         them_nguoi_di_hotro(nhamay,chuyen,mst,hoten,chucdanh,chuyendihotro,ngaydieuchuyendi,giodieuchuyendi,sogiohotro)
         ngay = request.form.get("ngay")   
-        chuyen = request.args.get['line']
+        chuyen = request.args.get('chuyen')
         style = request.form.get("style")
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
@@ -432,7 +432,7 @@ def nhantnclenchuyen():
         chuyen = request.form.get("chuyen_nhan_tnc")
         nhan_tnc_len_chuyen(id,chuyen)
         ngay = request.form.get("ngay")   
-        chuyen = request.args.get['line']
+        chuyen = request.args.get('chuyen')
         style = request.form.get("style")
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
@@ -454,7 +454,7 @@ def capnhatsogiohotro():
         sogio = request.form.get("sogio")
         capnhat_sogio_hotro(id,sogio)
         ngay = request.form.get("ngay")   
-        chuyen = request.args.get['line']
+        chuyen = request.args.get('chuyen')
         style = request.form.get("style")
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
@@ -465,7 +465,7 @@ def xoasanluongcanhan():
         id = request.form.get("id_xoasanluong")
         # print(id)
         ngay = request.form.get("ngay")   
-        chuyen = request.args.get['line']
+        chuyen = request.args.get('chuyen')
         style = request.form.get("style")
         # mst = request.form.get("mst")
         xoa_sanluong(id)
