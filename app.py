@@ -9,6 +9,7 @@ from logging.handlers import RotatingFileHandler
 import urllib.parse
 from pandas import DataFrame,read_excel
 from openpyxl import load_workbook
+import os
 
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
 
@@ -497,7 +498,7 @@ def taidulieuxuong():
 
         # Lưu lại tệp Excel đã chỉnh sửa
         wb.save(excel_path)
-        return send_file(f"data_{thoigian}.xlsx", as_attachment=True)
+        return send_file(excel_path, as_attachment=True)
 
 @app.route("/taidulieulen", methods=["POST"])
 def taidulieulen():
