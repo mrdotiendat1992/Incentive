@@ -223,6 +223,9 @@
                         </div>
                         <div class="modal-body">
                             <form action="/taidulieulen" method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="chuyen" value={{ request.args.get('chuyen') }}>
+                                <input type="hidden" name="ngay" value={{ request.args.get('ngay') }}>
+                                <input type="hidden" name="style" value={{ request.args.get('style') }}>
                                 <div class="form-group">
                                     <input type="file" class="form-control" id="file" name="file">
                                 </div>

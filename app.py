@@ -453,9 +453,9 @@ def xoasanluongcanhan():
         ngay = request.form.get("ngay")   
         chuyen = request.args.get['line']
         style = request.form.get("style")
-        mst = request.form.get("mst")
+        # mst = request.form.get("mst")
         xoa_sanluong(id)
-        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}&mst={mst}")
+        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
     
 @app.route("/taidulieuxuong", methods=["GET"])
 def taidulieuxuong():
@@ -524,7 +524,10 @@ def taidulieulen():
                 row["Mã công đoạn"],
                 row["Sản lượng cá nhân"]
             )
-        return redirect("/")
+        ngay = request.form.get("ngay")   
+        chuyen = request.args.get['line']
+        style = request.form.get("style")
+        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
         
     
 if __name__ == "__main__":
