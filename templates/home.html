@@ -46,7 +46,7 @@
             font-size: 1.2em;
           }
           .modal-backdrop {
-            z-index: -1;
+            z-index: 0;
           }
     </style>
   </head>
@@ -57,12 +57,173 @@
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#hotroModal">
                 Thêm người đi hỗ trợ
             </button>
+            <div class="modal fade" id="hotroModal" tabindex="-1" role="dialog" aria-labelledby="hotroModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="hotroModalLabel">Đi hỗ trợ</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/themnguoidihotro" method="POST">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ g.notice['line'] }}" readonly>
+                                    <label for="info">Người đi hỗ trợ</label>
+                                    <select class="form-control" id="nguoiduocdieuchuyen" name="nguoiduocdieuchuyen">
+                                        {% for nguoi in danhsach_congnhan_hotro %}
+                                            <option value='{{ nguoi[1] }}_{{ nguoi[2] }}'>{{ nguoi[1] }} - {{ nguoi[2] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="chuyenhotro">Chuyền hỗ trợ</label>
+                                    <select class="form-control" id="chuyenhotro" name="chuyenhotro">
+                                        {% for chuyen in danhsach_chuyen %}
+                                            {% if chuyen != g.notice['line'] %}
+                                            <option value='{{ chuyen }}'>{{ chuyen }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    <label for="ngaydieuchuyendi">Ngày đi hỗ trợ</label>
+                                    <input type="date" class="form-control" id="ngaydieuchuyendi" name="ngaydieuchuyendi">
+                                    <label for="giodieuchuyendi">Giờ đi hỗ trợ</label>
+                                    <input type="time" class="form-control" id="giodieuchuyendi" name="giodieuchuyendi">
+                                    <label for="sogiohotro">Số giờ đi hỗ trợ</label>
+                                    <input type="number" class="form-control" id="sogiohotro" name="sogiohotro">
+                                    <input type="hidden" name="style" value={{ request.args.get('style','') }}>
+                                    <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#tncchualenchuyenModal">
                 DS đi hỗ trợ
             </button>
+            <div class="modal fade" id="tncchualenchuyenModal" tabindex="-1" role="dialog" aria-labelledby="tncchualenchuyenModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="tncchualenchuyenModalLabel">Danh sách công nhân đi hỗ trợ</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ g.notice['line'] }}" readonly>
+        
+                                </div>
+                                <table class="table table-bordered table-sm">
+                                    <thead>
+                                        <tr class="bg-primary">
+                                            <th>MST</th>
+                                            <th>Họ tên</th>
+                                            <th>Chuyền</th>
+                                            <th>Ngày</th>
+                                            <th>Giờ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for nguoi in danhsach_di_hotro %}
+                                            <tr>
+                                                <td>{{ nguoi[1] }}</td>
+                                                <td>{{ nguoi[2] }}</td>
+                                                <td>{{ nguoi[5] }}</td>
+                                                <td class="date_en">{{ nguoi[6] }}</td>
+                                                <td>
+                                                    <form action="/capnhatsogiohotro" method="POST">
+                                                        <input type="hidden" name="id_hotro" value="{{ nguoi[-1] }}">
+                                                        <input type="hidden" name="chuyen" value={{ request.args.get('chuyen','') }}>
+                                                        <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
+                                                        <input type="number" name="sogio" value="{{ nguoi[8] }}" onchange="form.submit()">
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <button class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#tncModal">
                 Nhận công nhân TNC
             </button>
+            <div class="modal fade" id="tncModal" tabindex="-1" role="dialog" aria-labelledby="tncModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="tncModalLabel">Công nhân may chưa tính SAH</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ g.notice['line'] }}" readonly>
+        
+                                </div>
+                                <table class="table table-bordered table-sm">
+                                    <thead>
+                                        <tr class="bg-primary">
+                                            <th>MST</th>
+                                            <th>Họ tên</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for tnc in danhsach_tnc %}
+                                        <form action="/nhantnclenchuyen" method="POST">
+                                            <tr>
+                                                <td>{{ tnc[2] }}</td>
+                                                <td>{{ tnc[3] }}</td>
+                                                <td>
+                                                    <input type="hidden" name="chuyen_nhan_tnc" value="{{ g.notice['line'] }}">
+                                                    <input type="hidden" name="id_tnc" value="{{ tnc[0] }}">
+                                                    <input type="submit" class="btn btn-primary btn-sm" value="Nhận" onclick="return nhantnclenchuyen()">
+                                                </td>
+                                            </tr>
+                                            <input type="hidden" name="style" value={{ request.args.get('style','') }}>
+                                            <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
+                                        </form>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <button class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="/taidulieuxuong?chuyen={{ request.args.get('chuyen') }}&style={{ request.args.get('style') }}&ngay={{ request.args.get('ngay') }}" class="btn btn-success btn-sm">Tải dữ liệu xuống</a>
+            <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#uploadModal">
+                Tải dữ liệu lên
+            </button>
+            <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModal" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="uploadModal">Tải dữ liệu lên</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/taidulieulen" method="POST" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <input type="file" class="form-control" id="file" name="file">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Tải lên</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <form method="GET">
@@ -136,7 +297,7 @@
                         </select>
                     </th>
                     <th><input type="text" id="search_macongdoan" name="search_macongdoan" value="{{ request.args.get('search_macongdoan','') }}" onchange="form.submit()"></th>
-                    <th></th>
+                    <th><b style="color:red;">{{ sanluongtong }}</b></th>
                     <th><a class="fas fa-search"></a></th>
                 </tr>
             </form>
@@ -165,6 +326,24 @@
                                     <input type="number" name="macongdoan" value="{{ row[5] }}" class="macongdoan_tong">
                                     <a class="fas fa-fw fa-eye" href="#" data-toggle="modal" data-target="#congdoanModal" data-info="{{ row[5] }}_{{ request.args.get('style') }}"></a>
                                 </div>
+                                <div class="modal fade" id="congdoanModal" tabindex="-1" role="dialog" aria-labelledby="congdoanModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title" id="congdoanModalLabel">Tên công đoạn</h5>
+                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                          </button>
+                                        </div>
+                                        <div class="modal-body">
+                                          <p id="congdoanInfo"></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
                             </td>
                             <td><input type="number" name="sanluong" value={{ row[6] }} onchange="form.submit()"  class="sanluong_tong"></td>
                         </form>
@@ -221,162 +400,12 @@
             </table>
         </div>
     </div>
-     <!-- Modal for Cong Doan Information -->
-     <div class="modal fade" id="congdoanModal" tabindex="-1" role="dialog" aria-labelledby="congdoanModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="congdoanModalLabel">Tên công đoạn</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <p id="congdoanInfo"></p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal fade" id="tncchualenchuyenModal" tabindex="-1" role="dialog" aria-labelledby="tncchualenchuyenModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="tncchualenchuyenModalLabel">Danh sách công nhân đi hỗ trợ</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ g.notice['line'] }}" readonly>
-
-                        </div>
-                        <table class="table table-bordered table-sm">
-                            <thead>
-                                <tr class="bg-primary">
-                                    <th>MST</th>
-                                    <th>Họ tên</th>
-                                    <th>Chuyền</th>
-                                    <th>Ngày</th>
-                                    <th>Giờ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for nguoi in danhsach_di_hotro %}
-                                    <tr>
-                                        <td>{{ nguoi[1] }}</td>
-                                        <td>{{ nguoi[2] }}</td>
-                                        <td>{{ nguoi[5] }}</td>
-                                        <td class="date_en">{{ nguoi[6] }}</td>
-                                        <td>
-                                            <form action="/capnhatsogiohotro" method="POST">
-                                                <input type="hidden" name="id_hotro" value="{{ nguoi[-1] }}">
-                                                <input type="hidden" name="chuyen" value={{ request.args.get('chuyen','') }}>
-                                                <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
-                                                <input type="number" name="sogio" value="{{ nguoi[8] }}" onchange="form.submit()">
-                                            </form>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        <button class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="tncModal" tabindex="-1" role="dialog" aria-labelledby="tncModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="tncModalLabel">Công nhân may chưa tính SAH</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ g.notice['line'] }}" readonly>
-
-                        </div>
-                        <table class="table table-bordered table-sm">
-                            <thead>
-                                <tr class="bg-primary">
-                                    <th>MST</th>
-                                    <th>Họ tên</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for tnc in danhsach_tnc %}
-                                <form action="/nhantnclenchuyen" method="POST">
-                                    <tr>
-                                        <td>{{ tnc[2] }}</td>
-                                        <td>{{ tnc[3] }}</td>
-                                        <td>
-                                            <input type="hidden" name="chuyen_nhan_tnc" value="{{ g.notice['line'] }}">
-                                            <input type="hidden" name="id_tnc" value="{{ tnc[0] }}">
-                                            <input type="submit" class="btn btn-primary btn-sm" value="Nhận" onclick="return nhantnclenchuyen()">
-                                        </td>
-                                    </tr>
-                                    <input type="hidden" name="style" value={{ request.args.get('style','') }}>
-                                    <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
-                                </form>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        <button class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="hotroModal" tabindex="-1" role="dialog" aria-labelledby="hotroModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="hotroModalLabel">Đi hỗ trợ</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action="/themnguoidihotro" method="POST">
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ g.notice['line'] }}" readonly>
-                            <label for="info">Người đi hỗ trợ</label>
-                            <select class="form-control" id="nguoiduocdieuchuyen" name="nguoiduocdieuchuyen">
-                                {% for nguoi in danhsach_congnhan_hotro %}
-                                    <option value='{{ nguoi[1] }}_{{ nguoi[2] }}'>{{ nguoi[1] }} - {{ nguoi[2] }}</option>
-                                {% endfor %}
-                            </select>
-                            <label for="chuyenhotro">Chuyền hỗ trợ</label>
-                            <select class="form-control" id="chuyenhotro" name="chuyenhotro">
-                                {% for chuyen in danhsach_chuyen %}
-                                    {% if chuyen != g.notice['line'] %}
-                                    <option value='{{ chuyen }}'>{{ chuyen }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                            <label for="ngaydieuchuyendi">Ngày đi hỗ trợ</label>
-                            <input type="date" class="form-control" id="ngaydieuchuyendi" name="ngaydieuchuyendi">
-                            <label for="giodieuchuyendi">Giờ đi hỗ trợ</label>
-                            <input type="time" class="form-control" id="giodieuchuyendi" name="giodieuchuyendi">
-                            <label for="sogiohotro">Số giờ đi hỗ trợ</label>
-                            <input type="number" class="form-control" id="sogiohotro" name="sogiohotro">
-                            <input type="hidden" name="style" value={{ request.args.get('style','') }}>
-                            <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Lưu</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+     
+     
+      
+    
+    
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

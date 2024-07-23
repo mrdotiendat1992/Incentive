@@ -2,46 +2,13 @@ from flask import Flask, render_template, request, url_for, redirect, g, flash, 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 import pyodbc
-import os
+import datetime
 from functools import wraps
 import logging
 from logging.handlers import RotatingFileHandler
 import urllib.parse
-
-# DANH_SACH_TO_TRUONG = {
-#     "11S01":"7721",
-#     "11S03":"2540",
-#     "11S05":"398",
-#     "11S07":"7146",
-#     "11S09":"115",
-#     "11S11":"2340",
-#     "11S13":"3943",
-#     "12S01":"233",
-#     "12S03":"385",
-#     "12S05":"1163",
-#     "12S07":"6318",
-#     "12S09":"12756",
-#     "12S11":"1192",
-#     "21S01":"262",
-#     "21S03":"828",
-#     "21S05":"4727",
-#     "21S07":"152",
-#     "21S09":"4531",
-#     "21S11":"2565",
-#     "21S13":"3494",
-#     "22S01":"83",
-#     "22S03":"1162",
-#     "22S05":"1152",
-#     "22S07":"1657",
-#     "22S09":"376",
-#     "22S11":"4952",
-#     "22S13":"3590",
-#     "23S01":"4726",
-#     "23S07":"4882",
-#     "23S09":"2576",
-#     "25S09":"669",
-#     "25S11":"4706"
-# }
+from pandas import DataFrame
+from openpyxl import load_workbook
 
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
 
@@ -283,35 +250,20 @@ def laytongsanluongtheocongdoan(ngay,chuyen,style):
     except:
         return []
     
-def laydachsachtotruong():
+def lay_sanluong_tong_theochuyen(ngay, chuyen, style):
     try:
-        conn = connect_db()
-        query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_TO_TRUONG]"
-        cursor = execute_query(conn, query)
-        result = {"NT1":{
-                "Tổ trưởng": {},
-                "IE" : []
-            },"NT2":{
-                "Tổ trưởng": {},
-                "IE" : []
-            }}
-        rows = cursor.fetchall()
-        for row in rows:
-            # print(row)
-            if (row[2][2]=="S" and row[2][1].isdigit()):
-                if (row[2] in result[row[0]]["Tổ trưởng"]):
-                    if row[1] not in result[row[0]]["Tổ trưởng"][row[2]]:
-                        result[row[0]]["Tổ trưởng"][row[2]].append(int(row[1]))
-                else:
-                    result[row[0]]["Tổ trưởng"][row[2]] = [int(row[1])]
-            else:
-                result[row[0]]["IE"].append(int(row[1]))
-        # print(result)
-        close_db(conn)
-        return result
-    except Exception as e:
-        print(e)
-        return []
+        if ngay and chuyen and style:
+            conn = connect_db()
+            query = f"select Total_Qty from [INCENTIVE].[dbo].[INCENTIVE_BUOC1] where WorkDate='{ngay}' and Line='{chuyen}' and Style='{style}'"
+            print(query)
+            result = execute_query(conn, query).fetchone()
+            print(result)
+            close_db(conn)
+            return result[0]
+        else:
+            return 0
+    except:
+        return 0
 
 def login_required(f):
     @wraps(f)
@@ -326,7 +278,7 @@ def before_request():
     try:
         if current_user.is_authenticated:
             lines = get_line(current_user.masothe, current_user.macongty)
-            print(lines)
+            # print(lines)
             if lines:
                 if len(lines) == 1:
                     g.notice = {"line":lines,"role":"tt"}
@@ -392,7 +344,7 @@ def home():
         hoten = request.args.get("hoten")
         macongdoan = request.args.get("search_macongdoan")
         styles = get_all_styles(ngay, chuyen)
-        print(styles)
+        sanluongtong = lay_sanluong_tong_theochuyen(ngay, chuyen, style)
         danhsach_congnhan_hotro = lay_danhsach_congnhan_trongchuyen(chuyen)
         danhsach_chuyen = lay_danhsach_chuyen_hotro(chuyen)
         danhsach_sanluong = lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan)
@@ -401,7 +353,7 @@ def home():
         return render_template("home.html",styles=styles,danhsach_sanluong=danhsach_sanluong,
                                danhsach_congnhan_hotro=danhsach_congnhan_hotro,
                                danhsach_chuyen=danhsach_chuyen,danhsach_tnc=danhsach_tnc,
-                               danhsach_di_hotro=danhsach_di_hotro)
+                               danhsach_di_hotro=danhsach_di_hotro,sanluongtong=sanluongtong)
     
 @app.route("/nhapsanluongcanhan", methods=["POST"])
 @login_required
@@ -491,24 +443,70 @@ def capnhatsogiohotro():
         chuyen = request.args.get['line']
         style = request.form.get("style")
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
-    
-@app.route("/danhsach_totruong", methods=["POST"])
-def danhsach_totruong():
-    if request.method == "POST":
-        danhsach = laydachsachtotruong()
-        return jsonify(danhsach)
 
 @app.route("/xoasanluongcanhan", methods=["POST"])
 def xoasanluongcanhan():
     if request.method == "POST":
         id = request.form.get("id_xoasanluong")
-        print(id)
+        # print(id)
         ngay = request.form.get("ngay")   
         chuyen = request.args.get['line']
         style = request.form.get("style")
         mst = request.form.get("mst")
         xoa_sanluong(id)
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}&mst={mst}")
+    
+@app.route("/taidulieuxuong", methods=["GET"])
+def taidulieuxuong():
+    if request.method == "GET":
+        chuyen = request.args.get("chuyen")
+        ngay = request.args.get("ngay")
+        style = request.args.get("style")
+        rows = lay_danhsach_sanluong(ngay, chuyen, style,None,None,None)
+        data = []
+        for row in rows:
+            data.append({
+                "Mã số thẻ": int(row[0]),
+                "Họ tên": row[1],
+                "Chuyền": row[2],
+                "Ngày": row[3],
+                "Style": row[4],
+                "Mã công đoạn": int(row[5]) if row[5] else 0,
+                "Sản lượng cá nhân": int(row[6]) if row[6] else 0,
+            })
+        data_frame = DataFrame(data)
+        thoigian = datetime.datetime.now().strftime("%d%m%Y_%H%M%S")
+        excel_path = f"data_{thoigian}.xlsx"
+        data_frame.to_excel(excel_path, index=False)
+        # Mở tệp Excel để chỉnh độ rộng cột
+        wb = load_workbook(excel_path)
+        ws = wb.active
+
+        # Chỉnh độ rộng cột theo độ rộng dữ liệu
+        for column in ws.columns:
+            max_length = 0
+            column_letter = column[0].column_letter  # Lấy tên cột (ví dụ: 'A', 'B')
+            for cell in column:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = max_length + 2
+            ws.column_dimensions[column_letter].width = adjusted_width
+
+        # Lưu lại tệp Excel đã chỉnh sửa
+        wb.save(excel_path)
+        return send_file(f"data_{thoigian}.xlsx")
+
+@app.route("/taidulieulen", methods=["POST"])
+def taidulieulen():
+    if request.method == "POST":
+        file = request.files["file"]
+        if not file:
+            print("No file")
+        return redirect("/")
+        
     
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)
