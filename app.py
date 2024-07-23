@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect, g, flash, jsonify, send_file, session, flash, get_flashed_messages, render_template_string
 from flask_sqlalchemy import SQLAlchemy
+from flask_paginate import Pagination, get_page_parameter
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 import pyodbc
 import datetime
@@ -266,6 +267,16 @@ def lay_sanluong_tong_theochuyen(ngay, chuyen, style):
     except:
         return 0
 
+def lay_baocao_thuong_congnhan_may():
+    try:
+        conn = connect_db()
+        query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SAH,SCP,SO_GIO,Eff_CA_NHAN,THUONG_CA_NHAN FROM [INCENTIVE].[dbo].[INCENTIVE_CN_MAY_HANG_NGAY] ORDER BY NGAY DESC, CHUYEN ASC"
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -426,6 +437,7 @@ def nhantnclenchuyen():
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
 @app.route("/laytongsanluongtheocongdoan", methods=["POST"])
+@login_required
 def laytongsanluong():
     if request.method == "POST":
         ngay = request.args.get("ngay")
@@ -435,6 +447,7 @@ def laytongsanluong():
         return jsonify(data)
     
 @app.route("/capnhatsogiohotro", methods=["POST"])
+@login_required
 def capnhatsogiohotro():
     if request.method == "POST":
         id = request.form.get("id_hotro")
@@ -446,6 +459,7 @@ def capnhatsogiohotro():
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
 @app.route("/xoasanluongcanhan", methods=["POST"])
+@login_required
 def xoasanluongcanhan():
     if request.method == "POST":
         id = request.form.get("id_xoasanluong")
@@ -458,6 +472,7 @@ def xoasanluongcanhan():
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
     
 @app.route("/taidulieuxuong", methods=["GET"])
+@login_required
 def taidulieuxuong():
     if request.method == "GET":
         try:
@@ -508,8 +523,6 @@ def taidulieuxuong():
             style = request.form.get("style")
             return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
         
-            
-        
 @app.route("/taidulieulen", methods=["POST"])
 def taidulieulen():
     if request.method == "POST":
@@ -542,6 +555,20 @@ def taidulieulen():
             chuyen = request.args.get('chuyen')
             style = request.form.get("style")
             return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+
+@app.route("/baocao", methods=["GET"])
+def baocao_tong():
+    if request.method == "GET":
+        danhsach = lay_baocao_thuong_congnhan_may()
+        page = request.args.get(get_page_parameter(), type=int, default=1)
+        per_page = 10
+        total = len(danhsach)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_rows = danhsach[start:end]
         
+        pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+        return render_template("baocao_tong.html", danhsach=paginated_rows,pagination=pagination,)
+    
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)
