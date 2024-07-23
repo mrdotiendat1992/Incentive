@@ -7,7 +7,7 @@ from functools import wraps
 import logging
 from logging.handlers import RotatingFileHandler
 import urllib.parse
-from pandas import DataFrame
+from pandas import DataFrame,read_excel
 from openpyxl import load_workbook
 
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
@@ -505,6 +505,21 @@ def taidulieulen():
         file = request.files["file"]
         if not file:
             print("No file")
+            return redirect("/")
+        thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+        filepath = f"tailen_{thoigian}.xlsx"
+        file.save(filepath)
+        data = read_excel(filepath).to_dict(orient="records")
+        for row in data:
+            capnhat_sanluong(
+                row["Mã số thẻ"],
+                row["Họ tên"],
+                row["Chuyền"],
+                row["Ngày"],
+                row["Style"],
+                row["Mã công đoạn"],
+                row["Sản lượng cá nhân"]
+            )
         return redirect("/")
         
     
