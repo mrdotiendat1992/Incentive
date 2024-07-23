@@ -438,7 +438,7 @@
                     } else {
                         console.log("Chuyền may");
                     
-                        if (!(parseInt(masothe) == response.data[macongty]["Tổ trưởng"][chuyen])) {
+                        if (!(parseInt(masothe) == parseInt(response.data[macongty]["Tổ trưởng"][chuyen]))) {
                             console.log("Không phải tổ trưởng chuyển may");
                             // document.querySelectorAll('input').forEach((element) => {
                              //   element.setAttribute('disabled', 'disabled');
