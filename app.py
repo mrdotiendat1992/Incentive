@@ -102,18 +102,24 @@ def execute_query(conn, query):
 def get_line(masothe,macongty):
     try:
         conn = connect_db()
-        cursor = execute_query(conn, f"select Line from Danh_sach_CBCNV where The_cham_cong='{masothe}' and Factory='{macongty}'")
-        result = cursor.fetchone()
+        query = f"select CHUYEN from [INCENTIVE].[dbo].[DS_TO_TRUONG] where MST='{masothe}' and NHA_MAY='{macongty}'"
+        print(query)
+        cursor = execute_query(conn, query)
+        rows = cursor.fetchall()
+        result = [row[0] for row in rows]
+        # print(result)
         close_db(conn)
-        return result[0]
+        return result
     except:
-        return ""
+        return []
     
 def get_all_styles(ngay, chuyen):
     try:
-        if ngay:
+        if ngay and chuyen:
             conn = connect_db()
-            cursor = execute_query(conn, f"SELECT Distinct STYLE FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE NGAY='{ngay}' AND CHUYEN='{chuyen}'")
+            query = f"SELECT Distinct STYLE FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE NGAY='{ngay}' AND CHUYEN='{chuyen}'"
+            print(query)
+            cursor = execute_query(conn, query)
             result = cursor.fetchall()
             close_db(conn)
             return [style[0] for style in result]
@@ -131,12 +137,18 @@ def lay_danhsach_congnhan_trongchuyen(chuyen):
     return list(result)
     
 def lay_danhsach_chuyen_hotro(chuyen):
-    conn = connect_db()
-    query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_CHUYEN_MAY] WHERE LINE LIKE '{chuyen[0]}%' ORDER BY LINE"
-    cursor = execute_query(conn, query) 
-    result = cursor.fetchall()
-    close_db(conn)
-    return [line[0] for line in result]
+    try:
+        if chuyen:
+            conn = connect_db()
+            query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_CHUYEN_MAY] WHERE LINE LIKE '{chuyen[0]}%' ORDER BY LINE"
+            cursor = execute_query(conn, query) 
+            result = cursor.fetchall()
+            close_db(conn)
+            return [line[0] for line in result]
+        else:
+            return []
+    except:
+        return []
   
 def lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan):
     conn = connect_db()
@@ -313,11 +325,19 @@ def login_required(f):
 def before_request():
     try:
         if current_user.is_authenticated:
-            g.notice = {"line":get_line(current_user.masothe, current_user.macongty)}
+            lines = get_line(current_user.masothe, current_user.macongty)
+            print(lines)
+            if lines:
+                if len(lines) == 1:
+                    g.notice = {"line":lines,"role":"tt"}
+                elif len(lines) > 1:
+                    g.notice = {"line":lines,"role":"tk"}
+            else:
+                g.notice = {"line":[],"role":""}
         else:
-            g.notice = {"line":None}
+            g.notice = {"line":[],"role":""}
     except:
-        g.notice = {"line":None}
+        g.notice = {"line":[],"role":""}
         
 @app.context_processor
 def inject_notice():
@@ -366,12 +386,13 @@ def logout():
 def home():
     if request.method == "GET":
         ngay = request.args.get("ngay")   
-        chuyen = g.notice['line']
+        chuyen = request.args.get('chuyen')
         style = request.args.get("style")
         mst = request.args.get("mst")
         hoten = request.args.get("hoten")
         macongdoan = request.args.get("search_macongdoan")
         styles = get_all_styles(ngay, chuyen)
+        print(styles)
         danhsach_congnhan_hotro = lay_danhsach_congnhan_trongchuyen(chuyen)
         danhsach_chuyen = lay_danhsach_chuyen_hotro(chuyen)
         danhsach_sanluong = lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan)
@@ -435,7 +456,7 @@ def themnguoidihotro():
         nhamay = 'NT1' if chuyen[0]=="1" else 'NT2'
         them_nguoi_di_hotro(nhamay,chuyen,mst,hoten,chucdanh,chuyendihotro,ngaydieuchuyendi,giodieuchuyendi,sogiohotro)
         ngay = request.form.get("ngay")   
-        chuyen = g.notice['line']
+        chuyen = request.args.get['line']
         style = request.form.get("style")
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
@@ -447,7 +468,7 @@ def nhantnclenchuyen():
         chuyen = request.form.get("chuyen_nhan_tnc")
         nhan_tnc_len_chuyen(id,chuyen)
         ngay = request.form.get("ngay")   
-        chuyen = g.notice['line']
+        chuyen = request.args.get['line']
         style = request.form.get("style")
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
@@ -467,7 +488,7 @@ def capnhatsogiohotro():
         sogio = request.form.get("sogio")
         capnhat_sogio_hotro(id,sogio)
         ngay = request.form.get("ngay")   
-        chuyen = g.notice['line']
+        chuyen = request.args.get['line']
         style = request.form.get("style")
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
     
@@ -483,7 +504,7 @@ def xoasanluongcanhan():
         id = request.form.get("id_xoasanluong")
         print(id)
         ngay = request.form.get("ngay")   
-        chuyen = g.notice['line']
+        chuyen = request.args.get['line']
         style = request.form.get("style")
         mst = request.form.get("mst")
         xoa_sanluong(id)
