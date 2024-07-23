@@ -73,9 +73,7 @@
                                     <select class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" onchange="form.submit()">
                                         <option value=''></option>
                                         {% for chuyen in g.notice['line'] %}
-                                        {% if chuyen == request.args.get('chuyen') %}
-                                            <option value='{{ chuyen }}' selected>{{ chuyen }}</option>
-                                        {% else %}
+                                        {% if chuyen != request.args.get('chuyen') %}
                                             <option value='{{ chuyen }}'>{{ chuyen }}</option>
                                         {% endif %}    
                                         {% endfor %}
