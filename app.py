@@ -503,12 +503,12 @@ def taidulieuxuong():
             # wb.close()
             return send_file(excel_path, as_attachment=True)
         except Exception as e:
-            print(e)
-        finally:
             ngay = request.form.get("ngay")   
             chuyen = request.args.get['chuyen']
             style = request.form.get("style")
             return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+        
+            
         
 @app.route("/taidulieulen", methods=["POST"])
 def taidulieulen():
@@ -532,9 +532,12 @@ def taidulieulen():
                     row["Mã công đoạn"],
                     row["Sản lượng cá nhân"]
                 )
+            ngay = request.form.get("ngay")   
+            chuyen = request.args.get['chuyen']
+            style = request.form.get("style")
+            return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
         except Exception as e:
             print(e)
-        finally:
             ngay = request.form.get("ngay")   
             chuyen = request.args.get['chuyen']
             style = request.form.get("style")
