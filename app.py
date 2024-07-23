@@ -478,7 +478,7 @@ def taidulieuxuong():
                 })
             data_frame = DataFrame(data)
             thoigian = datetime.datetime.now().strftime("%d%m%Y_%H%M%S")
-            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/data_{thoigian}.xlsx")
+            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/{chuyen}_{style}_{thoigian}.xlsx")
             data_frame.to_excel(excel_path, index=False)
             # Mở tệp Excel để chỉnh độ rộng cột
             # wb = load_workbook(excel_path)
