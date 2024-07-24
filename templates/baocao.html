@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Báo cáo</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <style>
+            body {
+                padding-top: 5rem;
+            }
+            .table {
+                width: 100%;
+                font-weight: bold;
+            }
+            .table th {
+                text-align: center;
+                color: white;
+            }
+            .pagination {
+                font-size: 10px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div class="container">
+            <a href="/" class="btn btn-success btn-sm">Nhập liệu</a>
+            <a href="/baocao_thuong_may" class="btn btn-primary btn-sm">Thưởng may cá nhân</a>
+            <a href="/baocao_thuong_nhommay" class="btn btn-primary btn-sm">Thưởng nhóm may</a>
+            <a href="/baocao_sogio_lamviec" class="btn btn-primary btn-sm">Số giờ làm vệc</a>
+            <h1>Báo cáo thưởng cá nhân may</h1>
+            {% block filter %}
+            
+            {% endblock filter %}
+            <div class="pagination">{{ pagination.links }}</div>
+            {% block content %}
+            
+            {% endblock content %}
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.ngay').forEach(function(element) {
+                    element.textContent = element.textContent.replace(/(\d{4})-(\d{2})-(\d{2})/, '$3/$2/$1');
+                });
+
+                document.querySelectorAll('.sah').forEach(function(element) {
+                    if (element.textContent !== 'None') {
+                        let value = parseFloat(element.textContent);
+                        if (!isNaN(value)) {
+                            // Làm tròn đến số thập phân thứ 2
+                            value = value.toFixed(2);
+                            console.log(value);
+                            element.textContent = value;
+                        }
+                    }
+                });
+                document.querySelectorAll('.eff').forEach(function(element) {
+                    if (element.textContent !== 'None') {
+                        let value = parseFloat(element.textContent);
+                        if (!isNaN(value)) {
+                            // Chuyển đổi số thập phân thành phần trăm
+                            value = (value * 100).toFixed(2) + ' %';
+                            console.log(value);
+                            element.textContent = value;
+                        }
+                    }
+                });
+
+                document.querySelectorAll('.thuong').forEach(function(element) {
+                    if (element.textContent !== 'None') {
+                        let value = parseFloat(element.textContent);
+                        if (!isNaN(value)) {
+                            // Chuyển đổi số thập phân thành số nguyên và định dạng theo phần nghìn
+                            value = Math.round(value).toLocaleString('vi-VN') + ' VND';
+                            element.textContent = value;
+                        }
+                    }
+                });
+
+                document.querySelectorAll('table td').forEach(function(element) {
+                    if (element.textContent.trim() === 'None' || element.textContent.trim() === '0 VND' || element.textContent.trim() === '0.00 %') {
+                        element.textContent = ''; // Thay thế bằng chuỗi rỗng
+                    }
+                });
+                // Áp dụng thuộc tính CSS cho tất cả các ô trong bảng
+                document.querySelectorAll('table td').forEach(function(element) {
+                    element.style.whiteSpace = 'nowrap';
+                });
+                    });
+        </script>
+    </body>
+</html>

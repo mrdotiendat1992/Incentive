@@ -310,6 +310,24 @@ def lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style):
         return rows
     except:
         return []
+    
+def lay_baocao_sogio_lamviec(mst,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SO_GIO,CHUC_VU FROM [INCENTIVE].[dbo].[TGLV] WHERE CHUC_VU = N'Công nhân may công nghiệp'" 
+        if mst:
+            query += f" AND MST='{mst}'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+        query += " ORDER BY NGAY DESC, CHUYEN ASC"
+        print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
 
 def login_required(f):
     @wraps(f)
@@ -628,6 +646,24 @@ def baocao_nhommay():
         
         pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
         return render_template("baocao_thuong_nhommay.html", danhsach=paginated_rows,pagination=pagination,)
+
+@app.route("/baocao_sogio_lamviec", methods=["GET"])
+def baocao_sogio_lamviec():
+    if request.method == "GET":
+        mst = request.args.get("mst")
+        ngay = request.args.get("ngay")
+        chuyen = request.args.get("chuyen")
+        danhsach = lay_baocao_sogio_lamviec(mst,ngay,chuyen)
+        page = request.args.get(get_page_parameter(), type=int, default=1)
+        per_page = 10
+        total = len(danhsach)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_rows = danhsach[start:end]
+        
+        pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+        return render_template("baocao_sogio_lamviec.html", danhsach=paginated_rows,pagination=pagination,)
+    
     
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)
