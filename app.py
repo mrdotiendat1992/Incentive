@@ -137,7 +137,7 @@ def lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan):
     if hoten:
         query += f"AND HO_TEN=N'{hoten}' "
     if macongdoan:
-        query += f"AND MA_CONG_DOAN='{macongdoan}' "
+        query += f"AND MA_CONG_DOAN ='{macongdoan}' "
     query += "ORDER BY CAST(MST as INT) ASC, MA_CONG_DOAN ASC"
     cursor = execute_query(conn, query) 
     result = cursor.fetchall()
@@ -415,7 +415,7 @@ def nhapsanluongcanhan():
         macongdoan = request.form.get("macongdoan")
         sanluong = request.form.get("sanluong")
         capnhat_sanluong(mst,hoten,chuyen,ngay,style,macongdoan,sanluong)   
-        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+        return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}&search_macongdoan={macongdoan}")
     
 @app.route("/nhapsanluong_congdoanmoi", methods=["POST"])
 @login_required
