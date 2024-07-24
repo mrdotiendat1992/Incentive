@@ -241,10 +241,13 @@ def capnhat_sogio_hotro(id,sogio):
     except:
         return False
     
-def laytongsanluongtheocongdoan(ngay,chuyen,style):
+def laytongsanluongtheocongdoan(ngay,chuyen,style,macongdoan):
     try:
         conn = connect_db()
-        query = f"select MA_CONG_DOAN,QTY from [INCENTIVE].[dbo].[TONG_SL_CONG_DOAN] where NGAY='{ngay}' and CHUYEN='{chuyen}' and STYLE='{style}' group by MA_CONG_DOAN,QTY"
+        if macongdoan:
+            query = f"select MA_CONG_DOAN,QTY from [INCENTIVE].[dbo].[TONG_SL_CONG_DOAN] where NGAY='{ngay}' and CHUYEN='{chuyen}' and STYLE='{style}' and MA_CONG_DOAN='{macongdoan}' group by MA_CONG_DOAN,QTY"
+        else:
+            query = f"select MA_CONG_DOAN,QTY from [INCENTIVE].[dbo].[TONG_SL_CONG_DOAN] where NGAY='{ngay}' and CHUYEN='{chuyen}' and STYLE='{style}' group by MA_CONG_DOAN,QTY"
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         result=[]
@@ -446,7 +449,8 @@ def laytongsanluong():
         ngay = request.args.get("ngay")
         chuyen = request.args.get("chuyen")
         style = request.args.get("style")
-        data = laytongsanluongtheocongdoan(ngay,chuyen,style)
+        macongdoan = request.args.get("macongdoan")
+        data = laytongsanluongtheocongdoan(ngay,chuyen,style,macongdoan)
         return jsonify(data)
     
 @app.route("/capnhatsogiohotro", methods=["POST"])

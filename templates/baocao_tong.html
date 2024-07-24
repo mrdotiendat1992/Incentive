@@ -21,10 +21,6 @@
                 text-align: center;
                 color: white;
             }
-            .table td {
-                text-align: center;
-                white-space: nowrap;
-            }
 
         </style>
     </head>
@@ -32,6 +28,8 @@
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
+        <a href="/" class="btn btn-primary">Trang chủ</a>
+        <h1>Báo cáo thưởng cá nhân công nhân may</h1>
         <div class="pagination">{{ pagination.links }}</div>
         <table class="table table-bordered table-sm">
             <thead>
@@ -108,6 +106,10 @@
                         element.textContent = ''; // Thay thế bằng chuỗi rỗng
                     }
                 });
+                // Áp dụng thuộc tính CSS cho tất cả các ô trong bảng
+                document.querySelectorAll('table td').forEach(function(element) {
+                    element.style.whiteSpace = 'nowrap';
+        });
             });
         </script>
     </body>

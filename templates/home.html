@@ -9,6 +9,7 @@
     <style>
         .table {
             width: 100%;
+            font-weight: bold;
           }
           .table .input-container {
             display: flex;
@@ -240,6 +241,9 @@
             <div class="form-group">
                 <select class="form-control" id="chuyen" name="chuyen" value="{{ request.args.get('chuyen') }}" onchange="form.submit()">
                     <option value=''></option>
+                    {% if g.notice['line']|length == 1 %}
+                        <option value='{{ g.notice['line'][0] }}' selected>{{ g.notice['line'][0] }}</option>
+                    {% else %}
                     {% for chuyen in g.notice['line'] %}
                     {% if chuyen == request.args.get('chuyen') %}
                         <option value='{{ chuyen }}' selected>{{ chuyen }}</option>
@@ -247,6 +251,7 @@
                         <option value='{{ chuyen }}'>{{ chuyen }}</option>
                     {% endif %}    
                     {% endfor %}
+                    {% endif %}
                 <select>
             </div>
             <div class="form-group">
@@ -305,7 +310,7 @@
                     </th>
                     <th><input type="text" id="search_macongdoan" name="search_macongdoan" value="{{ request.args.get('search_macongdoan','') }}" onchange="form.submit()"></th>
                     <th><b style="color:red;">{{ sanluongtong }}</b></th>
-                    <th><a class="fas fa-search"></a></th>
+                    <th><a class="fas fa-search" href="#" data-toggle="modal" data-target="#tongsanluongModal"></a></th>
                 </tr>
             </form>
             </thead>
@@ -405,6 +410,36 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <hr/>
+            <div class="modal fade" id="tongsanluongModal" tabindex="-1" role="dialog" aria-labelledby="tongsanluongModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="tongsanluongModalLabel">Tổng sản lượng</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr class="bg-primary">
+                                    <th>Mã công đoạn</th>
+                                    <th>Sản lượng</th>
+                                    <th>Sản lượng nhập vào</th>
+                                    <th>+/-</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sosanh">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
      
@@ -487,18 +522,36 @@
             const ngay = "{{ request.args.get('ngay') }}";
             const chuyen = "{{ request.args.get('chuyen') }}";
             const style = "{{ request.args.get('style') }}";
+            const macongdoan = "{{ request.args.get('search_macongdoan') }}";
             axios({
                 method: 'post',
-                url: '/laytongsanluongtheocongdoan?ngay=' + ngay + '&chuyen=' + chuyen + '&style=' + style,
+                url: '/laytongsanluongtheocongdoan?ngay=' + ngay + '&chuyen=' + chuyen + '&style=' + style + '&macongdoan=' + macongdoan,
             })
             .then(function (response) {
                 var tonghop_congdoan_nhapsai = []
                 var congdoan_nhapsai = []
                 var data = response.data;
+                var sosanh = document.querySelector('#sosanh');
+
                 data.forEach(element => {
                     tonghop_congdoan_nhapsai.push([parseInt(element[0]), element[1], result[element[0]]])
                 })
+                
                 tonghop_congdoan_nhapsai.forEach(element => {
+                    
+                    if (result[element[0]]) {
+                        congtru = result[element[0]] - element[1]
+                        if (congtru < 0) {
+                            sosanh.insertAdjacentHTML('beforeend', '<tr class="cd_'+element[0]+'"><td>'+element[0]+'</td><td>'+element[1]+'</td><td>'+result[element[0]]+'</td><td style="color:red;">'+congtru+'</td></tr>')
+                        } else if (congtru > 0){
+                            sosanh.insertAdjacentHTML('beforeend', '<tr class="cd_'+element[0]+'"><td>'+element[0]+'</td><td>'+element[1]+'</td><td>'+result[element[0]]+'</td><td style="color:green;">'+congtru+'</td></tr>')
+                        } else {
+                            sosanh.insertAdjacentHTML('beforeend', '<tr class="cd_'+element[0]+'"><td>'+element[0]+'</td><td>'+element[1]+'</td><td>'+result[element[0]]+'</td><td>'+congtru+'</td></tr>')
+                        }
+                    } else {
+                        sosanh.insertAdjacentHTML('beforeend', '<tr class="cd_'+element[0]+'"><td>'+element[0]+'</td><td>'+element[1]+'</td><td></td></tr>')
+                    }
+                    
                     if (element[2] != element[1]) {
                         congdoan_nhapsai.push(element)
                     }
