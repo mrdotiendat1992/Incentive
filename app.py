@@ -282,6 +282,16 @@ def lay_baocao_thuong_congnhan_may():
         return rows
     except:
         return []
+    
+def lay_baocao_thuong_congnhan_nhommay():
+    try:
+        conn = connect_db()
+        query = f"SELECT Workdate,Line,Sah,Total_hours,Eff,Style,TRANG_THAI,CHUYEN_MOI,OQL,GR_INCENTIVE,GR_INCENTIVE_TOPUP1,GR_INCENTIVE_TOPUP2,TONG_THUONG FROM [INCENTIVE].[dbo].[THUONG_NHOM_MAY_HANG_NGAY] ORDER BY Workdate DESC, Line ASC"
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
 
 def login_required(f):
     @wraps(f)
@@ -563,8 +573,8 @@ def taidulieulen():
             style = request.form.get("style")
             return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
-@app.route("/baocao", methods=["GET"])
-def baocao_tong():
+@app.route("/baocao_thuong_may", methods=["GET"])
+def baocao_may():
     if request.method == "GET":
         danhsach = lay_baocao_thuong_congnhan_may()
         page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -575,7 +585,21 @@ def baocao_tong():
         paginated_rows = danhsach[start:end]
         
         pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-        return render_template("baocao_tong.html", danhsach=paginated_rows,pagination=pagination,)
+        return render_template("baocao_thuong_may.html", danhsach=paginated_rows,pagination=pagination,)
+    
+@app.route("/baocao_thuong_nhommay", methods=["GET"])
+def baocao_nhommay():
+    if request.method == "GET":
+        danhsach = lay_baocao_thuong_congnhan_nhommay()
+        page = request.args.get(get_page_parameter(), type=int, default=1)
+        per_page = 10
+        total = len(danhsach)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_rows = danhsach[start:end]
+        
+        pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+        return render_template("baocao_thuong_nhommay.html", danhsach=paginated_rows,pagination=pagination,)
     
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)

@@ -28,39 +28,50 @@
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-        <a href="/" class="btn btn-primary">Trang chủ</a>
-        <h1>Báo cáo thưởng cá nhân công nhân may</h1>
-        <div class="pagination">{{ pagination.links }}</div>
-        <table class="table table-bordered table-sm">
-            <thead>
-                <tr class="bg-primary">
-                    <th>MST</th>
-                    <th>Họ tên</th>
-                    <th>Chuyền</th>
-                    <th>Ngày</th>
-                    <th>SAH</th>
-                    <th>SCP</th>
-                    <th>Số giờ</th>
-                    <th>Hiệu suất</th>
-                    <th>Thưởng</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in danhsach %}
-                    <tr>
-                        <td>{{ row[0] }}</td>
-                        <td>{{ row[1] }}</td>
-                        <td>{{ row[2] }}</td>
-                        <td class="ngay">{{ row[3] }}</td>
-                        <td class="sah">{{ row[4] }}</td>
-                        <td>{{ row[5] }}</td>
-                        <td>{{ row[6] }}</td>
-                        <td class="eff">{{ row[7] }}</td>
-                        <td class="thuong">{{ row[8] }}</td>
+        <div class="container">
+            <a href="/" class="btn btn-success btn-sm">Nhập liệu</a>
+            <a href="/baocao_thuong_may" class="btn btn-primary btn-sm">Thưởng may cá nhân</a>
+            <a href="/baocao_thuong_nhommay" class="btn btn-primary btn-sm">Thưởng nhóm may</a>
+            <h1>Báo cáo thưởng cá nhân công nhân may</h1>
+            <div class="pagination">{{ pagination.links }}</div>
+            <table class="table table-bordered table-sm">
+                <thead>
+                    <tr class="bg-primary">
+                        <th>Ngày</th>
+                        <th>Chuyền</th>
+                        <th>Sah</th>
+                        <th>Số giờ</th>
+                        <th>Hiệu suất</th>
+                        <th>Style</th>
+                        <th>Trạng thái đơn hàng</th>
+                        <th>Chuyền mới</th>
+                        <th>OQL</th>
+                        <th>Thưởng nhóm</th>
+                        <th>Thưởng 1</th>
+                        <th>Thưởng 2</th>
+                        <th>Tổng thưởng</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for row in danhsach %}
+                        <tr>
+                            <td class="ngay">{{ row[0] }}</td>
+                            <td>{{ row[1] }}</td>
+                            <td class="sah">{{ row[2] }}</td>
+                            <td>{{ row[3] }}</td>
+                            <td class="eff">{{ row[4] }}</td>
+                            <td>{{ row[5] }}</td>
+                            <td>{{ row[6] }}</td>
+                            <td>{{ row[7] }}</td>
+                            <td>{{ row[8] }}</td>
+                            <td class="thuong">{{ row[9] }}</td>
+                            <td class="thuong">{{ row[10] }}</td>
+                            <td class="thuong">{{ row[11] }}</td>
+                            <td class="thuong">{{ row[12] }}</td>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 document.querySelectorAll('.ngay').forEach(function(element) {
@@ -109,7 +120,10 @@
                 // Áp dụng thuộc tính CSS cho tất cả các ô trong bảng
                 document.querySelectorAll('table td').forEach(function(element) {
                     element.style.whiteSpace = 'nowrap';
-        });
+                });
+                document.querySelectorAll('table th').forEach(function(element) {
+                    element.style.verticalAlign = 'middle';
+                });
             });
         </script>
     </body>
