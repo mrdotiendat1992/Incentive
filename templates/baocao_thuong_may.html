@@ -13,6 +13,9 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
         <style>
+            body {
+                padding-top: 5rem;
+            }
             .table {
                 width: 100%;
                 font-weight: bold;
@@ -20,6 +23,9 @@
             .table th {
                 text-align: center;
                 color: white;
+            }
+            .pagination {
+                font-size: 10px;
             }
 
         </style>
@@ -32,7 +38,27 @@
             <a href="/" class="btn btn-success btn-sm">Nhập liệu</a>
             <a href="/baocao_thuong_may" class="btn btn-primary btn-sm">Thưởng may cá nhân</a>
             <a href="/baocao_thuong_nhommay" class="btn btn-primary btn-sm">Thưởng nhóm may</a>
-            <h1>Báo cáo thưởng cá nhân công nhân may</h1>
+            <h1>Báo cáo thưởng cá nhân may</h1>
+            <div id="filter">
+                <form method="get">
+                    <div class="form-group">
+                        <select type="text" name="macongty" class="form-control" id="macongty" value="{{ request.args.get('macongty','') }}" onchange="form.submit()">
+                            <option value="">Tất cả</option>
+                            <option value="1">NT1</option>
+                            <option value="2">NT2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="mst" class="form-control" id="mst" placeholder="MST" value="{{ request.args.get('mst','') }}" onchange="form.submit()">
+                    </div>
+                    <div class="form-group">
+                        <input type="date" name="ngay" class="form-control" id="ngay" placeholder="Ngày" value="{{ request.args.get('ngay','') }}" onchange="form.submit()">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="chuyen" class="form-control" id="chuyen" placeholder="Chuyền" value="{{ request.args.get('chuyen','') }}" onchange="form.submit()">
+                    </div>
+                </form>
+            </div>
             <div class="pagination">{{ pagination.links }}</div>
             <table class="table table-bordered table-sm">
                 <thead>
@@ -106,7 +132,7 @@
                 });
 
                 document.querySelectorAll('table td').forEach(function(element) {
-                    if (element.textContent.trim() === 'None') {
+                    if (element.textContent.trim() === 'None' || element.textContent.trim() === '0 VND' || element.textContent.trim() === '0.00 %') {
                         element.textContent = ''; // Thay thế bằng chuỗi rỗng
                     }
                 });

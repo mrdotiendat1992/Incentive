@@ -265,7 +265,6 @@ def lay_sanluong_tong_theochuyen(ngay, chuyen, style):
             query = f"select Total_Qty from [INCENTIVE].[dbo].[INCENTIVE_BUOC1] where WorkDate='{ngay}' and Line='{chuyen}' and Style='{style}'"
             print(query)
             result = execute_query(conn, query).fetchone()
-            print(result)
             close_db(conn)
             return result[0]
         else:
@@ -273,20 +272,39 @@ def lay_sanluong_tong_theochuyen(ngay, chuyen, style):
     except:
         return 0
 
-def lay_baocao_thuong_congnhan_may():
+def lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen):
     try:
         conn = connect_db()
-        query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SAH,SCP,SO_GIO,Eff_CA_NHAN,THUONG_CA_NHAN FROM [INCENTIVE].[dbo].[INCENTIVE_CN_MAY_HANG_NGAY] ORDER BY NGAY DESC, CHUYEN ASC"
+        query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SAH,SCP,SO_GIO,Eff_CA_NHAN,THUONG_CA_NHAN FROM [INCENTIVE].[dbo].[INCENTIVE_CN_MAY_HANG_NGAY] WHERE 1=1" 
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if mst:
+            query += f" AND MST='{mst}'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+        query += " ORDER BY NGAY DESC, CHUYEN ASC"
+        print(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
     except:
         return []
     
-def lay_baocao_thuong_congnhan_nhommay():
+def lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style):
     try:
         conn = connect_db()
-        query = f"SELECT Workdate,Line,Sah,Total_hours,Eff,Style,TRANG_THAI,CHUYEN_MOI,OQL,GR_INCENTIVE,GR_INCENTIVE_TOPUP1,GR_INCENTIVE_TOPUP2,TONG_THUONG FROM [INCENTIVE].[dbo].[THUONG_NHOM_MAY_HANG_NGAY] ORDER BY Workdate DESC, Line ASC"
+        query = f"SELECT Workdate,Line,Sah,Total_hours,Eff,Style,TRANG_THAI,CHUYEN_MOI,OQL,GR_INCENTIVE,GR_INCENTIVE_TOPUP1,GR_INCENTIVE_TOPUP2,TONG_THUONG FROM [INCENTIVE].[dbo].[THUONG_NHOM_MAY_HANG_NGAY] WHERE 1=1"
+        if macongty:
+            query += f" AND Line LIKE '{macongty}%'"
+        if ngay:
+            query += f" AND Workdate='{ngay}'"
+        if chuyen:
+            query += f" AND Line LIKE '%{chuyen}%'" 
+        if style:
+            query += f" AND Style LIKE '%{style}%'"
+        query += "ORDER BY Workdate DESC, Line ASC"
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -576,7 +594,11 @@ def taidulieulen():
 @app.route("/baocao_thuong_may", methods=["GET"])
 def baocao_may():
     if request.method == "GET":
-        danhsach = lay_baocao_thuong_congnhan_may()
+        macongty = request.args.get("macongty")
+        mst = request.args.get("mst")
+        ngay = request.args.get("ngay")
+        chuyen = request.args.get("chuyen")
+        danhsach = lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen)
         page = request.args.get(get_page_parameter(), type=int, default=1)
         per_page = 10
         total = len(danhsach)
@@ -590,7 +612,11 @@ def baocao_may():
 @app.route("/baocao_thuong_nhommay", methods=["GET"])
 def baocao_nhommay():
     if request.method == "GET":
-        danhsach = lay_baocao_thuong_congnhan_nhommay()
+        macongty = request.args.get("macongty")
+        ngay = request.args.get("ngay")
+        chuyen = request.args.get("chuyen")
+        style = request.args.get("style")
+        danhsach = lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style)
         page = request.args.get(get_page_parameter(), type=int, default=1)
         per_page = 10
         total = len(danhsach)

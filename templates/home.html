@@ -71,8 +71,11 @@
                             <form action="/themnguoidihotro" method="POST">
                                 <div class="form-group">
                                     <div class="form-group">
+                                        {% if g.notice['line']|length == 1 %} 
+                                        <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ g.notice['line'][0] }}" readonly> 
+                                        {% else %}
                                         <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" readonly>
-            
+                                        {% endif %}
                                     </div>
                                     <label for="info">Người đi hỗ trợ</label>
                                     <select class="form-control" id="nguoiduocdieuchuyen" name="nguoiduocdieuchuyen">
@@ -118,8 +121,11 @@
                         <div class="modal-body">
                             
                                 <div class="form-group">
-                                    <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" readonly>
-        
+                                    {% if g.notice['line']|length == 1 %} 
+                                        <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ g.notice['line'][0] }}" readonly> 
+                                        {% else %}
+                                        <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" readonly>
+                                        {% endif %}
                                 </div>
                                 <table class="table table-bordered table-sm">
                                     <thead>
@@ -170,8 +176,11 @@
                         <div class="modal-body">
                             
                                 <div class="form-group">
-                                    <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" readonly>
-        
+                                    {% if g.notice['line']|length == 1 %} 
+                                        <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ g.notice['line'][0] }}" readonly> 
+                                    {% else %}
+                                        <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" readonly>
+                                    {% endif %}
                                 </div>
                                 <table class="table table-bordered table-sm">
                                     <thead>
