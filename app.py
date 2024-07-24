@@ -391,6 +391,8 @@ def home():
         macongdoan = request.args.get("search_macongdoan")
         styles = get_all_styles(ngay, chuyen)
         sanluongtong = lay_sanluong_tong_theochuyen(ngay, chuyen, style)
+        if g.notice['role'] == 'tt':
+            chuyen = g.notice['line'][0]
         danhsach_congnhan_hotro = lay_danhsach_congnhan_trongchuyen(chuyen)
         danhsach_chuyen = lay_danhsach_chuyen_hotro(chuyen)
         danhsach_sanluong = lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan)
