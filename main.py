@@ -4,7 +4,7 @@ import time
 while True:
     try:
         # Chạy ứng dụng Flask cùng với waitress
-        subprocess.run(["python", "-m", "waitress", "--port=82", "app:app"], check=True)
+        subprocess.run(["python", "-m", "waitress", "--port=83", "app:app"], check=True)
     except subprocess.CalledProcessError as e:
         print(f"Flask gap loi: {e}")
         print("Đang khoi dong flask...")
