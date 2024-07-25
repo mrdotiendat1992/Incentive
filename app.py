@@ -57,6 +57,9 @@ class Nhanvien(UserMixin, db.Model):
     def __repr__(self):
         return f"<User {self.hoten}>"
 
+def chuyen_so_thanh_sotien(so):
+    return "{:,.0f}".format(so)
+
 def chinh_do_rong_cot(file_excel):
     try:
         # Mở tệp Excel để chỉnh độ rộng cột
@@ -668,7 +671,7 @@ def taidulieulen():
             style = request.form.get("style")
             return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
-@app.route("/baocao_thuong_may", methods=["GET"])
+@app.route("/baocao_thuong_may", methods=["GET","POST"])
 def baocao_may():
     if request.method == "GET":
         try:
@@ -689,67 +692,183 @@ def baocao_may():
             app.logger.error(e)
             return render_template("baocao_thuong_may.html", danhsach=[])
     elif request.method == "POST":
-        macongty = request.args.get("macongty")
-        mst = request.args.get("mst")
-        ngay = request.args.get("ngay")
-        chuyen = request.args.get("chuyen")
-        danhsach = lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen)
-        data = []
-        for row in danhsach:
-            data.append({
-                
-            })
+        try:
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Mã số thẻ": row[0],
+                    "Họ tên":row[1],
+                    "Chuyền":row[2],
+                    "Ngày":datetime.datetime.strptime(row[3],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "SAH":round(row[4],2) if row[4] else "",
+                    "SCP":row[5],
+                    "Số giờ":row[6],
+                    "Hiệu suất":f"{round(row[7]*100)} %" if row[7] else "",
+                    "Thưởng":chuyen_so_thanh_sotien(row[8]) if row[8] else ""
+                })
+            df = DataFrame(data)
+            thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/thuongcanhanmay_{thoigian}.xlsx")
+            df.to_excel(excel_path, index=False)
+            chinh_do_rong_cot(excel_path)
+            return send_file(excel_path, as_attachment=True)
+        except Exception as e:
+            app.logger.error(e)
+            return redirect("/baocao_thuong_may")
             
-@app.route("/baocao_thuong_nhommay", methods=["GET"])
+@app.route("/baocao_thuong_nhommay", methods=["GET","POST"])
 def baocao_nhommay():
     if request.method == "GET":
-        macongty = request.args.get("macongty")
-        ngay = request.args.get("ngay")
-        chuyen = request.args.get("chuyen")
-        style = request.args.get("style")
-        danhsach = lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style)
-        page = request.args.get(get_page_parameter(), type=int, default=1)
-        per_page = 10
-        total = len(danhsach)
-        start = (page - 1) * per_page
-        end = start + per_page
-        paginated_rows = danhsach[start:end]
-        pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-        return render_template("baocao_thuong_nhommay.html", danhsach=paginated_rows,pagination=pagination)
-
-@app.route("/baocao_sogio_lamviec", methods=["GET"])
+        try:
+            macongty = request.args.get("macongty")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            style = request.args.get("style")
+            danhsach = lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_nhommay.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            app.logger.error(e)
+            return render_template("baocao_thuong_may.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            style = request.form.get("style")
+            danhsach = lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Ngày": datetime.datetime.strptime(row[0],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[1],
+                    "SAH":round(row[2],2) if row[2] else "",
+                    "Số giờ":row[3],
+                    "Hiệu suất":f"{round(row[4]*100)} %" if row[4] else "",
+                    "Style": row[5],
+                    "Trạng thái đơn hàng": row[6],
+                    "Chuyền mới": row[7],
+                    "OQL": row[8],
+                    "Thưởng nhóm": chuyen_so_thanh_sotien(row[9]) if row[9] else "",
+                    "Thưởng 1": chuyen_so_thanh_sotien(row[10]) if row[10] else "",
+                    "Thưởng 2": chuyen_so_thanh_sotien(row[11]) if row[11] else "",
+                    "Tổng thưởng": chuyen_so_thanh_sotien(row[12]) if row[12] else ""
+                })
+            df = DataFrame(data)
+            thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/thuongnhommay_{thoigian}.xlsx")
+            df.to_excel(excel_path, index=False)
+            chinh_do_rong_cot(excel_path)
+            return send_file(excel_path, as_attachment=True)
+        except Exception as e:
+            app.logger.error(e)
+            return redirect("/baocao_thuong_nhommay")
+        
+@app.route("/baocao_sogio_lamviec", methods=["GET", "POST"])
 def baocao_sogio_lamviec():
     if request.method == "GET":
-        macongty = request.args.get("macongty")
-        mst = request.args.get("mst")
-        ngay = request.args.get("ngay")
-        chuyen = request.args.get("chuyen")
-        danhsach = lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen)
-        page = request.args.get(get_page_parameter(), type=int, default=1)
-        per_page = 10
-        total = len(danhsach)
-        start = (page - 1) * per_page
-        end = start + per_page
-        paginated_rows = danhsach[start:end]
-        pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-        return render_template("baocao_sogio_lamviec.html", danhsach=paginated_rows,pagination=pagination)
+        try:
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_sogio_lamviec.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            app.logger.error(e)
+            return render_template("baocao_sogio_lamviec.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Mã số thẻ": row[0],
+                    "Họ tên":row[1],
+                    "Chuyền":row[2],
+                    "Ngày": datetime.datetime.strptime(row[3],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Số giờ":row[4],
+                    "Chức danh" : row[5],
+                })
+            df = DataFrame(data)
+            thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/sogiolamviec_{thoigian}.xlsx")
+            df.to_excel(excel_path, index=False)
+            chinh_do_rong_cot(excel_path)
+            return send_file(excel_path, as_attachment=True)
+        except Exception as e:
+            app.logger.error(e)
+            return redirect("/baocao_sogio_lamviec")
     
-@app.route("/baocao_sanluong_canhan", methods=["GET"])
+@app.route("/baocao_sanluong_canhan", methods=["GET","POST"])
 def baocao_sanluong_canhan():
     if request.method == "GET":
-        macongty = request.args.get("macongty")
-        mst = request.args.get("mst")
-        ngay = request.args.get("ngay")
-        chuyen = request.args.get("chuyen")
-        danhsach = lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen)
-        page = request.args.get(get_page_parameter(), type=int, default=1)
-        per_page = 10
-        total = len(danhsach)
-        start = (page - 1) * per_page
-        end = start + per_page
-        paginated_rows = danhsach[start:end]
-        pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-        return render_template("baocao_sanluong_canhan.html", danhsach=paginated_rows,pagination=pagination)
+        try:
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_sanluong_canhan.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            app.logger.error(e)
+            return render_template("baocao_sanluong_canhan.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Mã số thẻ": row[0],
+                    "Họ tên": row[1],
+                    "Chuyền":row[2],
+                    "Ngày": datetime.datetime.strptime(row[3],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Style":row[4],
+                    "Mã công đoạn" : row[5],
+                    "Sản lượng": row[6]
+                })
+            df = DataFrame(data)
+            thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/sanluongcanhan_{thoigian}.xlsx")
+            df.to_excel(excel_path, index=False)
+            chinh_do_rong_cot(excel_path)
+            return send_file(excel_path, as_attachment=True)
+        except Exception as e:
+            app.logger.error(e)
+            return redirect("/baocao_sanluong_canhan")
     
     
 if __name__ == "__main__":

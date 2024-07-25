@@ -21,6 +21,14 @@
     </form>
     </div>
 {% endblock filter %}
+{% block export %}
+<form method="post">
+    <input type="hidden" name="macongty" value="{{ request.args.get('macongty','') }}">
+    <input type="hidden" name="ngay" value="{{ request.args.get('ngay','') }}">
+    <input type="hidden" name="chuyen" value="{{ request.args.get('chuyen','') }}">
+    <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-fw fa-download"></i></button>
+</form>
+{% endblock export %}
 {% block content %}
 <table class="table table-bordered table-sm">
     <thead>
