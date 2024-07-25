@@ -11,6 +11,7 @@ import urllib.parse
 from pandas import DataFrame,read_excel
 from openpyxl import load_workbook
 import os
+import time
 
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
 
@@ -56,6 +57,34 @@ class Nhanvien(UserMixin, db.Model):
     def __repr__(self):
         return f"<User {self.hoten}>"
 
+def chinh_do_rong_cot(file_excel):
+    try:
+        # Mở tệp Excel để chỉnh độ rộng cột
+        wb = load_workbook(file_excel)
+        ws = wb.active
+
+        # Chỉnh độ rộng cột theo độ rộng dữ liệu
+        for column in ws.columns:
+            max_length = 0
+            column_letter = column[0].column_letter  # Lấy tên cột (ví dụ: 'A', 'B')
+            for cell in column:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = max_length + 2
+            ws.column_dimensions[column_letter].width = adjusted_width
+
+        # Lưu lại tệp Excel đã chỉnh sửa
+        wb.save(file_excel)
+        wb.close()
+        time.sleep(1)
+        return True
+    except Exception as e:
+        app.logger.error(f"Loi khi dieu chinh do rong cot file excel: {e}")
+        return False
+    
 def connect_db():
     conn = pyodbc.connect(r'DRIVER={SQL Server};SERVER=172.16.60.100;DATABASE=HR;UID=huynguyen;PWD=Namthuan@123')
     return conn
@@ -262,7 +291,7 @@ def lay_sanluong_tong_theochuyen(ngay, chuyen, style):
     try:
         if ngay and chuyen and style:
             conn = connect_db()
-            query = f"select Total_Qty from [INCENTIVE].[dbo].[INCENTIVE_BUOC1] where WorkDate='{ngay}' and Line='{chuyen}' and Style='{style}'"
+            query = f"select QTY from [INCENTIVE].[dbo].[SL_NGAY_CHUYEN_STYLE ] where NGAY='{ngay}' and CHUYEN='{chuyen}' and GR_STYLE='{style}'"
             print(query)
             result = execute_query(conn, query).fetchone()
             close_db(conn)
@@ -311,10 +340,12 @@ def lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style):
     except:
         return []
     
-def lay_baocao_sogio_lamviec(mst,ngay,chuyen):
+def lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen):
     try:
         conn = connect_db()
-        query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SO_GIO,CHUC_VU FROM [INCENTIVE].[dbo].[TGLV] WHERE CHUC_VU = N'Công nhân may công nghiệp'" 
+        query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SO_GIO,CHUC_VU FROM [INCENTIVE].[dbo].[TGLV_1] WHERE 1=1" 
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
         if ngay:
@@ -322,6 +353,26 @@ def lay_baocao_sogio_lamviec(mst,ngay,chuyen):
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
+        print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
+    
+def lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[SL_CA_NHAN_1] WHERE 1=1" 
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if mst:
+            query += f" AND MST='{mst}'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+        query += " ORDER BY NGAY DESC, CHUYEN ASC, MST ASC"
         print(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
@@ -420,6 +471,33 @@ def home():
                                danhsach_congnhan_hotro=danhsach_congnhan_hotro,
                                danhsach_chuyen=danhsach_chuyen,danhsach_tnc=danhsach_tnc,
                                danhsach_di_hotro=danhsach_di_hotro,sanluongtong=sanluongtong)
+    elif request.method == "POST":
+        try:
+            ngay = request.form.get("ngay")   
+            chuyen = request.form.get('chuyen')
+            style = request.form.get("style")
+            mst = request.form.get("mst")
+            hoten = request.form.get("hoten")
+            macongdoan = request.form.get("search_macongdoan")
+            danhsach_sanluong = lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan)
+            data = [{
+                "Mã số thẻ": int(row[0]),
+                "Họ tên": row[1],
+                "Chuyền": row[2],
+                "Ngày": datetime.datetime.strptime(row[3], "%Y-%m-%d").strftime("%d/%m/%Y"),
+                "Style": row[4],
+                "Mã công đoạn": int(row[5]) if row[5] else 0,
+                "Sản lượng": int(row[6]) if row[6] else 0,
+            } for row in danhsach_sanluong]
+            df = DataFrame(data)
+            thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/{ngay}_{chuyen}_{style}_{thoigian}.xlsx")
+            df.to_excel(excel_path, index=False)
+            chinh_do_rong_cot(excel_path)
+            return send_file(excel_path, as_attachment=True)    
+        except Exception as e:
+            app.logger.error(f'Không thế tạo bảng {e} !!!')
+            return redirect("/")    
     
 @app.route("/nhapsanluongcanhan", methods=["POST"])
 @login_required
@@ -518,11 +596,9 @@ def capnhatsogiohotro():
 def xoasanluongcanhan():
     if request.method == "POST":
         id = request.form.get("id_xoasanluong")
-        # print(id)
         ngay = request.form.get("ngay")   
         chuyen = request.args.get('chuyen')
         style = request.form.get("style")
-        # mst = request.form.get("mst")
         xoa_sanluong(id)
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
     
@@ -551,26 +627,7 @@ def taidulieuxuong():
             giotai = datetime.datetime.now().strftime("%H%M%S")
             excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/{ngay}_{chuyen}_{style}_{giotai}.xlsx")
             data_frame.to_excel(excel_path, index=False)
-            # Mở tệp Excel để chỉnh độ rộng cột
-            # wb = load_workbook(excel_path)
-            # ws = wb.active
-
-            # # Chỉnh độ rộng cột theo độ rộng dữ liệu
-            # for column in ws.columns:
-            #     max_length = 0
-            #     column_letter = column[0].column_letter  # Lấy tên cột (ví dụ: 'A', 'B')
-            #     for cell in column:
-            #         try:
-            #             if len(str(cell.value)) > max_length:
-            #                 max_length = len(cell.value)
-            #         except:
-            #             pass
-            #     adjusted_width = max_length + 2
-            #     ws.column_dimensions[column_letter].width = adjusted_width
-
-            # # Lưu lại tệp Excel đã chỉnh sửa
-            # wb.save(excel_path)
-            # wb.close()
+            chinh_do_rong_cot(excel_path)
             return send_file(excel_path, as_attachment=True)
         except Exception as e:
             ngay = request.form.get("ngay")   
@@ -614,21 +671,35 @@ def taidulieulen():
 @app.route("/baocao_thuong_may", methods=["GET"])
 def baocao_may():
     if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_may.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            app.logger.error(e)
+            return render_template("baocao_thuong_may.html", danhsach=[])
+    elif request.method == "POST":
         macongty = request.args.get("macongty")
         mst = request.args.get("mst")
         ngay = request.args.get("ngay")
         chuyen = request.args.get("chuyen")
         danhsach = lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen)
-        page = request.args.get(get_page_parameter(), type=int, default=1)
-        per_page = 10
-        total = len(danhsach)
-        start = (page - 1) * per_page
-        end = start + per_page
-        paginated_rows = danhsach[start:end]
-        
-        pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-        return render_template("baocao_thuong_may.html", danhsach=paginated_rows,pagination=pagination,)
-    
+        data = []
+        for row in danhsach:
+            data.append({
+                
+            })
+            
 @app.route("/baocao_thuong_nhommay", methods=["GET"])
 def baocao_nhommay():
     if request.method == "GET":
@@ -643,26 +714,42 @@ def baocao_nhommay():
         start = (page - 1) * per_page
         end = start + per_page
         paginated_rows = danhsach[start:end]
-        
         pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-        return render_template("baocao_thuong_nhommay.html", danhsach=paginated_rows,pagination=pagination,)
+        return render_template("baocao_thuong_nhommay.html", danhsach=paginated_rows,pagination=pagination)
 
 @app.route("/baocao_sogio_lamviec", methods=["GET"])
 def baocao_sogio_lamviec():
     if request.method == "GET":
+        macongty = request.args.get("macongty")
         mst = request.args.get("mst")
         ngay = request.args.get("ngay")
         chuyen = request.args.get("chuyen")
-        danhsach = lay_baocao_sogio_lamviec(mst,ngay,chuyen)
+        danhsach = lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen)
         page = request.args.get(get_page_parameter(), type=int, default=1)
         per_page = 10
         total = len(danhsach)
         start = (page - 1) * per_page
         end = start + per_page
         paginated_rows = danhsach[start:end]
-        
         pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-        return render_template("baocao_sogio_lamviec.html", danhsach=paginated_rows,pagination=pagination,)
+        return render_template("baocao_sogio_lamviec.html", danhsach=paginated_rows,pagination=pagination)
+    
+@app.route("/baocao_sanluong_canhan", methods=["GET"])
+def baocao_sanluong_canhan():
+    if request.method == "GET":
+        macongty = request.args.get("macongty")
+        mst = request.args.get("mst")
+        ngay = request.args.get("ngay")
+        chuyen = request.args.get("chuyen")
+        danhsach = lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen)
+        page = request.args.get(get_page_parameter(), type=int, default=1)
+        per_page = 10
+        total = len(danhsach)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_rows = danhsach[start:end]
+        pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+        return render_template("baocao_sanluong_canhan.html", danhsach=paginated_rows,pagination=pagination)
     
     
 if __name__ == "__main__":

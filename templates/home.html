@@ -292,7 +292,7 @@
                     <th></th>
                 </tr>
                 <tr>
-                    <th></th>
+                    <th><a class="fas fa-search" href="#" data-toggle="modal" data-target="#tongsanluongModal"></a></th>
                     <th>
                         <select id="mst" name="mst" onchange="form.submit()">
                             <option value=''></option>
@@ -319,9 +319,20 @@
                     </th>
                     <th><input type="text" id="search_macongdoan" name="search_macongdoan" value="{{ request.args.get('search_macongdoan','') }}" onchange="form.submit()"></th>
                     <th><b style="color:red;">{{ sanluongtong }}</b></th>
-                    <th><a class="fas fa-search" href="#" data-toggle="modal" data-target="#tongsanluongModal"></a></th>
+                </form>
+                    <th>
+                        <form method="POST" action="/">
+                            <input type="hidden" name="chuyen" value={{ request.args.get('chuyen','') }}>
+                            <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
+                            <input type="hidden" name="style" value={{ request.args.get('style','') }}>
+                            <input type="hidden" name="mst" value={{ request.args.get('mst','') }}>
+                            <input type="hidden" name="hoten" value={{ request.args.get('hoten','') }}>
+                            <input type="hidden" name="macongdoan" value={{ request.args.get('search_macongdoan','') }}>
+                            <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-fw fa-download"></i></button>
+                        </form>
+                    </th>
                 </tr>
-            </form>
+            
             </thead>
             <tbody> 
                     {% for row in danhsach_sanluong %}

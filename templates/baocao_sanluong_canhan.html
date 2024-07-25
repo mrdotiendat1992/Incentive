@@ -1,6 +1,6 @@
 {% extends "baocao.html" %}
 {% block title %}
-    Báo cáo số giờ làm việc
+    Báo cáo thưởng cá nhân may
 {% endblock title %}
 {% block filter %}
  <div id="filter">
@@ -32,8 +32,9 @@
             <th>Họ tên</th>
             <th>Chuyền</th>
             <th>Ngày</th>
-            <th>Số giờ</th>
-            <th>Chức vụ</th>
+            <th>Style</th>
+            <th>Mã công đoạn</th>
+            <th>Sản lượng</th>
         </tr>
     </thead>
     <tbody>
@@ -45,6 +46,7 @@
                 <td class="ngay">{{ row[3] }}</td>
                 <td>{{ row[4] }}</td>
                 <td>{{ row[5] }}</td>
+                <td>{{ row[6] }}</td>
             </tr>
         {% endfor %}
     </tbody>

@@ -1,5 +1,7 @@
 {% extends "baocao.html" %}
 
+{% block title %}Báo cáo thưởng cá nhân may{% endblock title%}
+
 {% block filter %}
  <div id="filter">
     <form method="get">
@@ -22,6 +24,13 @@
     </form>
     </div>
 {% endblock filter %}
+
+{% block export %}
+<form method="post">
+    <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-file-excel-o"></i></button>
+</form>
+{% endblock export %}
+
 {% block content %}
 <table class="table table-bordered table-sm">
     <thead>

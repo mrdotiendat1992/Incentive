@@ -7,7 +7,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Báo cáo</title>
+        <title>{% block title %}{% endblock title %}</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -20,9 +20,10 @@
                 width: 100%;
                 font-weight: bold;
             }
-            .table th {
+            th {
                 text-align: center;
                 color: white;
+                vertical-align: middle;
             }
             .pagination {
                 font-size: 10px;
@@ -39,11 +40,14 @@
             <a href="/baocao_thuong_may" class="btn btn-primary btn-sm">Thưởng may cá nhân</a>
             <a href="/baocao_thuong_nhommay" class="btn btn-primary btn-sm">Thưởng nhóm may</a>
             <a href="/baocao_sogio_lamviec" class="btn btn-primary btn-sm">Số giờ làm vệc</a>
-            <h1>Báo cáo thưởng cá nhân may</h1>
-            {% block filter %}
-            
-            {% endblock filter %}
-            <div class="pagination">{{ pagination.links }}</div>
+            <a href="/baocao_sanluong_canhan" class="btn btn-primary btn-sm">Sản lượng cá nhân</a>
+            <h1>{% block page_title %}{% endblock page_title %}</h1>
+            {% block filter %}{% endblock filter %}
+
+            <div style="display: flex; justify-content: space-around;">
+                <div class="pagination">{{ pagination.links }}</div>
+                {% block export %}{% endblock export %}
+            </div>
             {% block content %}
             
             {% endblock content %}
