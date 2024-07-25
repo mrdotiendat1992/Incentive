@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect, g, flash, jsonify, send_file, session, flash, get_flashed_messages, render_template_string
+from flask import Flask, render_template, request, url_for, redirect, g, flash, jsonify, send_file, session, flash, get_flashed_messages, render_template_string,make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_paginate import Pagination, get_page_parameter
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
@@ -8,10 +8,11 @@ from functools import wraps
 import logging
 from logging.handlers import RotatingFileHandler
 import urllib.parse
-from pandas import DataFrame,read_excel
+from pandas import DataFrame,read_excel,ExcelWriter
 from openpyxl import load_workbook
 import os
 import time
+from io import BytesIO
 
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
 
@@ -493,12 +494,36 @@ def home():
                 "Sản lượng": int(row[6]) if row[6] else 0,
             } for row in danhsach_sanluong]
             df = DataFrame(data)
-            thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
-            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/{ngay}_{chuyen}_{style}_{thoigian}.xlsx")
-            df.to_excel(excel_path, index=False)
-            time.sleep(1)
-            chinh_do_rong_cot(excel_path)
-            return send_file(excel_path, as_attachment=True)    
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename={ngay}_{chuyen}_{style}_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response    
         except Exception as e:
             app.logger.error(f'Không thế tạo bảng {e} !!!')
             return redirect("/")    
@@ -605,39 +630,6 @@ def xoasanluongcanhan():
         style = request.form.get("style")
         xoa_sanluong(id)
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
-    
-@app.route("/taidulieuxuong", methods=["GET"])
-@login_required
-def taidulieuxuong():
-    if request.method == "GET":
-        try:
-            chuyen = request.args.get("chuyen")
-            ngay = request.args.get("ngay")
-            style = request.args.get("style")
-            rows = lay_danhsach_sanluong(ngay, chuyen, style,None,None,None)
-            data = []
-            for row in rows:
-                data.append({
-                    "Mã số thẻ": int(row[0]),
-                    "Họ tên": row[1],
-                    "Chuyền": row[2],
-                    "Ngày": row[3],
-                    "Style": row[4],
-                    "Mã công đoạn": int(row[5]) if row[5] else 0,
-                    "Sản lượng cá nhân": int(row[6]) if row[6] else 0,
-                })
-            data_frame = DataFrame(data)
-            ngay = ngay.split("-")[2]+ngay.split("-")[1]+ngay.split("-")[0]
-            giotai = datetime.datetime.now().strftime("%H%M%S")
-            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/{ngay}_{chuyen}_{style}_{giotai}.xlsx")
-            data_frame.to_excel(excel_path, index=False)
-            chinh_do_rong_cot(excel_path)
-            return send_file(excel_path, as_attachment=True)
-        except Exception as e:
-            ngay = request.form.get("ngay")   
-            chuyen = request.args.get('chuyen')
-            style = request.form.get("style")
-            return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
         
 @app.route("/taidulieulen", methods=["POST"])
 def taidulieulen():
@@ -713,11 +705,36 @@ def baocao_may():
                     "Thưởng":chuyen_so_thanh_sotien(row[8]) if row[8] else ""
                 })
             df = DataFrame(data)
-            thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
-            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/thuongcanhanmay_{thoigian}.xlsx")
-            df.to_excel(excel_path, index=False)
-            chinh_do_rong_cot(excel_path)
-            return send_file(excel_path, as_attachment=True)
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongmay_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
         except Exception as e:
             app.logger.error(e)
             return redirect("/baocao_thuong_may")
@@ -767,11 +784,36 @@ def baocao_nhommay():
                     "Tổng thưởng": chuyen_so_thanh_sotien(row[12]) if row[12] else ""
                 })
             df = DataFrame(data)
-            thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
-            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/thuongnhommay_{thoigian}.xlsx")
-            df.to_excel(excel_path, index=False)
-            chinh_do_rong_cot(excel_path)
-            return send_file(excel_path, as_attachment=True)
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongnhommay_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
         except Exception as e:
             app.logger.error(e)
             return redirect("/baocao_thuong_nhommay")
@@ -814,11 +856,36 @@ def baocao_sogio_lamviec():
                     "Chức danh" : row[5],
                 })
             df = DataFrame(data)
-            thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
-            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/sogiolamviec_{thoigian}.xlsx")
-            df.to_excel(excel_path, index=False)
-            chinh_do_rong_cot(excel_path)
-            return send_file(excel_path, as_attachment=True)
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaosogiolamviec_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
         except Exception as e:
             app.logger.error(e)
             return redirect("/baocao_sogio_lamviec")
@@ -862,11 +929,36 @@ def baocao_sanluong_canhan():
                     "Sản lượng": row[6]
                 })
             df = DataFrame(data)
-            thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
-            excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/sanluongcanhan_{thoigian}.xlsx")
-            df.to_excel(excel_path, index=False)
-            chinh_do_rong_cot(excel_path)
-            return send_file(excel_path, as_attachment=True)
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaosanluongcanhan_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
         except Exception as e:
             app.logger.error(e)
             return redirect("/baocao_sanluong_canhan")
