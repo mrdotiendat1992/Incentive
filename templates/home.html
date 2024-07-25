@@ -220,32 +220,6 @@
         
             <div style="display:flex; justify-content: space-around">
                 <p><b>{{ current_user.masothe}} - {{ current_user.hoten}}</b></p>
-                <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#uploadModal">
-                    <i class="fas fa-upload"></i>
-                </button>
-                <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModal" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="uploadModal">Tải dữ liệu lên</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="/taidulieulen" method="POST" enctype="multipart/form-data">
-                                    <input type="hidden" name="chuyen" value={{ request.args.get('chuyen') }}>
-                                    <input type="hidden" name="ngay" value={{ request.args.get('ngay') }}>
-                                    <input type="hidden" name="style" value={{ request.args.get('style') }}>
-                                    <div class="form-group">
-                                        <input type="file" class="form-control" id="file" name="file">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Tải lên</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <form method="GET">
             <div class="form-group">
@@ -322,6 +296,32 @@
                     <th><b style="color:red;">{{ sanluongtong }}</b></th>
                 </form>
                     <th>
+                        <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#uploadModal">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                        <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModal" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="uploadModal">Tải dữ liệu lên</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="/taidulieulen" method="POST" enctype="multipart/form-data">
+                                            <input type="hidden" name="chuyen" value={{ request.args.get('chuyen') }}>
+                                            <input type="hidden" name="ngay" value={{ request.args.get('ngay') }}>
+                                            <input type="hidden" name="style" value={{ request.args.get('style') }}>
+                                            <div class="form-group">
+                                                <input type="file" class="form-control" id="file" name="file">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Tải lên</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <form method="POST" action="/">
                             <input type="hidden" name="chuyen" value={{ request.args.get('chuyen','') }}>
                             <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
