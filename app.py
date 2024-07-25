@@ -104,11 +104,11 @@ def get_line(masothe,macongty):
     try:
         conn = connect_db()
         query = f"select CHUYEN from [INCENTIVE].[dbo].[DS_TO_TRUONG] where MST='{masothe}' and NHA_MAY='{macongty}'"
-        print(query)
+        app.logger.info(query)
         cursor = execute_query(conn, query)
         rows = cursor.fetchall()
         result = [row[0] for row in rows]
-        # print(result)
+        # app.logger.info(result)
         close_db(conn)
         return result
     except:
@@ -119,7 +119,7 @@ def get_all_styles(ngay, chuyen):
         if ngay and chuyen:
             conn = connect_db()
             query = f"SELECT Distinct STYLE FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE NGAY='{ngay}' AND CHUYEN='{chuyen}'"
-            print(query)
+            app.logger.info(query)
             cursor = execute_query(conn, query)
             result = cursor.fetchall()
             close_db(conn)
@@ -179,14 +179,14 @@ def lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan):
 def capnhat_sanluong(mst,hoten,chuyen,ngay,style,macongdoan,sanluong):
     conn = connect_db()
     query = f"INSERT INTO [INCENTIVE].[dbo].[SL_CA_NHAN] (MST,HO_TEN,CHUYEN,NGAY,STYLE,MA_CONG_DOAN,SL_CA_NHAN) VALUES('{mst}', N'{hoten}', '{chuyen}', '{ngay}', '{style}', '{macongdoan}', '{sanluong}')"
-    print(query)
+    app.logger.info(query)
     execute_query(conn, query)
     try:
         conn.commit()
         close_db(conn)
         return True
     except Exception as e:
-        print(e)
+        app.logger.info(e)
         return False
 
 def xoa_sanluong(id):
@@ -198,7 +198,7 @@ def xoa_sanluong(id):
         close_db(conn)
         return True
     except Exception as e:
-        print(e)
+        app.logger.info(e)
         return False
 
 def lay_tencongdoan(thongtin):
@@ -220,7 +220,7 @@ def them_nguoi_di_hotro(nhamay,chuyen,mst,hoten,chucdanh,chuyendihotro,ngaydieuc
             query = f"insert into [INCENTIVE].[dbo].[CN_MAY_DI_HO_TRO] values ('{nhamay}','{mst}',N'{hoten}',N'{chucdanh}','{chuyen}','{chuyendihotro}','{ngaydieuchuyendi}','{giodieuchuyendi}','{sogiohotro}')"
         else:
             query = f"insert into [INCENTIVE].[dbo].[CN_MAY_DI_HO_TRO] values ('{nhamay}','{mst}',N'{hoten}',N'{chucdanh}','{chuyen}','{chuyendihotro}','{ngaydieuchuyendi}',NULL,'{sogiohotro}')"
-        print(query)
+        app.logger.info(query)
         execute_query(conn, query)
         conn.commit()
         close_db(conn)
@@ -265,7 +265,7 @@ def capnhat_sogio_hotro(id,sogio):
     try:
         conn = connect_db()
         query = f"update [INCENTIVE].[dbo].[CN_MAY_DI_HO_TRO] SET SO_GIO_HO_TRO='{sogio}' WHERE ID='{id}'"
-        print(query)
+        app.logger.info(query)
         execute_query(conn, query)
         conn.commit()
         close_db(conn)
@@ -295,7 +295,7 @@ def lay_sanluong_tong_theochuyen(ngay, chuyen, style):
         if ngay and chuyen and style:
             conn = connect_db()
             query = f"select QTY from [INCENTIVE].[dbo].[SL_NGAY_CHUYEN_STYLE ] where NGAY='{ngay}' and CHUYEN='{chuyen}' and GR_STYLE='{style}'"
-            print(query)
+            app.logger.info(query)
             result = execute_query(conn, query).fetchone()
             close_db(conn)
             return result[0]
@@ -317,7 +317,7 @@ def lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen):
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        print(query)
+        app.logger.info(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -356,7 +356,7 @@ def lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen):
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        print(query)
+        app.logger.info(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -376,7 +376,7 @@ def lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen):
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC, MST ASC"
-        print(query)
+        app.logger.info(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -396,7 +396,7 @@ def before_request():
     try:
         if current_user.is_authenticated:
             lines = get_line(current_user.masothe, current_user.macongty)
-            # print(lines)
+            # app.logger.info(lines)
             if lines:
                 if len(lines) == 1:
                     g.notice = {"line":lines,"role":"tt"}
@@ -431,7 +431,7 @@ def login():
             user = Nhanvien.query.filter_by(masothe=masothe, macongty=macongty).first()    
             if user and user.matkhau == matkhau:
                 if login_user(user):    
-                    print(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang nhap !!!")
+                    app.logger.info(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang nhap !!!")
                     return redirect(url_for('home'))
             return redirect(url_for("login"))
         except Exception as e:
@@ -445,7 +445,7 @@ def login():
 @login_required
 def logout():
     try:
-        print(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang xuat !!!")
+        app.logger.info(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang xuat !!!")
         logout_user()
     except Exception as e:
         app.logger.error(f'Không thế đăng xuất {e} !!!')
@@ -496,6 +496,7 @@ def home():
             thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
             excel_path = os.path.join(os.path.dirname(__file__),f"taixuong/{ngay}_{chuyen}_{style}_{thoigian}.xlsx")
             df.to_excel(excel_path, index=False)
+            time.sleep(1)
             chinh_do_rong_cot(excel_path)
             return send_file(excel_path, as_attachment=True)    
         except Exception as e:
@@ -644,7 +645,7 @@ def taidulieulen():
         try:
             file = request.files["file"]
             if not file:
-                print("No file")
+                app.logger.info("No file")
                 return redirect("/")
             thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
             filepath = f"tailen/data_{thoigian}.xlsx"
@@ -665,7 +666,7 @@ def taidulieulen():
             style = request.form.get("style")
             return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
         except Exception as e:
-            print(e)
+            app.logger.info(e)
             ngay = request.form.get("ngay")   
             chuyen = request.args.get('chuyen')
             style = request.form.get("style")
