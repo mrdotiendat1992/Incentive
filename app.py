@@ -491,7 +491,7 @@ def home():
                 "Ngày": datetime.datetime.strptime(row[3], "%Y-%m-%d").strftime("%d/%m/%Y"),
                 "Style": row[4],
                 "Mã công đoạn": int(row[5]) if row[5] else 0,
-                "Sản lượng cá nhân": int(row[6]) if row[6] else 0,
+                "Sản lượng": int(row[6]) if row[6] else 0,
             } for row in danhsach_sanluong]
             df = DataFrame(data)
             output = BytesIO()
@@ -651,7 +651,7 @@ def taidulieulen():
                     datetime.datetime.strptime(row["Ngày"],"%d/%m/%Y").strftime("%Y-%m-%d"),
                     row["Style"],
                     row["Mã công đoạn"],
-                    row["Sản lượng cá nhân"]
+                    row["Sản lượng"]
                 )
             ngay = request.form.get("ngay")   
             chuyen = request.args.get('chuyen')
@@ -702,7 +702,7 @@ def baocao_may():
                     "SCP":row[5],
                     "Số giờ":row[6],
                     "Hiệu suất":f"{round(row[7]*100)} %" if row[7] else "",
-                    "Thưởng":chuyen_so_thanh_sotien(row[8]) if row[8] else ""
+                    "Thưởng": chuyen_so_thanh_sotien(row[8]) if row[8] else ""
                 })
             df = DataFrame(data)
             output = BytesIO()
@@ -926,7 +926,7 @@ def baocao_sanluong_canhan():
                     "Ngày": datetime.datetime.strptime(row[3],"%Y-%m-%d").strftime("%d/%m/%Y"),
                     "Style":row[4],
                     "Mã công đoạn" : row[5],
-                    "Sản lượng sản lượng": row[6]
+                    "Sản lượng": row[6]
                 })
             df = DataFrame(data)
             output = BytesIO()
@@ -962,7 +962,6 @@ def baocao_sanluong_canhan():
         except Exception as e:
             app.logger.error(e)
             return redirect("/baocao_sanluong_canhan")
-    
     
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)
