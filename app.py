@@ -626,7 +626,7 @@ def xoasanluongcanhan():
     if request.method == "POST":
         id = request.form.get("id_xoasanluong")
         ngay = request.form.get("ngay")   
-        chuyen = request.args.get('chuyen')
+        chuyen = request.form.get('chuyen')
         style = request.form.get("style")
         xoa_sanluong(id)
         return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")

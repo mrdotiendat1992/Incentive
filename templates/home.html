@@ -214,7 +214,7 @@
                 </div>
             </div>
             
-            <a href="/baocao_thuong_may" class="btn btn-danger btn-sm" >Báo cáo</a>
+            <a href="/baocao_thuong_may" class="btn btn-warning btn-sm" >Báo cáo</a>
         </div>
         
         
@@ -340,10 +340,9 @@
                     <tr class="cd_{{ row[5] }}">
                         <td>
                             <form action="/xoasanluongcanhan" method="POST">
-                                <input type="hidden" name="chuyen" value={{ request.args.get('chuyen') }}>
-                                <input type="hidden" name="ngay" value={{ request.args.get('ngay') }}>
-                                <input type="hidden" name="style" value={{ request.args.get('style') }}>
-                                <input type="hidden" name="mst" value={{ request.args.get('mst') }}>
+                                <input type="hidden" name="chuyen" value={{ request.args.get('chuyen','') }}>
+                                <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
+                                <input type="hidden" name="style" value={{ request.args.get('style','') }}>
                                 <input type="hidden" name="id_xoasanluong" value={{ row[-1]}}>
                                 <button type="submit" onclick="return xoasanluongcanhan()" class="btn btn-danger btn-sm"><i class="fas fa-fw fa-trash" ></i></button>
                             </form>
