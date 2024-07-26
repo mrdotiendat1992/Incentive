@@ -96,10 +96,11 @@
                     if (element.textContent.trim() === 'None' || element.textContent.trim() === '0 VND' || element.textContent.trim() === '0.00 %') {
                         element.textContent = ''; // Thay thế bằng chuỗi rỗng
                     }
+                    element.style.whiteSpace = 'nowrap';
                 });
                 // Áp dụng thuộc tính CSS cho tất cả các ô trong bảng
-                document.querySelectorAll('table td').forEach(function(element) {
-                    element.style.whiteSpace = 'nowrap';
+                document.querySelectorAll('table th').forEach(function(element) {
+                    element.style.verticalAlign = 'middle';
                 });
                     });
         </script>
