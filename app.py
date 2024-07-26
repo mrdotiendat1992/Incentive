@@ -491,7 +491,7 @@ def home():
                 "Ngày": datetime.datetime.strptime(row[3], "%Y-%m-%d").strftime("%d/%m/%Y"),
                 "Style": row[4],
                 "Mã công đoạn": int(row[5]) if row[5] else 0,
-                "Sản lượng": int(row[6]) if row[6] else 0,
+                "Sản lượng cá nhân": int(row[6]) if row[6] else 0,
             } for row in danhsach_sanluong]
             df = DataFrame(data)
             output = BytesIO()
@@ -648,7 +648,7 @@ def taidulieulen():
                     row["Mã số thẻ"],
                     row["Họ tên"],
                     row["Chuyền"],
-                    row["Ngày"],
+                    datetime.datetime.strptime(row["Ngày"],"%d/%m/%Y").strftime("%Y-%m-%d"),
                     row["Style"],
                     row["Mã công đoạn"],
                     row["Sản lượng cá nhân"]
@@ -926,7 +926,7 @@ def baocao_sanluong_canhan():
                     "Ngày": datetime.datetime.strptime(row[3],"%Y-%m-%d").strftime("%d/%m/%Y"),
                     "Style":row[4],
                     "Mã công đoạn" : row[5],
-                    "Sản lượng": row[6]
+                    "Sản lượng sản lượng": row[6]
                 })
             df = DataFrame(data)
             output = BytesIO()
