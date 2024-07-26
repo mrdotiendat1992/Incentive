@@ -357,7 +357,7 @@
                             <td><input type="text" name="hoten" readonly value='{{ row[1] }}'></td>
                             <td>
                                 <div class="input-container">
-                                    <input type="number" name="macongdoan" value="{{ row[5] }}" class="macongdoan_tong">
+                                    <input type="number" name="macongdoan" value="{{ row[5] }}" class="macongdoan_tong" onchange="form.submit()">
                                     <a class="fas fa-fw fa-eye" href="#" data-toggle="modal" data-target="#congdoanModal" data-info="{{ row[5] }}_{{ request.args.get('style') }}"></a>
                                 </div>
                                 <div class="modal fade" id="congdoanModal" tabindex="-1" role="dialog" aria-labelledby="congdoanModalLabel" aria-hidden="true">
