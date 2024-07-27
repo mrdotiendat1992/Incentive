@@ -254,7 +254,7 @@
                         <input type="hidden" name="macongdoan" value={{ request.args.get('search_macongdoan','') }}>
                         <button type="submit" class="btn btn-success btn-sm" style="height: 40px;"><i class="fas fa-fw fa-download"></i></button>
                     </form>
-                    {% if 'IED' in current_user.phongban %}
+                    {% if current_user.phongban == "1IED" || current_user.phongban == "2IED" %}
                     <form method="GET" action="/taithuongchitiet">
                         <button type="submit" class="btn btn-success btn-sm" style="height: 40px;"><i class="fas fa-fw fa-file"></i></button>
                     </form>
