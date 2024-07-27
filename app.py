@@ -130,9 +130,17 @@ def get_all_styles(ngay, chuyen):
     except:
         return []
 
+def laydulieuthuongmaychitiet():
+    conn = connect_db()
+    query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_CN_MAY_HANG_NGAY_CHI_TIET]"
+    cursor = execute_query(conn, query) 
+    result = cursor.fetchall()
+    close_db(conn)
+    return result
+
 def lay_danhsach_congnhan_trongchuyen(chuyen):
     conn = connect_db()
-    query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_CN_MAY_THEO_HC_CHUYEN] WHERE Chuyen='{chuyen}'"
+    query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_CN_MAY_THEO_HC_CHUYEN] WHERE Chuyen='{chuyen}' order by Ngay desc, Chuyen Asc, Cast(MaSoThe as int) Asc"
     cursor = execute_query(conn, query) 
     result = cursor.fetchall()
     close_db(conn)
@@ -577,7 +585,7 @@ def themnguoidihotro():
         chuyendihotro = request.form.get("chuyenhotro")
         ngaydieuchuyendi = request.form.get("ngaydieuchuyendi")
         giodieuchuyendi = request.form.get("giodieuchuyendi")
-        sogiohotro = request.form.get("sogiohotro")
+        sogiohotro = request.form.get("sogiohotro").replace(",", ".")
         nhamay = 'NT1' if chuyen[0]=="1" else 'NT2'
         them_nguoi_di_hotro(nhamay,chuyen,mst,hoten,chucdanh,chuyendihotro,ngaydieuchuyendi,giodieuchuyendi,sogiohotro)
         ngay = request.form.get("ngay")   
@@ -962,6 +970,79 @@ def baocao_sanluong_canhan():
         except Exception as e:
             app.logger.error(e)
             return redirect("/baocao_sanluong_canhan")
-    
+@app.route("/taithuongchitiet", methods=["GET","POST"])
+def taithuongchitiet():
+    try:
+        danhsach = laydulieuthuongmaychitiet()
+        data = []
+        for row in danhsach:
+            data.append({
+                "Ngày": datetime.datetime.strptime(row[0],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                "Mã số thẻ": row[1],
+                "Họ tên": row[2],
+                "Chuyền": row[3],
+                "SAH nhóm": round(row[4],1) if row[4] else "",
+                "Thòi gian làm việc nhóm": round(row[5]) if row[5] else "",
+                "Hiệu suất nhóm": f"{round(row[6]*100)} %" if row[6] else "",
+                "Style": row[7] if row[7] else "",
+                "Chuyền mới": row[8] if row[8] else "",
+                "Ngày vào chuyền": row[9] if row[9] else "",
+                "Trạng thái": row[10] if row[10] else "",
+                "UI": row[11] if row[11] else "",
+                "BE": row[12] if row[12] else "",
+                "BE TOPUP 1": row[13] if row[13] else "",
+                "TOPUP 1": row[14] if row[14] else "",
+                "BE TOPUP 2": row[15] if row[1] else "",
+                "TOPUP 2": row[16] if row[16] else "",
+                "OQL": f"{row[17]*100} %" if row[17] else "",
+                "AQL": row[18] if row[18] else "",
+                "Group incentive": round(row[19]) if row[19] else "",
+                "Group incentive topup 1": round(row[20]) if row[20] else "",
+                "Group incentive topup 2": round(row[21]) if row[21] else "",
+                "Tổng thưởng": round(row[22]) if row[22] else "",
+                "SAH": round(row[23],1) if row[23] else "",
+                "Thời gian làm việc": row[24] if row[24] else "",
+                "Hiệu suất": f"{round(row[25]*100)} %" if row[25] else "",
+                "SCP": row[26] if row[26] else "",
+                "Hệ số SCP": row[27] if row[27] else "",
+                "Hệ số thưởng cá nhân": round(row[28],1) if row[28] else "",
+                "Hệ số thưởng nhóm": round(row[29],1) if row[29] else "",
+                "Thưởng cá nhân": round(row[30]) if row[30] else ""
+            })
+        df = DataFrame(data)
+        output = BytesIO()
+        with ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False)
+
+        # Điều chỉnh độ rộng cột
+        output.seek(0)
+        workbook = load_workbook(output)
+        sheet = workbook.active
+
+        for column in sheet.columns:
+            max_length = 0
+            column_letter = column[0].column_letter
+            for cell in column:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 2)
+            sheet.column_dimensions[column_letter].width = adjusted_width
+
+        output = BytesIO()
+        workbook.save(output)
+        output.seek(0)
+        time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+        # Trả file về cho client
+        response = make_response(output.read())
+        response.headers['Content-Disposition'] = f'attachment; filename=thuongmaychitiet_{time_stamp}.xlsx'
+        response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        return response  
+    except Exception as e:
+        app.logger.error(f"Loi lay thuong may chi tiet: {e}")
+        return redirect("/")
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)

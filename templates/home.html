@@ -215,9 +215,7 @@
             </div>
             
             <a href="/baocao_thuong_may" class="btn btn-warning btn-sm" >Báo cáo</a>
-        </div>
-        
-        
+        </div>        
             <div style="display:flex; justify-content: space-around; padding:10px">
                 <p><b>{{ current_user.masothe}} - {{ current_user.hoten}}</b></p>
                 <div style="display:flex; justify-content: space-around;gap:10px;">
@@ -256,6 +254,11 @@
                         <input type="hidden" name="macongdoan" value={{ request.args.get('search_macongdoan','') }}>
                         <button type="submit" class="btn btn-success btn-sm" style="height: 40px;"><i class="fas fa-fw fa-download"></i></button>
                     </form>
+                    {% if 'IED' in current_user.phongban %}
+                    <form method="GET" action="/taithuongchitiet">
+                        <button type="submit" class="btn btn-success btn-sm" style="height: 40px;"><i class="fas fa-fw fa-file"></i></button>
+                    </form>
+                    {% endif %}
                 </div>
             </div>
             <form method="GET">
