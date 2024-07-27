@@ -13,6 +13,7 @@ from openpyxl import load_workbook
 import os
 import time
 from io import BytesIO
+import subprocess
 
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
 
@@ -1045,4 +1046,14 @@ def taithuongchitiet():
         return redirect("/")
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=80)
+    while True:
+        try:
+            app.run(debug=False, host="0.0.0.0", port=83)
+        except subprocess.CalledProcessError as e:
+            app.logger.error(f"Flask gap loi: {e}")
+            print("Đang khoi dong flask...")
+            time.sleep(1)  # Đợi một khoảng thời gian trước khi khởi động lại
+        except Exception as e:
+            app.logger.error(f"Loi khong xac dinh: {e}")
+            print("Đang khoi dong lai flask ...")
+            time.sleep(1)
