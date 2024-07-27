@@ -132,7 +132,7 @@ def get_all_styles(ngay, chuyen):
 
 def laydulieuthuongmaychitiet():
     conn = connect_db()
-    query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_CN_MAY_HANG_NGAY_CHI_TIET]"
+    query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_CN_MAY_HANG_NGAY_CHI_TIET] order by Ngay desc, Chuyen Asc, Cast(MaSoThe as int) Asc"
     cursor = execute_query(conn, query) 
     result = cursor.fetchall()
     close_db(conn)
@@ -140,7 +140,7 @@ def laydulieuthuongmaychitiet():
 
 def lay_danhsach_congnhan_trongchuyen(chuyen):
     conn = connect_db()
-    query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_CN_MAY_THEO_HC_CHUYEN] WHERE Chuyen='{chuyen}' order by Ngay desc, Chuyen Asc, Cast(MaSoThe as int) Asc"
+    query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_CN_MAY_THEO_HC_CHUYEN] WHERE Chuyen='{chuyen}'"
     cursor = execute_query(conn, query) 
     result = cursor.fetchall()
     close_db(conn)
