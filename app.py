@@ -8,12 +8,13 @@ from functools import wraps
 import logging
 from logging.handlers import RotatingFileHandler
 import urllib.parse
-from pandas import DataFrame,read_excel,ExcelWriter
+from pandas import DataFrame,read_excel,ExcelWriter,to_numeric
 from openpyxl import load_workbook
 import os
 import time
 from io import BytesIO
 import subprocess
+import numpy as np
 
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
 
@@ -710,10 +711,15 @@ def baocao_may():
                     "SAH":round(row[4],2) if row[4] else "",
                     "SCP":row[5],
                     "Số giờ":row[6],
-                    "Hiệu suất":f"{round(row[7]*100)} %" if row[7] else "",
-                    "Thưởng": chuyen_so_thanh_sotien(row[8]) if row[8] else ""
+                    "Hiệu suất":f"{row[7]:.0%}" if row[7] else "",
+                    "Thưởng": round(row[8]) if row[8] else ""
                 })
             df = DataFrame(data)
+            # Sử dụng pd.to_numeric để chuyển đổi cột 'A' sang int64
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            df['SAH'] = to_numeric(df['SAH'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['Thưởng'] = to_numeric(df['Thưởng'], errors='coerce')
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
                 df.to_excel(writer, index=False)
@@ -782,17 +788,24 @@ def baocao_nhommay():
                     "Chuyền":row[1],
                     "SAH":round(row[2],2) if row[2] else "",
                     "Số giờ":row[3],
-                    "Hiệu suất":f"{round(row[4]*100)} %" if row[4] else "",
+                    "Hiệu suất": f"{row[4]:.0%}"if row[4] else "",
                     "Style": row[5],
                     "Trạng thái đơn hàng": row[6],
                     "Chuyền mới": row[7],
                     "OQL": row[8],
-                    "Thưởng nhóm": chuyen_so_thanh_sotien(row[9]) if row[9] else "",
-                    "Thưởng 1": chuyen_so_thanh_sotien(row[10]) if row[10] else "",
-                    "Thưởng 2": chuyen_so_thanh_sotien(row[11]) if row[11] else "",
-                    "Tổng thưởng": chuyen_so_thanh_sotien(row[12]) if row[12] else ""
+                    "Thưởng nhóm":round(row[9]) if row[9] else "",
+                    "Thưởng 1": round(row[10]) if row[10] else "",
+                    "Thưởng 2": round(row[11]) if row[11] else "",
+                    "Tổng thưởng": round(row[12]) if row[12] else ""
                 })
             df = DataFrame(data)
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['SAH'] = to_numeric(df['SAH'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['Thưởng 1'] = to_numeric(df['Thưởng 1'], errors='coerce')
+            df['Thưởng 2'] = to_numeric(df['Thưởng 2'], errors='coerce')
+            df['Tổng thưởng'] = to_numeric(df['Tổng thưởng'], errors='coerce')
+            output = BytesIO()
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
                 df.to_excel(writer, index=False)
@@ -865,6 +878,8 @@ def baocao_sogio_lamviec():
                     "Chức danh" : row[5],
                 })
             df = DataFrame(data)
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
                 df.to_excel(writer, index=False)
@@ -938,6 +953,9 @@ def baocao_sanluong_canhan():
                     "Sản lượng": row[6]
                 })
             df = DataFrame(data)
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            df['Mã công đoạn'] = to_numeric(df['Mã công đoạn'], errors='coerce')
+            df['Sản lượng'] = to_numeric(df['Sản lượng'], errors='coerce')
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
                 df.to_excel(writer, index=False)
@@ -983,19 +1001,19 @@ def taithuongchitiet():
                 "Họ tên": row[2],
                 "Chuyền": row[3],
                 "SAH nhóm": round(row[4],1) if row[4] else "",
-                "Thòi gian làm việc nhóm": round(row[5]) if row[5] else "",
-                "Hiệu suất nhóm": f"{round(row[6]*100)} %" if row[6] else "",
+                "Thời gian làm việc nhóm": round(row[5]) if row[5] else "",
+                "Hiệu suất nhóm": f"{row[6]:.0%}" if row[6] else "",
                 "Style": row[7] if row[7] else "",
                 "Chuyền mới": row[8] if row[8] else "",
                 "Ngày vào chuyền": row[9] if row[9] else "",
                 "Trạng thái": row[10] if row[10] else "",
                 "UI": row[11] if row[11] else "",
-                "BE": row[12] if row[12] else "",
-                "BE TOPUP 1": row[13] if row[13] else "",
-                "TOPUP 1": row[14] if row[14] else "",
-                "BE TOPUP 2": row[15] if row[1] else "",
-                "TOPUP 2": row[16] if row[16] else "",
-                "OQL": f"{row[17]*100} %" if row[17] else "",
+                "BE": f"{row[12]:.0%}" if row[12] else "",
+                "BE TOPUP 1": f"{row[13]:.0%}" if row[13] else "",
+                "TOPUP 1": f"{row[14]:.0%}" if row[14] else "",
+                "BE TOPUP 2": f"{row[15]:.0%}" if row[15] else "",
+                "TOPUP 2": f"{row[16]:.0%}" if row[16] else "",
+                "OQL": f"{row[17]:.0%}" if row[17] else "",
                 "AQL": row[18] if row[18] else "",
                 "Group incentive": round(row[19]) if row[19] else "",
                 "Group incentive topup 1": round(row[20]) if row[20] else "",
@@ -1003,7 +1021,7 @@ def taithuongchitiet():
                 "Tổng thưởng": round(row[22]) if row[22] else "",
                 "SAH": round(row[23],1) if row[23] else "",
                 "Thời gian làm việc": row[24] if row[24] else "",
-                "Hiệu suất": f"{round(row[25]*100)} %" if row[25] else "",
+                "Hiệu suất": f"{row[25]:.0%}" if row[25] else "",
                 "SCP": row[26] if row[26] else "",
                 "Hệ số SCP": row[27] if row[27] else "",
                 "Hệ số thưởng cá nhân": round(row[28],1) if row[28] else "",
@@ -1011,6 +1029,19 @@ def taithuongchitiet():
                 "Thưởng cá nhân": round(row[30]) if row[30] else ""
             })
         df = DataFrame(data)
+        df["Mã số thẻ"] = to_numeric(df['Mã số thẻ'], errors='coerce')
+        df["SAH nhóm"] = to_numeric(df['SAH nhóm'], errors='coerce')
+        df["Thời gian làm việc nhóm"] = to_numeric(df['Thời gian làm việc nhóm'], errors='coerce')
+        df["Group incentive"] = to_numeric(df['Group incentive'], errors='coerce')
+        df["Group incentive topup 1"] = to_numeric(df['Group incentive topup 1'], errors='coerce')
+        df["Group incentive topup 2"] = to_numeric(df['Group incentive topup 2'], errors='coerce')
+        df["Tổng thưởng"] = to_numeric(df['Tổng thưởng'], errors='coerce')
+        df["SAH"] = to_numeric(df['SAH'], errors='coerce')
+        df["Thời gian làm việc"] = to_numeric(df['Thời gian làm việc'], errors='coerce')
+        df["Hệ số SCP"] = to_numeric(df['Hệ số SCP'], errors='coerce')
+        df["Hệ số thưởng cá nhân"] = to_numeric(df['Hệ số thưởng cá nhân'], errors='coerce')
+        df["Hệ số thưởng nhóm"] = to_numeric(df['Hệ số thưởng nhóm'], errors='coerce')
+        df["Thưởng cá nhân"] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
         output = BytesIO()
         with ExcelWriter(output, engine='openpyxl') as writer:
             df.to_excel(writer, index=False)
@@ -1046,14 +1077,16 @@ def taithuongchitiet():
         return redirect("/")
 
 if __name__ == "__main__":
-    while True:
-        try:
-            app.run(debug=False, host="0.0.0.0", port=83)
-        except subprocess.CalledProcessError as e:
-            app.logger.error(f"Flask gap loi: {e}")
-            print("Đang khoi dong flask...")
-            time.sleep(1)  # Đợi một khoảng thời gian trước khi khởi động lại
-        except Exception as e:
-            app.logger.error(f"Loi khong xac dinh: {e}")
-            print("Đang khoi dong lai flask ...")
-            time.sleep(1)
+    # while True:
+    #     try:
+    #         app.run(debug=False, host="0.0.0.0", port=83)
+    #     except subprocess.CalledProcessError as e:
+    #         app.logger.error(f"Flask gap loi: {e}")
+    #         print("Đang khoi dong flask...")
+    #         time.sleep(1)  # Đợi một khoảng thời gian trước khi khởi động lại
+    #     except Exception as e:
+    #         app.logger.error(f"Loi khong xac dinh: {e}")
+    #         print("Đang khoi dong lai flask ...")
+    #         time.sleep(1)
+    
+    app.run(host="0.0.0.0", port=83, debug=True)

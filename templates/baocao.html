@@ -7,14 +7,15 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="icon" href="/static/img/logo.ico">
         <title>{% block title %}{% endblock title %}</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
         <style>
             body {
-                padding-top: 5rem;
+                padding-top: 1rem;
             }
             .table {
                 width: 100%;
@@ -36,14 +37,67 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
         <div class="container">
-            <a href="/" class="btn btn-success btn-sm">Nhập liệu</a>
-            <a href="/baocao_thuong_may" class="btn btn-primary btn-sm">Thưởng may cá nhân</a>
-            <a href="/baocao_thuong_nhommay" class="btn btn-primary btn-sm">Thưởng nhóm may</a>
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                      </button>
+                    <a class="navbar-brand" href="/">
+                        <img src="/static/img/logo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
+                      </a>
+                  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                      <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/baocao_sanluong_canhan">Sản lượng cá nhân</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="/baocao_sogio_lamviec">Số giờ làm việc</a>
+                      </li>
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Thưởng cá nhân
+                        </a>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="#">Cắt</a></li>
+                          <li><a class="dropdown-item" href="/baocao_thuong_may">May</a></li>
+                          <li><a class="dropdown-item" href="#">QC1</a></li>
+                          <li><a class="dropdown-item" href="#">Là</a></li>
+                          <li><a class="dropdown-item" href="#">QC2</a></li>
+                          <li><a class="dropdown-item" href="#">Đóng gói</a></li>
+                          <li><a class="dropdown-item" href="#">NDC</a></li>
+                          <li><a class="dropdown-item" href="#">Quản lý</a></li>
+                          <li><a class="dropdown-item" href="#">Phụ</a></li>
+                        </ul>
+                      </li>
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Thưởng nhóm
+                        </a>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="#">Cắt</a></li>
+                          <li><a class="dropdown-item" href="/baocao_thuong_nhommay">May</a></li>
+                          <li><a class="dropdown-item" href="#">QC1</a></li>
+                          <li><a class="dropdown-item" href="#">Là</a></li>
+                          <li><a class="dropdown-item" href="#">QC2</a></li>
+                          <li><a class="dropdown-item" href="#">Đóng gói</a></li>
+                          <li><a class="dropdown-item" href="#">NDC</a></li>
+                          <li><a class="dropdown-item" href="#">Quản lý</a></li>
+                          <li><a class="dropdown-item" href="#">Phụ</a></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </nav>
+            <!--<a href="/baocao_thuong_nhommay" class="btn btn-primary btn-sm">Thưởng nhóm may</a>
             <a href="/baocao_sogio_lamviec" class="btn btn-primary btn-sm">Số giờ làm vệc</a>
-            <a href="/baocao_sanluong_canhan" class="btn btn-primary btn-sm">Sản lượng cá nhân</a>
+            <a href="/baocao_sanluong_canhan" class="btn btn-primary btn-sm">Sản lượng cá nhân</a>-->
             <h1>{% block page_title %}{% endblock page_title %}</h1>
             {% block filter %}{% endblock filter %}
-
+            <br>
             <div style="display: flex; justify-content: space-around;">
                 <div class="pagination">{{ pagination.links }}</div>
                 {% block export %}{% endblock export %}
@@ -52,6 +106,7 @@
             
             {% endblock content %}
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 document.querySelectorAll('.ngay').forEach(function(element) {
