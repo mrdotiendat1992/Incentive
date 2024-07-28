@@ -1077,16 +1077,14 @@ def taithuongchitiet():
         return redirect("/")
 
 if __name__ == "__main__":
-    # while True:
-    #     try:
-    #         app.run(debug=False, host="0.0.0.0", port=83)
-    #     except subprocess.CalledProcessError as e:
-    #         app.logger.error(f"Flask gap loi: {e}")
-    #         print("Đang khoi dong flask...")
-    #         time.sleep(1)  # Đợi một khoảng thời gian trước khi khởi động lại
-    #     except Exception as e:
-    #         app.logger.error(f"Loi khong xac dinh: {e}")
-    #         print("Đang khoi dong lai flask ...")
-    #         time.sleep(1)
-    
-    app.run(host="0.0.0.0", port=83, debug=True)
+    while True:
+        try:
+            app.run(debug=False, host="0.0.0.0", port=83)
+        except subprocess.CalledProcessError as e:
+            app.logger.error(f"Flask gap loi: {e}")
+            print("Đang khoi dong flask...")
+            time.sleep(1)  # Đợi một khoảng thời gian trước khi khởi động lại
+        except Exception as e:
+            app.logger.error(f"Loi khong xac dinh: {e}")
+            print("Đang khoi dong lai flask ...")
+            time.sleep(1)
