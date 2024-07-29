@@ -664,7 +664,10 @@ def taidulieulen():
                     row["Sản lượng"])
         except Exception as e:
             print(e)
-    return redirect("/")
+    chuyen = request.form.get('chuyen')
+    ngay = request.form.get('ngay')
+    style = request.form.get('style')
+    return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
 @app.route("/baocao_thuong_may", methods=["GET","POST"])
 def baocao_may():
