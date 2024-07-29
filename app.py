@@ -662,10 +662,9 @@ def taidulieulen():
                     row["Style"],
                     row["Mã công đoạn"],
                     row["Sản lượng"])
-            return redirect("/")
         except Exception as e:
             print(e)
-            return redirect("/")
+    return redirect("/")
 
 @app.route("/baocao_thuong_may", methods=["GET","POST"])
 def baocao_may():
