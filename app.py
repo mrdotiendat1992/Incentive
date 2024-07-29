@@ -15,6 +15,7 @@ import time
 from io import BytesIO
 import subprocess
 import numpy as np
+from waitress import serve
 
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
 
@@ -1074,7 +1075,7 @@ def taithuongchitiet():
 if __name__ == "__main__":
     while True:
         try:
-            app.run(debug=False, host="0.0.0.0", port=83)
+            serve(app, host="0.0.0.0", port=83, threads=8, _quiet=True)
         except subprocess.CalledProcessError as e:
             print(f"Flask gap loi: {e}")
             print("Đang khoi dong flask...")
