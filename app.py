@@ -88,7 +88,7 @@ def chinh_do_rong_cot(file_excel):
         time.sleep(1)
         return True
     except Exception as e:
-        app.logger.error(f"Loi khi dieu chinh do rong cot file excel: {e}")
+        print(f"Loi khi dieu chinh do rong cot file excel: {e}")
         return False
     
 def connect_db():
@@ -107,11 +107,11 @@ def get_line(masothe,macongty):
     try:
         conn = connect_db()
         query = f"select CHUYEN from [INCENTIVE].[dbo].[DS_TO_TRUONG] where MST='{masothe}' and NHA_MAY='{macongty}'"
-        # app.logger.info(query)
+        # print(query)
         cursor = execute_query(conn, query)
         rows = cursor.fetchall()
         result = [row[0] for row in rows]
-        # app.logger.info(result)
+        # print(result)
         close_db(conn)
         return result
     except:
@@ -122,7 +122,7 @@ def get_all_styles(ngay, chuyen):
         if ngay and chuyen:
             conn = connect_db()
             query = f"SELECT Distinct STYLE FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE NGAY='{ngay}' AND CHUYEN='{chuyen}'"
-            # app.logger.info(query)
+            # print(query)
             cursor = execute_query(conn, query)
             result = cursor.fetchall()
             close_db(conn)
@@ -188,16 +188,16 @@ def lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan):
     return list(result)
 
 def capnhat_sanluong(mst,hoten,chuyen,ngay,style,macongdoan,sanluong):
-    conn = connect_db()
-    query = f"INSERT INTO [INCENTIVE].[dbo].[SL_CA_NHAN] (MST,HO_TEN,CHUYEN,NGAY,STYLE,MA_CONG_DOAN,SL_CA_NHAN) VALUES('{mst}', N'{hoten}', '{chuyen}', '{ngay}', '{style}', '{macongdoan}', '{sanluong}')"
-    # app.logger.info(query)
-    execute_query(conn, query)
     try:
+        conn = connect_db()
+        query = f"INSERT INTO [INCENTIVE].[dbo].[SL_CA_NHAN] (MST,HO_TEN,CHUYEN,NGAY,STYLE,MA_CONG_DOAN,SL_CA_NHAN) VALUES('{mst}', N'{hoten}', '{chuyen}', '{ngay}', '{style}', '{macongdoan}', '{sanluong}')"
+        # print(query)
+        execute_query(conn, query)
         conn.commit()
         close_db(conn)
         return True
     except Exception as e:
-        app.logger.info(e)
+        print(e)
         return False
 
 def xoa_sanluong(id):
@@ -209,7 +209,7 @@ def xoa_sanluong(id):
         close_db(conn)
         return True
     except Exception as e:
-        app.logger.info(e)
+        print(e)
         return False
 
 def lay_tencongdoan(thongtin):
@@ -231,7 +231,7 @@ def them_nguoi_di_hotro(nhamay,chuyen,mst,hoten,chucdanh,chuyendihotro,ngaydieuc
             query = f"insert into [INCENTIVE].[dbo].[CN_MAY_DI_HO_TRO] values ('{nhamay}','{mst}',N'{hoten}',N'{chucdanh}','{chuyen}','{chuyendihotro}','{ngaydieuchuyendi}','{giodieuchuyendi}','{sogiohotro}')"
         else:
             query = f"insert into [INCENTIVE].[dbo].[CN_MAY_DI_HO_TRO] values ('{nhamay}','{mst}',N'{hoten}',N'{chucdanh}','{chuyen}','{chuyendihotro}','{ngaydieuchuyendi}',NULL,'{sogiohotro}')"
-        # app.logger.info(query)
+        # print(query)
         execute_query(conn, query)
         conn.commit()
         close_db(conn)
@@ -276,7 +276,7 @@ def capnhat_sogio_hotro(id,sogio):
     try:
         conn = connect_db()
         query = f"update [INCENTIVE].[dbo].[CN_MAY_DI_HO_TRO] SET SO_GIO_HO_TRO='{sogio}' WHERE ID='{id}'"
-        # app.logger.info(query)
+        # print(query)
         execute_query(conn, query)
         conn.commit()
         close_db(conn)
@@ -306,7 +306,7 @@ def lay_sanluong_tong_theochuyen(ngay, chuyen, style):
         if ngay and chuyen and style:
             conn = connect_db()
             query = f"select QTY from [INCENTIVE].[dbo].[SL_NGAY_CHUYEN_STYLE ] where NGAY='{ngay}' and CHUYEN='{chuyen}' and GR_STYLE='{style}'"
-            # app.logger.info(query)
+            # print(query)
             result = execute_query(conn, query).fetchone()
             close_db(conn)
             return result[0]
@@ -328,7 +328,7 @@ def lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen):
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        # app.logger.info(query)
+        # print(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -367,7 +367,7 @@ def lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen):
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        # app.logger.info(query)
+        # print(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -387,7 +387,7 @@ def lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen):
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC, MST ASC"
-        # app.logger.info(query)
+        # print(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -407,7 +407,7 @@ def before_request():
     try:
         if current_user.is_authenticated:
             lines = get_line(current_user.masothe, current_user.macongty)
-            # app.logger.info(lines)
+            # print(lines)
             if lines:
                 if len(lines) == 1:
                     g.notice = {"line":lines,"role":"tt"}
@@ -442,11 +442,11 @@ def login():
             user = Nhanvien.query.filter_by(masothe=masothe, macongty=macongty).first()    
             if user and user.matkhau == matkhau:
                 if login_user(user):    
-                    app.logger.info(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang nhap !!!")
+                    print(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang nhap !!!")
                     return redirect(url_for('home'))
             return redirect(url_for("login"))
         except Exception as e:
-            app.logger.error(f'Nguoi dung {masothe} o {macongty} dang nhap that bai: {e} !!!')
+            print(f'Nguoi dung {masothe} o {macongty} dang nhap that bai: {e} !!!')
             return redirect(url_for("login"))
     else:
         danhsachcongty = ["NT1","NT2"]
@@ -456,10 +456,10 @@ def login():
 @login_required
 def logout():
     try:
-        app.logger.info(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang xuat !!!")
+        print(f"Nguoi dung {current_user.masothe} o {current_user.macongty} vua  dang xuat !!!")
         logout_user()
     except Exception as e:
-        app.logger.error(f'Không thế đăng xuất {e} !!!')
+        print(f'Không thế đăng xuất {e} !!!')
     return redirect("/")
 
 @app.route("/", methods=['GET','POST'])
@@ -535,7 +535,7 @@ def home():
             response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             return response    
         except Exception as e:
-            app.logger.error(f'Không thế tạo bảng {e} !!!')
+            print(f'Không thế tạo bảng {e} !!!')
             return redirect("/")    
     
 @app.route("/nhapsanluongcanhan", methods=["POST"])
@@ -647,7 +647,7 @@ def taidulieulen():
         try:
             file = request.files["file"]
             if not file:
-                app.logger.info("No file")
+                print("No file")
                 return redirect("/")
             thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
             filepath = f"tailen/data_{thoigian}.xlsx"
@@ -664,7 +664,7 @@ def taidulieulen():
                     row["Sản lượng"])
             return redirect("/")
         except Exception as e:
-            app.logger.info(e)
+            print(e)
             return redirect("/")
 
 @app.route("/baocao_thuong_may", methods=["GET","POST"])
@@ -685,7 +685,7 @@ def baocao_may():
             pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
             return render_template("baocao_thuong_may.html", danhsach=paginated_rows,pagination=pagination)
         except Exception as e:
-            app.logger.error(e)
+            print(e)
             return render_template("baocao_thuong_may.html", danhsach=[])
     elif request.method == "POST":
         try:
@@ -744,7 +744,7 @@ def baocao_may():
             response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             return response  
         except Exception as e:
-            app.logger.error(e)
+            print(e)
             return redirect("/baocao_thuong_may")
             
 @app.route("/baocao_thuong_nhommay", methods=["GET","POST"])
@@ -765,7 +765,7 @@ def baocao_nhommay():
             pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
             return render_template("baocao_thuong_nhommay.html", danhsach=paginated_rows,pagination=pagination)
         except Exception as e:
-            app.logger.error(e)
+            print(e)
             return render_template("baocao_thuong_may.html", danhsach=[])
     elif request.method == "POST":
         try:
@@ -830,7 +830,7 @@ def baocao_nhommay():
             response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             return response  
         except Exception as e:
-            app.logger.error(e)
+            print(e)
             return redirect("/baocao_thuong_nhommay")
         
 @app.route("/baocao_sogio_lamviec", methods=["GET", "POST"])
@@ -851,7 +851,7 @@ def baocao_sogio_lamviec():
             pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
             return render_template("baocao_sogio_lamviec.html", danhsach=paginated_rows,pagination=pagination)
         except Exception as e:
-            app.logger.error(e)
+            print(e)
             return render_template("baocao_sogio_lamviec.html", danhsach=[])
     elif request.method == "POST":
         try:
@@ -904,7 +904,7 @@ def baocao_sogio_lamviec():
             response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             return response  
         except Exception as e:
-            app.logger.error(e)
+            print(e)
             return redirect("/baocao_sogio_lamviec")
     
 @app.route("/baocao_sanluong_canhan", methods=["GET","POST"])
@@ -925,7 +925,7 @@ def baocao_sanluong_canhan():
             pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
             return render_template("baocao_sanluong_canhan.html", danhsach=paginated_rows,pagination=pagination)
         except Exception as e:
-            app.logger.error(e)
+            print(e)
             return render_template("baocao_sanluong_canhan.html", danhsach=[])
     elif request.method == "POST":
         try:
@@ -980,7 +980,7 @@ def baocao_sanluong_canhan():
             response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             return response  
         except Exception as e:
-            app.logger.error(e)
+            print(e)
             return redirect("/baocao_sanluong_canhan")
 @app.route("/taithuongchitiet", methods=["GET","POST"])
 def taithuongchitiet():
@@ -1066,7 +1066,7 @@ def taithuongchitiet():
         response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         return response  
     except Exception as e:
-        app.logger.error(f"Loi lay thuong may chi tiet: {e}")
+        print(f"Loi lay thuong may chi tiet: {e}")
         return redirect("/")
 
 if __name__ == "__main__":
@@ -1074,10 +1074,10 @@ if __name__ == "__main__":
         try:
             app.run(debug=False, host="0.0.0.0", port=83)
         except subprocess.CalledProcessError as e:
-            app.logger.error(f"Flask gap loi: {e}")
+            print(f"Flask gap loi: {e}")
             print("Đang khoi dong flask...")
             time.sleep(1)  # Đợi một khoảng thời gian trước khi khởi động lại
         except Exception as e:
-            app.logger.error(f"Loi khong xac dinh: {e}")
+            print(f"Loi khong xac dinh: {e}")
             print("Đang khoi dong lai flask ...")
             time.sleep(1)
