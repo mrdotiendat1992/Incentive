@@ -661,18 +661,11 @@ def taidulieulen():
                     datetime.datetime.strptime(row["Ngày"],"%d/%m/%Y").strftime("%Y-%m-%d"),
                     row["Style"],
                     row["Mã công đoạn"],
-                    row["Sản lượng"]
-                )
-            ngay = request.form.get("ngay")   
-            chuyen = request.args.get('chuyen')
-            style = request.form.get("style")
-            return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+                    row["Sản lượng"])
+            return redirect("/")
         except Exception as e:
             app.logger.info(e)
-            ngay = request.form.get("ngay")   
-            chuyen = request.args.get('chuyen')
-            style = request.form.get("style")
-            return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
+            return redirect("/")
 
 @app.route("/baocao_thuong_may", methods=["GET","POST"])
 def baocao_may():
