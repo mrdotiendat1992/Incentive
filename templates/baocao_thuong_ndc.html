@@ -1,6 +1,7 @@
 {% extends "baocao.html" %}
-{% block title %}Báo cáo thưởng nhóm QC1{% endblock title %}
-{% block page_title %}Báo cáo thưởng nhóm QC1{% endblock page_title %}
+
+{% block title %}Báo cáo thưởng cá nhân NDC{% endblock title%}
+{% block page_title %}Báo cáo thưởng cá nhân NDC{% endblock page_title%}
 {% block filter %}
  <div id="filter">
     <form method="get">
@@ -24,6 +25,9 @@
             </select>
         </div>
         <div class="form-group">
+            <input type="text" name="mst" class="form-control" id="mst" placeholder="MST" value="{{ request.args.get('mst','') }}" onchange="form.submit()">
+        </div>
+        <div class="form-group">
             <input type="date" name="ngay" class="form-control" id="ngay" placeholder="Ngày" value="{{ request.args.get('ngay','') }}" onchange="form.submit()">
         </div>
         <div class="form-group">
@@ -32,53 +36,45 @@
     </form>
     </div>
 {% endblock filter %}
+
 {% block export %}
 <form method="post">
     <input type="hidden" name="macongty" value="{{ request.args.get('macongty','') }}">
+    <input type="hidden" name="mst" value="{{ request.args.get('mst','') }}">
     <input type="hidden" name="ngay" value="{{ request.args.get('ngay','') }}">
     <input type="hidden" name="chuyen" value="{{ request.args.get('chuyen','') }}">
     <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-fw fa-download"></i></button>
 </form>
 {% endblock export %}
+
 {% block content %}
 <table class="table table-bordered table-sm">
     <thead>
         <tr class="bg-primary">
-            <th>Ngày</th>
+            <th>MST</th>
+            <th>Họ tên</th>
             <th>Chuyền</th>
-            <th>Sah</th>
-            <th>Số giờ</th>
-            <th>Hiệu suất</th>
-            <th>UI</th>
-            <th>BE</th>
-            <th>BE Topup 1</th>
-            <th>Topup 1</th>
-            <th>Tỉ lệ lỗi</th>
-            <th>AQL</th>
+            <th>Ngày</th>
+            <th>Hệ số cá nhân</th>
+            <th>Hệ số nhóm</th>
             <th>Thưởng nhóm</th>
-            <th>Kích cầu 1</th>
-            <th>Tổng thưởng</th>
+            <th>Thưởng cá nhân</th>
         </tr>
     </thead>
     <tbody>
         {% for row in danhsach %}
             <tr>
-                <td class="ngay">{{ row[0] }}</td>
+                <td>{{ row[0] }}</td>
                 <td>{{ row[1] }}</td>
-                <td class="sah">{{ row[2] }}</td>
-                <td class="sah">{{ row[3] }}</td>
-                <td class="eff">{{ row[4] }}</td>
-                <td>{{ row[6] }}</td>
-                <td class="eff">{{ row[7] }}</td>
-                <td class="eff">{{ row[8] }}</td>
-                <td class="eff">{{ row[9] }}</td>
-                <td class="eff">{{ row[10] }}</td>
-                <td class="eff">{{ row[11] }}</td>
-                <td class="thuong">{{ row[12] }}</td>
-                <td class="thuong">{{ row[13] }}</td>
-                <td class="thuong">{{ row[14] }}</td>
+                <td>{{ row[3] }}</td>
+                <td class="ngay">{{ row[4] }}</td>
+                <td class="sah">{{ row[5] }}</td>
+                <td class="sah">{{ row[7] }}</td>
+                <td class="thuong">{{ row[6] }}</td>
+                <td class="thuong">{{ row[8] }}</td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
-{% endblock %}
+{% endblock content %}
+

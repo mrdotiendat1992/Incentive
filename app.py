@@ -336,6 +336,125 @@ def lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen):
     except:
         return []
     
+def lay_baocao_thuong_congnhan_cat(macongty,mst,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,HE_SO,TGLV,HE_SO_CN,TONG_HE_SO,THUONG_NHOM,THUONG_CN FROM [INCENTIVE].[dbo].[INCENTIVE_CN_CAT_HANG_NGAY] WHERE 1=1" 
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if mst:
+            query += f" AND MST='{mst}'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+        query += " ORDER BY NGAY DESC, CHUYEN ASC"
+        # print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
+    
+def lay_baocao_thuong_congnhan_la(macongty,mst,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_LA_HANG_NGAY] WHERE 1=1" 
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if mst:
+            query += f" AND MST='{mst}'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+        query += " ORDER BY NGAY DESC, CHUYEN ASC"
+        # print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
+
+def lay_baocao_thuong_congnhan_qc1(macongty,mst,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_QC1_HANG_NGAY] WHERE 1=1" 
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if mst:
+            query += f" AND MST='{mst}'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+        query += " ORDER BY NGAY DESC, NHOM ASC"
+        # print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
+    
+def lay_baocao_thuong_congnhan_qc2(macongty,mst,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_QC2_HANG_NGAY] WHERE 1=1" 
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if mst:
+            query += f" AND MST='{mst}'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+        query += " ORDER BY NGAY DESC, NHOM ASC"
+        # print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
+    
+def lay_baocao_thuong_congnhan_donggoi(macongty,mst,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_DONG_GOI_HANG_NGAY] WHERE 1=1" 
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if mst:
+            query += f" AND MST='{mst}'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+        query += " ORDER BY NGAY DESC, CHUYEN ASC"
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
+    
+def lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_NDC_HANG_NGAY] WHERE 1=1" 
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if mst:
+            query += f" AND MST='{mst}'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+        query += " ORDER BY NGAY DESC, NHOM ASC"
+        # print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
+    
 def lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style):
     try:
         conn = connect_db()
@@ -779,6 +898,90 @@ def taidulieulen():
     style = request.form.get('style')
     return redirect(f"/?chuyen={chuyen}&ngay={ngay}&style={style}")
 
+@app.route("/baocao_thuong_cat", methods=["GET","POST"])
+def baocao_cat():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_cat(macongty,mst,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_cat.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_cat.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_cat(macongty,mst,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Mã số thẻ": row[0],
+                    "Họ tên":row[1],
+                    "Chuyền":row[2],
+                    "Ngày":datetime.datetime.strptime(row[3],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Hệ số":round(row[4],2) if row[4] else "",
+                    "Số giờ":row[5],
+                    "Hệ số cá nhân": round(row[6],2) if row[6] else "",
+                    "Tổng hệ số": round(row[7],2) if row[7] else "",
+                    "Thưởng nhóm":round(row[8]) if row[8] else "",
+                    "Thưởng cá nhân": round(row[9]) if row[9] else ""
+                })
+            df = DataFrame(data)
+            # Sử dụng pd.to_numeric để chuyển đổi cột 'A' sang int64
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            df['Hệ số'] = to_numeric(df['Hệ số'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['Hệ số cá nhân'] = to_numeric(df['Hệ số cá nhân'], errors='coerce')
+            df['Tổng hệ số'] = to_numeric(df['Tổng hệ số'], errors='coerce')
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongcat_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_cat")
+
 @app.route("/baocao_thuong_may", methods=["GET","POST"])
 def baocao_may():
     if request.method == "GET":
@@ -858,7 +1061,498 @@ def baocao_may():
         except Exception as e:
             print(e)
             return redirect("/baocao_thuong_may")
+
+@app.route("/baocao_thuong_la", methods=["GET","POST"])
+def baocao_la():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_la(macongty,mst,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_la.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_la.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_la(macongty,mst,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Mã số thẻ": row[0],
+                    "Họ tên":row[1],
+                    "Ngày": datetime.datetime.strptime(row[3],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[2],
+                    "SAH": round(row[4],2) if row[4] else "",
+                    "Số giờ":row[5],
+                    "Hiệu suất cá nhân": f"{row[6]:.0%}" if row[6] else "",
+                    "SAH nhóm": round(row[7],2) if row[7] else "",
+                    "Thưởng nhóm": round(row[8]) if row[8] else "",
+                    "Thưởng cá nhân": round(row[9]) if row[9] else ""
+                })
+            df = DataFrame(data)
+            # Sử dụng pd.to_numeric để chuyển đổi cột 'A' sang int64
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            df['SAH'] = to_numeric(df['SAH'], errors='coerce')
+            df['SAH nhóm'] = to_numeric(df['SAH nhóm'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongla_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_la")
+       
+@app.route("/baocao_thuong_qc1", methods=["GET","POST"])
+def baocao_qc1():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_qc1(macongty,mst,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_qc1.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_qc1.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_qc1(macongty,mst,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Mã số thẻ": row[0],
+                    "Họ tên":row[1],
+                    "Ngày": datetime.datetime.strptime(row[2],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[3],
+                    "SAH": round(row[4],2) if row[4] else "",
+                    "Số giờ":row[5],
+                    "Hiệu suất cá nhân": f"{row[6]:.0%}" if row[6] else "",
+                    "SAH nhóm": round(row[7],2) if row[7] else "",
+                    "Thưởng nhóm": round(row[8]) if row[8] else "",
+                    "Thưởng cá nhân": round(row[9]) if row[9] else ""
+                })
+            df = DataFrame(data)
+            # Sử dụng pd.to_numeric để chuyển đổi cột 'A' sang int64
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            df['SAH'] = to_numeric(df['SAH'], errors='coerce')
+            df['SAH nhóm'] = to_numeric(df['SAH nhóm'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongqc1_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_qc1")
+        
+@app.route("/baocao_thuong_qc2", methods=["GET","POST"])
+def baocao_qc2():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_qc2(macongty,mst,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_qc2.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_qc2.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_qc2(macongty,mst,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Mã số thẻ": row[0],
+                    "Họ tên":row[1],
+                    "Ngày": datetime.datetime.strptime(row[2],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[3],
+                    "SAH": round(row[4],2) if row[4] else "",
+                    "Số giờ":row[5],
+                    "Hiệu suất cá nhân": f"{row[6]:.0%}" if row[6] else "",
+                    "SAH nhóm": round(row[7],2) if row[7] else "",
+                    "Thưởng nhóm": round(row[8]) if row[8] else "",
+                    "Thưởng cá nhân": round(row[9]) if row[9] else ""
+                })
+            df = DataFrame(data)
+            # Sử dụng pd.to_numeric để chuyển đổi cột 'A' sang int64
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            df['SAH'] = to_numeric(df['SAH'], errors='coerce')
+            df['SAH nhóm'] = to_numeric(df['SAH nhóm'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongqc1_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_qc2")
             
+@app.route("/baocao_thuong_donggoi", methods=["GET","POST"])
+def baocao_donggoi():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_donggoi(macongty,mst,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_donggoi.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_donggoi.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_donggoi(macongty,mst,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Mã số thẻ": row[0],
+                    "Họ tên":row[1],
+                    "Ngày": datetime.datetime.strptime(row[3],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[2],
+                    "Số giờ":row[4],
+                    "OT": row[6],
+                    "Hệ số cá nhân": round(row[7],2) if row[7] else "",
+                    "Hệ số nhóm": round(row[9],2) if row[3] else "",
+                    "Thưởng nhóm": round(row[8]) if row[8] else "",
+                    "Thưởng cá nhân": round(row[10]) if row[10] else ""
+                })
+            df = DataFrame(data)
+            # Sử dụng pd.to_numeric để chuyển đổi cột 'A' sang int64
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['OT'] = to_numeric(df['OT'], errors='coerce')
+            df['Hệ số cá nhân'] = to_numeric(df['Hệ số cá nhân'], errors='coerce')
+            df['Hệ số nhóm'] = to_numeric(df['Hệ số nhóm'], errors='coerce')
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongdonggoi_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_donggoi")
+
+@app.route("/baocao_thuong_ndc", methods=["GET","POST"])
+def baocao_ndc():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_ndc.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_ndc.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Mã số thẻ": row[0],
+                    "Họ tên":row[1],
+                    "Ngày": datetime.datetime.strptime(row[4],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[3],
+                    "Hệ số cá nhân": round(row[5],2) if row[5] else "",
+                    "Hệ số nhóm": round(row[7],2) if row[7] else "",
+                    "Thưởng nhóm": round(row[6]) if row[6] else "",
+                    "Thưởng cá nhân": round(row[8]) if row[8] else ""
+                })
+            df = DataFrame(data)
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            df['Hệ số cá nhân'] = to_numeric(df['Hệ số cá nhân'], errors='coerce')
+            df['Hệ số nhóm'] = to_numeric(df['Hệ số nhóm'], errors='coerce')
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongndc_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_ndc")
+        
+@app.route("/baocao_thuong_ndc", methods=["GET","POST"])
+def baocao_ndc():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_quanly(macongty,mst,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_quanly.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_quanly.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Mã số thẻ": row[0],
+                    "Họ tên":row[1],
+                    "Ngày": datetime.datetime.strptime(row[4],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[3],
+                    "Hệ số cá nhân": round(row[5],2) if row[5] else "",
+                    "Hệ số nhóm": round(row[7],2) if row[7] else "",
+                    "Thưởng nhóm": round(row[6]) if row[6] else "",
+                    "Thưởng cá nhân": round(row[8]) if row[8] else ""
+                })
+            df = DataFrame(data)
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            df['Hệ số cá nhân'] = to_numeric(df['Hệ số cá nhân'], errors='coerce')
+            df['Hệ số nhóm'] = to_numeric(df['Hệ số nhóm'], errors='coerce')
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongquanly_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_quanly")
+       
 @app.route("/baocao_thuong_nhommay", methods=["GET","POST"])
 def baocao_nhommay():
     if request.method == "GET":
@@ -1614,6 +2308,7 @@ def baocao_sanluong_canhan():
         except Exception as e:
             print(e)
             return redirect("/baocao_sanluong_canhan")
+        
 @app.route("/taithuongchitiet", methods=["GET","POST"])
 def taithuongchitiet():
     try:

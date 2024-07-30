@@ -1,1 +1,1 @@
-pm2 start ecosystem.config.js
+python app.py
