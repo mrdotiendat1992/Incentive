@@ -1,6 +1,6 @@
 {% extends "baocao.html" %}
-{% block title %}Báo cáo thưởng nhóm may{% endblock title %}
-{% block page_title %}Báo cáo thưởng nhóm may{% endblock page_title %}
+{% block title %}Báo cáo thưởng nhóm NDC{% endblock title %}
+{% block page_title %}Báo cáo thưởng nhóm NDC{% endblock page_title %}
 {% block filter %}
  <div id="filter">
     <form method="get">
@@ -44,37 +44,34 @@
 <table class="table table-bordered table-sm">
     <thead>
         <tr class="bg-primary">
+            <th>Nhóm</th>
             <th>Ngày</th>
-            <th>Chuyền</th>
-            <th>Sah</th>
-            <th>Số giờ</th>
-            <th>Hiệu suất</th>
-            <th>Style</th>
-            <th>Trạng thái đơn hàng</th>
-            <th>Chuyền mới</th>
-            <th>OQL</th>
-            <th>Thưởng nhóm</th>
-            <th>Thưởng 1</th>
-            <th>Thưởng 2</th>
+            <th>Số công nhân</th>
+            <th>UI</th>
+            <th>Đánh giá 6S</th>
+            <th>Hệ số 6S</th>
+            <th>OT FNS</th>
+            <th>OT NDC</th>
+            <th>Hệ số OT</th>
+            <th>Số ngày công</th>
             <th>Tổng thưởng</th>
         </tr>
     </thead>
     <tbody>
         {% for row in danhsach %}
             <tr>
-                <td class="ngay">{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td class="sah">{{ row[2] }}</td>
-                <td>{{ row[3] }}</td>
-                <td class="eff">{{ row[4] }}</td>
+                <td>{{ row[0] }}</td>
+                <td class="ngay">{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[4] }}</td>
                 <td>{{ row[5] }}</td>
                 <td>{{ row[6] }}</td>
                 <td>{{ row[7] }}</td>
-                <td class="eff">{{ row[8] }}</td>
-                <td class="thuong">{{ row[9] }}</td>
-                <td class="thuong">{{ row[10] }}</td>
+                <td>{{ row[8] }}</td>
+                <td>{{ row[9] }}</td>
+                <td>{{ row[10] }}</td>
                 <td class="thuong">{{ row[11] }}</td>
-                <td class="thuong">{{ row[12] }}</td>
+            </tr>
         {% endfor %}
     </tbody>
 </table>

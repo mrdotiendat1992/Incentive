@@ -1,6 +1,6 @@
 {% extends "baocao.html" %}
-{% block title %}Báo cáo thưởng nhóm may{% endblock title %}
-{% block page_title %}Báo cáo thưởng nhóm may{% endblock page_title %}
+{% block title %}Báo cáo thưởng nhóm QC2{% endblock title %}
+{% block page_title %}Báo cáo thưởng nhóm QC2{% endblock page_title %}
 {% block filter %}
  <div id="filter">
     <form method="get">
@@ -49,13 +49,14 @@
             <th>Sah</th>
             <th>Số giờ</th>
             <th>Hiệu suất</th>
-            <th>Style</th>
-            <th>Trạng thái đơn hàng</th>
-            <th>Chuyền mới</th>
-            <th>OQL</th>
+            <th>UI</th>
+            <th>BE</th>
+            <th>BE Topup 1</th>
+            <th>Topup 1</th>
+            <th>Tỉ lệ lỗi</th>
+            <th>AQl</th>
             <th>Thưởng nhóm</th>
-            <th>Thưởng 1</th>
-            <th>Thưởng 2</th>
+            <th>Kích cầu 1</th>
             <th>Tổng thưởng</th>
         </tr>
     </thead>
@@ -65,16 +66,18 @@
                 <td class="ngay">{{ row[0] }}</td>
                 <td>{{ row[1] }}</td>
                 <td class="sah">{{ row[2] }}</td>
-                <td>{{ row[3] }}</td>
+                <td class="sah">{{ row[3] }}</td>
                 <td class="eff">{{ row[4] }}</td>
-                <td>{{ row[5] }}</td>
                 <td>{{ row[6] }}</td>
-                <td>{{ row[7] }}</td>
+                <td class="eff">{{ row[7] }}</td>
                 <td class="eff">{{ row[8] }}</td>
-                <td class="thuong">{{ row[9] }}</td>
-                <td class="thuong">{{ row[10] }}</td>
-                <td class="thuong">{{ row[11] }}</td>
+                <td class="eff">{{ row[9] }}</td>
+                <td class="eff">{{ row[10] }}</td>
+                <td class="eff">{{ row[11] }}</td>
                 <td class="thuong">{{ row[12] }}</td>
+                <td class="thuong">{{ row[13] }}</td>
+                <td class="thuong">{{ row[14] }}</td>
+            </tr>
         {% endfor %}
     </tbody>
 </table>

@@ -7,9 +7,21 @@
     <form method="get">
         <div class="form-group">
             <select type="text" name="macongty" class="form-control" id="macongty" value="{{ request.args.get('macongty','') }}" onchange="form.submit()">
+                {% if request.args.get('macongty')=='' %}
+                <option value="" selected>Tất cả</option>
+                {% else %}
                 <option value="">Tất cả</option>
+                {% endif %}
+                {% if request.args.get('macongty')=='1' %}
+                <option value="1" selected>NT1</option>
+                {% else %}
                 <option value="1">NT1</option>
+                {% endif %}
+                {% if request.args.get('macongty')=='2' %}
+                <option value="2" selected>NT2</option>
+                {% else %}
                 <option value="2">NT2</option>
+                {% endif %}
             </select>
         </div>
         <div class="form-group">

@@ -352,7 +352,116 @@ def lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style):
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
-    except:
+    except Exception as e:
+        print(e)
+        return []
+    
+def lay_baocao_thuong_congnhan_nhomcat(macongty,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT NGAY,NHOM,SAH,SO_GIO,EFF,CAT_KE,NHA_MAY,UI,BE,BE_TOPUP1,TOP_UP1,TI_LE_LOI,AQL,THUONG_NHOM,KICH_CAU1,TONG_THUONG_NHOM FROM [INCENTIVE].[dbo].[THUONG_NHOM_CAT_HANG_NGAY] WHERE 1=1"
+        if macongty:
+            query += f" AND NHOM LIKE '{macongty}%'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND NHOM LIKE '%{chuyen}%'" 
+        query += "ORDER BY NGAY DESC, NHOM ASC"
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except Exception as e:
+        print(e)
+        return []
+    
+def lay_baocao_thuong_congnhan_nhomla(macongty,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_LA_HANG_NGAY] WHERE 1=1"
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND CHUYEN LIKE '%{chuyen}%'" 
+        query += "ORDER BY NGAY DESC, CHUYEN ASC"
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except Exception as e:
+        print(e)
+        return []
+    
+def lay_baocao_thuong_congnhan_nhomdonggoi(macongty,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_DONG_GOI_HANG_NGAY] WHERE 1=1"
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND NHOM LIKE '%{chuyen}%'" 
+        query += "ORDER BY NGAY DESC, NHOM ASC"
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except Exception as e:
+        print(e)
+        return []
+    
+def lay_baocao_thuong_congnhan_nhomndc(macongty,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_NDC_HANG_NGAY] WHERE 1=1"
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND NHOM LIKE '%{chuyen}%'" 
+        query += "ORDER BY NGAY DESC, NHOM ASC"
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except Exception as e:
+        print(e)
+        return []
+    
+def lay_baocao_thuong_congnhan_nhomqc1(macongty,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_QC1_HANG_NGAY] WHERE 1=1"
+        if macongty:
+            query += f" AND NHOM LIKE '{macongty}%'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND NHOM LIKE '%{chuyen}%'" 
+        query += "ORDER BY NGAY DESC, NHOM ASC"
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except Exception as e:
+        print(e)
+        return []
+    
+def lay_baocao_thuong_congnhan_nhomqc2(macongty,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_QC2_HANG_NGAY] WHERE 1=1"
+        if macongty:
+            query += f" AND NHOM LIKE '{macongty}%'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND NHOM LIKE '%{chuyen}%'" 
+        query += "ORDER BY NGAY DESC, NHOM ASC"
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except Exception as e:
+        print(e)
         return []
     
 def lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen):
@@ -835,7 +944,527 @@ def baocao_nhommay():
         except Exception as e:
             print(e)
             return redirect("/baocao_thuong_nhommay")
+
+@app.route("/baocao_thuong_nhomcat", methods=["GET","POST"])
+def baocao_nhomcat():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_nhomcat(macongty,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_nhomcat.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_nhomcat.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_nhomcat(macongty,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Ngày": datetime.datetime.strptime(row[0],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[1],
+                    "SAH":round(row[2],2) if row[2] else "",
+                    "Số giờ":round(row[3],1),
+                    "Hiệu suất": f"{row[4]:.0%}"if row[4] else "",
+                    "Cắt kẻ": row[5],
+                    "Nhà máy": row[6],
+                    "UI": row[7],
+                    "BE": f"{row[8]:.0%}" if row[8] else "",
+                    "BE TOPUP 1":f"{row[9]:.0%}" if row[9] else "",
+                    "TOP UP 1": f"{row[10]:.0%}" if row[10] else "",
+                    "Tỉ lệ lỗi": f"{row[11]:.0%}" if row[11] else "",
+                    "AQL": f"{row[12]:.0%}" if row[12] else "",
+                    "Thưởng nhóm": round(row[13]) if row[13] else "",
+                    "Kích cầu 1": round(row[14]) if row[14] else "",
+                    "Tổng thưởng nhóm": round(row[15]) if row[15] else "",
+                })
+            df = DataFrame(data)
+            
+            df['SAH'] = to_numeric(df['SAH'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['UI'] = to_numeric(df['UI'], errors='coerce')
+            df['Kích cầu 1'] = to_numeric(df['Kích cầu 1'], errors='coerce')
+            df['Tổng thưởng nhóm'] = to_numeric(df['Tổng thưởng nhóm'], errors='coerce')
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            output = BytesIO()
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongnhomcat_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_nhomcat")
+
+@app.route("/baocao_thuong_nhomla", methods=["GET","POST"])
+def baocao_nhomla():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_nhomla(macongty,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_nhomla.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_nhomla.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_nhomla(macongty,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Ngày": datetime.datetime.strptime(row[0],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[1],
+                    "SAH":round(row[2],2) if row[2] else "",
+                    "Số giờ":round(row[3],1),
+                    "Hiệu suất": f"{row[4]:.0%}"if row[4] else "",
+                    "Nhà máy": row[5],
+                    "UI": row[6],
+                    "BE": f"{row[7]:.0%}" if row[7] else "",
+                    "BE TOPUP 1":f"{row[8]:.0%}" if row[8] else "",
+                    "TOP UP 1": f"{row[9]:.0%}" if row[9] else "",
+                    "BE TOPUP 2":f"{row[10]:.0%}" if row[10] else "",
+                    "TOP UP 2": f"{row[11]:.0%}" if row[11] else "",
+                    "Tỉ lệ lỗi": f"{row[12]:.0%}" if row[12] else "",
+                    "AQL": f"{row[13]:.0%}" if row[13] else "",
+                    "Thưởng nhóm": round(row[14]) if row[14] else "",
+                    "Kích cầu 1": round(row[15]) if row[15] else "",
+                    "Kích cầu 2": round(row[16]) if row[16] else "",
+                    "Tổng thưởng nhóm": round(row[17]) if row[17] else "",
+                })
+            df = DataFrame(data)
+            
+            df['SAH'] = to_numeric(df['SAH'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['UI'] = to_numeric(df['UI'], errors='coerce')
+            df['Kích cầu 1'] = to_numeric(df['Kích cầu 1'], errors='coerce')
+            df['Kích cầu 2'] = to_numeric(df['Kích cầu 2'], errors='coerce')
+            df['Tổng thưởng nhóm'] = to_numeric(df['Tổng thưởng nhóm'], errors='coerce')
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            output = BytesIO()
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongnhomla_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_nhomla")
+
+@app.route("/baocao_thuong_nhomdonggoi", methods=["GET","POST"])
+def baocao_nhomdonggoi():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_nhomdonggoi(macongty,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_nhomdonggoi.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_nhomdonggoi.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_nhomdonggoi(macongty,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Ngày": datetime.datetime.strptime(row[0],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[1],
+                    "SAH":round(row[2],2) if row[2] else "",
+                    "Số giờ":round(row[3],1),
+                    "Hiệu suất": f"{row[4]:.0%}"if row[4] else "",
+                    "Nhà máy": row[5],
+                    "UI": row[6],
+                    "BE": f"{row[7]:.0%}" if row[7] else "",
+                    "BE TOPUP 1":f"{row[8]:.0%}" if row[8] else "",
+                    "TOP UP 1": f"{row[9]:.0%}" if row[9] else "",
+                    "Tỉ lệ lỗi": f"{row[10]:.0%}" if row[10] else "",
+                    "AQL": f"{row[11]:.0%}" if row[11] else "",
+                    "Thưởng nhóm": round(row[12]) if row[12] else "",
+                    "Kích cầu 1": round(row[13]) if row[13] else "",
+                    "Tổng thưởng nhóm": round(row[14]) if row[14] else "",
+                })
+            df = DataFrame(data)
+            
+            df['SAH'] = to_numeric(df['SAH'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['UI'] = to_numeric(df['UI'], errors='coerce')
+            df['Kích cầu 1'] = to_numeric(df['Kích cầu 1'], errors='coerce')
+            df['Tổng thưởng nhóm'] = to_numeric(df['Tổng thưởng nhóm'], errors='coerce')
+            output = BytesIO()
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongnhomdonggoi_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_nhomdonggoi")
+
+@app.route("/baocao_thuong_nhomndc", methods=["GET","POST"])
+def baocao_nhomndc():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_nhomndc(macongty,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_nhomndc.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_nhomndc.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_nhomndc(macongty,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Ngày": datetime.datetime.strptime(row[0],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[1],
+                    "Số công nhân":round(row[2],2) if row[2] else "",
+                    "Nhà máy": row[3],
+                    "UI": row[4],
+                    "Đánh giá 6S": row[5],
+                    "HS 6S": row[6],
+                    "OT FNS": row[7],
+                    "OT NDC": row[8],
+                    "Hệ số OT": row[9],
+                    "Số ngày công": row[10],
+                    "Tổng thưởng nhóm": round(row[11]) if row[11] else "",
+                })
+            df = DataFrame(data)
+            
+            df['Tổng thưởng nhóm'] = to_numeric(df['Tổng thưởng nhóm'], errors='coerce')
+            output = BytesIO()
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongnhomndc_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_nhomndc")
         
+@app.route("/baocao_thuong_nhomqc1", methods=["GET","POST"])
+def baocao_nhomqc1():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_nhomqc1(macongty,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_nhomqc1.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_nhomqc1.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_nhomqc1(macongty,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Ngày": datetime.datetime.strptime(row[0],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[1],
+                    "SAH":round(row[2],2) if row[2] else "",
+                    "Số giờ":round(row[3],1),
+                    "Hiệu suất": f"{row[4]:.0%}"if row[4] else "",
+                    "Nhà máy": row[5],
+                    "UI": row[6],
+                    "BE": f"{row[7]:.0%}" if row[7] else "",
+                    "BE TOPUP 1":f"{row[8]:.0%}" if row[8] else "",
+                    "TOP UP 1": f"{row[9]:.0%}" if row[9] else "",
+                    "Tỉ lệ lỗi": f"{row[10]:.0%}" if row[10] else "",
+                    "AQL": f"{row[11]:.0%}" if row[11] else "",
+                    "Thưởng nhóm": round(row[12]) if row[12] else "",
+                    "Kích cầu 1": round(row[13]) if row[13] else "",
+                    "Tổng thưởng nhóm": round(row[14]) if row[14] else "",
+                })
+            df = DataFrame(data)
+            
+            df['SAH'] = to_numeric(df['SAH'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['Hiệu suất'] = to_numeric(df['Hiệu suất'], errors='coerce')
+            df['UI'] = to_numeric(df['UI'], errors='coerce')
+            df['Kích cầu 1'] = to_numeric(df['Kích cầu 1'], errors='coerce')
+            df['Tổng thưởng nhóm'] = to_numeric(df['Tổng thưởng nhóm'], errors='coerce')
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            output = BytesIO()
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongnhomqc1_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_nhomqc1")
+        
+@app.route("/baocao_thuong_nhomqc2", methods=["GET","POST"])
+def baocao_nhomqc2():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_nhomqc2(macongty,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_nhomqc2.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_nhomcqc2.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_nhomqc2(macongty,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Ngày": datetime.datetime.strptime(row[0],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[1],
+                    "SAH":round(row[2],2) if row[2] else "",
+                    "Số giờ":round(row[3],1),
+                    "Hiệu suất": f"{row[4]:.0%}"if row[4] else "",
+                    "Nhà máy": row[5],
+                    "UI": row[6],
+                    "BE": f"{row[7]:.0%}" if row[7] else "",
+                    "BE TOPUP 1":f"{row[8]:.0%}" if row[8] else "",
+                    "TOP UP 1": f"{row[9]:.0%}" if row[9] else "",
+                    "Tỉ lệ lỗi": f"{row[10]:.0%}" if row[10] else "",
+                    "AQL": f"{row[11]:.0%}" if row[11] else "",
+                    "Thưởng nhóm": round(row[12]) if row[12] else "",
+                    "Kích cầu 1": round(row[13]) if row[13] else "",
+                    "Tổng thưởng nhóm": round(row[14]) if row[14] else "",
+                })
+            df = DataFrame(data)
+            
+            df['SAH'] = to_numeric(df['SAH'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['Hiệu suất'] = to_numeric(df['Hiệu suất'], errors='coerce')
+            df['UI'] = to_numeric(df['UI'], errors='coerce')
+            df['Kích cầu 1'] = to_numeric(df['Kích cầu 1'], errors='coerce')
+            df['Tổng thưởng nhóm'] = to_numeric(df['Tổng thưởng nhóm'], errors='coerce')
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            output = BytesIO()
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongnhomqc2_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_nhomqc2")
+
 @app.route("/baocao_sogio_lamviec", methods=["GET", "POST"])
 def baocao_sogio_lamviec():
     if request.method == "GET":
@@ -1072,15 +1701,19 @@ def taithuongchitiet():
         print(f"Loi lay thuong may chi tiet: {e}")
         return redirect("/")
 
+
+
 if __name__ == "__main__":
-    while True:
-        try:
-            serve(app, host="0.0.0.0", port=83, threads=8, _quiet=True)
-        except subprocess.CalledProcessError as e:
-            print(f"Flask gap loi: {e}")
-            print("Đang khoi dong flask...")
-            time.sleep(1)  # Đợi một khoảng thời gian trước khi khởi động lại
-        except Exception as e:
-            print(f"Loi khong xac dinh: {e}")
-            print("Đang khoi dong lai flask ...")
-            time.sleep(1)
+    # while True:
+    #     try:
+    #         serve(app, host="0.0.0.0", port=83, threads=8, _quiet=True)
+    #     except subprocess.CalledProcessError as e:
+    #         print(f"Flask gap loi: {e}")
+    #         print("Đang khoi dong flask...")
+    #         time.sleep(1)  # Đợi một khoảng thời gian trước khi khởi động lại
+    #     except Exception as e:
+    #         print(f"Loi khong xac dinh: {e}")
+    #         print("Đang khoi dong lai flask ...")
+    #         time.sleep(1)
+
+    app.run(host="0.0.0.0", port=83, debug=True)

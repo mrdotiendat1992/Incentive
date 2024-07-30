@@ -70,7 +70,7 @@
                                     <li><a class="dropdown-item" href="#">Đóng gói</a></li>
                                     <li><a class="dropdown-item" href="#">NDC</a></li>
                                     <li><a class="dropdown-item" href="#">Quản lý</a></li>
-                                    <li><a class="dropdown-item" href="#">Phụ</a></li>
+                                    <li><a class="dropdown-item" href="#">Công nhân phụ</a></li>
                                     </ul>
                                 </li>
                                 <li class="nav-item dropdown">
@@ -78,15 +78,13 @@
                                     Thưởng nhóm
                                     </a>
                                     <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Cắt</a></li>
+                                    <li><a class="dropdown-item" href="/baocao_thuong_nhomcat">Cắt</a></li>
                                     <li><a class="dropdown-item" href="/baocao_thuong_nhommay">May</a></li>
-                                    <li><a class="dropdown-item" href="#">QC1</a></li>
-                                    <li><a class="dropdown-item" href="#">Là</a></li>
-                                    <li><a class="dropdown-item" href="#">QC2</a></li>
-                                    <li><a class="dropdown-item" href="#">Đóng gói</a></li>
-                                    <li><a class="dropdown-item" href="#">NDC</a></li>
-                                    <li><a class="dropdown-item" href="#">Quản lý</a></li>
-                                    <li><a class="dropdown-item" href="#">Phụ</a></li>
+                                    <li><a class="dropdown-item" href="/baocao_thuong_nhomqc1">QC1</a></li>
+                                    <li><a class="dropdown-item" href="/baocao_thuong_nhomla">Là</a></li>
+                                    <li><a class="dropdown-item" href="/baocao_thuong_nhomqc2">QC2</a></li>
+                                    <li><a class="dropdown-item" href="/baocao_thuong_nhomdonggoi">Đóng gói</a></li>
+                                    <li><a class="dropdown-item" href="/baocao_thuong_nhomndc">NDC</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -101,6 +99,7 @@
                 <div class="pagination">{{ pagination.links }}</div>
                 {% block export %}{% endblock export %}
             </div>
+            <br>
             {% block content %}
             
             {% endblock content %}
