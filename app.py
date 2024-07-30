@@ -455,6 +455,46 @@ def lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen):
     except:
         return []
     
+def lay_baocao_thuong_congnhan_phu(macongty,mst,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_PHU_HANG_NGAY] WHERE 1=1" 
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if mst:
+            query += f" AND MST='{mst}'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+        query += " ORDER BY NGAY DESC, CHUYEN ASC"
+        # print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
+    
+def lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_QUANLY_HANG_NGAY] WHERE 1=1" 
+        if macongty:
+            query += f" AND CHUYEN LIKE '{macongty}%'"
+        if mst:
+            query += f" AND MST='{mst}'"
+        if ngay:
+            query += f" AND NGAY='{ngay}'"
+        if chuyen:
+            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+        query += " ORDER BY NGAY DESC, CHUYEN ASC"
+        # print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
+    
 def lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style):
     try:
         conn = connect_db()
@@ -1403,7 +1443,7 @@ def baocao_ndc():
             mst = request.args.get("mst")
             ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -1411,17 +1451,17 @@ def baocao_ndc():
             end = start + per_page
             paginated_rows = danhsach[start:end]
             pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-            return render_template("baocao_thuong_ndc.html", danhsach=paginated_rows,pagination=pagination)
+            return render_template("baocao_thuong_quanly.html", danhsach=paginated_rows,pagination=pagination)
         except Exception as e:
             print(e)
-            return render_template("baocao_thuong_ndc.html", danhsach=[])
+            return render_template("baocao_thuong_quanly.html", danhsach=[])
     elif request.method == "POST":
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
             ngay = request.form.get("ngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -1472,17 +1512,96 @@ def baocao_ndc():
             return response  
         except Exception as e:
             print(e)
-            return redirect("/baocao_thuong_ndc")
+            return redirect("/baocao_thuong_quanly")
         
-@app.route("/baocao_thuong_ndc", methods=["GET","POST"])
-def baocao_ndc():
+@app.route("/baocao_thuong_cnphu", methods=["GET","POST"])
+def baocao_cn_phu():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
             ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_quanly(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_phu(macongty,mst,ngay,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_thuong_cnphu.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_thuong_cnphu.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            ngay = request.form.get("ngay")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_thuong_congnhan_phu(macongty,mst,ngay,chuyen)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Mã số thẻ": row[0],
+                    "Họ tên":row[1],
+                    "Ngày": datetime.datetime.strptime(row[4],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[3],
+                    "Hệ số cá nhân": round(row[5],2) if row[5] else "",
+                    "Hệ số nhóm": round(row[7],2) if row[7] else "",
+                    "Thưởng nhóm": round(row[6]) if row[6] else "",
+                    "Thưởng cá nhân": round(row[8]) if row[8] else ""
+                })
+            df = DataFrame(data)
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            df['Hệ số cá nhân'] = to_numeric(df['Hệ số cá nhân'], errors='coerce')
+            df['Hệ số nhóm'] = to_numeric(df['Hệ số nhóm'], errors='coerce')
+            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaothuongcnphu_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_thuong_cnphu")
+        
+@app.route("/baocao_thuong_quanly", methods=["GET","POST"])
+def baocao_quanly():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            ngay = request.args.get("ngay")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
