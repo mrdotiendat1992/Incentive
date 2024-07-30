@@ -1704,16 +1704,16 @@ def taithuongchitiet():
 
 
 if __name__ == "__main__":
-    # while True:
-    #     try:
-    #         serve(app, host="0.0.0.0", port=83, threads=8, _quiet=True)
-    #     except subprocess.CalledProcessError as e:
-    #         print(f"Flask gap loi: {e}")
-    #         print("Đang khoi dong flask...")
-    #         time.sleep(1)  # Đợi một khoảng thời gian trước khi khởi động lại
-    #     except Exception as e:
-    #         print(f"Loi khong xac dinh: {e}")
-    #         print("Đang khoi dong lai flask ...")
-    #         time.sleep(1)
+    while True:
+        try:
+            serve(app, host="0.0.0.0", port=83, threads=8, _quiet=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Flask gap loi: {e}")
+            print("Đang khoi dong flask...")
+            time.sleep(1)  # Đợi một khoảng thời gian trước khi khởi động lại
+        except Exception as e:
+            print(f"Loi khong xac dinh: {e}")
+            print("Đang khoi dong lai flask ...")
+            time.sleep(1)
 
-    app.run(host="0.0.0.0", port=83, debug=True)
+    # app.run(host="0.0.0.0", port=83, debug=True)
