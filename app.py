@@ -16,6 +16,7 @@ from io import BytesIO
 import subprocess
 import numpy as np
 from waitress import serve
+import sys
 
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
 
@@ -63,34 +64,6 @@ class Nhanvien(UserMixin, db.Model):
 
 def chuyen_so_thanh_sotien(so):
     return "{:,.0f}".format(so)
-
-def chinh_do_rong_cot(file_excel):
-    try:
-        # Mở tệp Excel để chỉnh độ rộng cột
-        wb = load_workbook(file_excel)
-        ws = wb.active
-
-        # Chỉnh độ rộng cột theo độ rộng dữ liệu
-        for column in ws.columns:
-            max_length = 0
-            column_letter = column[0].column_letter  # Lấy tên cột (ví dụ: 'A', 'B')
-            for cell in column:
-                try:
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(cell.value)
-                except:
-                    pass
-            adjusted_width = max_length + 2
-            ws.column_dimensions[column_letter].width = adjusted_width
-
-        # Lưu lại tệp Excel đã chỉnh sửa
-        wb.save(file_excel)
-        wb.close()
-        time.sleep(1)
-        return True
-    except Exception as e:
-        print(f"Loi khi dieu chinh do rong cot file excel: {e}")
-        return False
     
 def connect_db():
     conn = pyodbc.connect(r'DRIVER={SQL Server};SERVER=172.16.60.100;DATABASE=HR;UID=huynguyen;PWD=Namthuan@123')
@@ -164,29 +137,34 @@ def lay_danhsach_chuyen_hotro(chuyen):
         return []
   
 def lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan):
-    conn = connect_db()
-    query = f"SELECT * FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE 1=1 "
-    if ngay:
-        query += f"AND NGAY='{ngay}' "
-    else:
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[SL_CA_NHAN] WHERE 1=1 "
+        if ngay:
+            query += f"AND NGAY='{ngay}' "
+        else:
+            return []
+        if chuyen:
+            query += f"AND CHUYEN='{chuyen}' "
+        if style:
+            query += f"AND STYLE='{style}' "
+        else:
+            return []
+        if mst:
+            query += f"AND MST='{mst}' "
+        if hoten:
+            query += f"AND HO_TEN=N'{hoten}' "
+        if macongdoan:
+            query += f"AND MA_CONG_DOAN ='{macongdoan}' "
+        query += "ORDER BY CAST(MST as INT) ASC, MA_CONG_DOAN ASC"
+        print(query)
+        cursor = execute_query(conn, query) 
+        result = cursor.fetchall()
+        close_db(conn)
+        return list(result)
+    except Exception as e:
+        print(e)
         return []
-    if chuyen:
-        query += f"AND CHUYEN='{chuyen}' "
-    if style:
-        query += f"AND STYLE='{style}' "
-    else:
-        return []
-    if mst:
-        query += f"AND MST='{mst}' "
-    if hoten:
-        query += f"AND HO_TEN=N'{hoten}' "
-    if macongdoan:
-        query += f"AND MA_CONG_DOAN ='{macongdoan}' "
-    query += "ORDER BY CAST(MST as INT) ASC, MA_CONG_DOAN ASC"
-    cursor = execute_query(conn, query) 
-    result = cursor.fetchall()
-    close_db(conn)
-    return list(result)
 
 def capnhat_sanluong(mst,hoten,chuyen,ngay,style,macongdoan,sanluong):
     try:
@@ -2518,16 +2496,18 @@ def taithuongchitiet():
 
 
 if __name__ == "__main__":
-    while True:
-        try:
-            serve(app, host="0.0.0.0", port=83, threads=8, _quiet=True)
-        except subprocess.CalledProcessError as e:
-            print(f"Flask gap loi: {e}")
-            print("Đang khoi dong flask...")
-            time.sleep(1)  # Đợi một khoảng thời gian trước khi khởi động lại
-        except Exception as e:
-            print(f"Loi khong xac dinh: {e}")
-            print("Đang khoi dong lai flask ...")
-            time.sleep(1)
-
-    # app.run(host="0.0.0.0", port=83, debug=True)
+    try:
+        if sys.argv[1]=="1":
+            while True:
+                try:
+                    serve(app, host="0.0.0.0", port=83, threads=8, _quiet=True)
+                except subprocess.CalledProcessError as e:
+                    print(f"Flask gap loi: {e}")
+                    print("Đang khoi dong flask...")
+                    time.sleep(1)  # Đợi một khoảng thời gian trước khi khởi động lại
+                except Exception as e:
+                    print(f"Loi khong xac dinh: {e}")
+                    print("Đang khoi dong lai flask ...")
+                    time.sleep(1)
+    except:
+        app.run(host="0.0.0.0", port=83, debug=True)

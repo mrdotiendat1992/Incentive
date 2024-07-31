@@ -246,11 +246,11 @@
                         </div>
                     </div>
                     <form method="POST" action="/">
-                        <input type="hidden" name="chuyen" value={{ request.args.get('chuyen','') }}>
-                        <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
-                        <input type="hidden" name="style" value={{ request.args.get('style','') }}>
+                        <input type="hidden" name="chuyen" value=''{{ request.args.get('chuyen','') }}''>
+                        <input type="hidden" name="ngay" value='{{ request.args.get('ngay','') }}'>
+                        <input type="hidden" name="style" value='{{ request.args.get('style','') }}'>
                         <input type="hidden" name="mst" value={{ request.args.get('mst','') }}>
-                        <input type="hidden" name="hoten" value={{ request.args.get('hoten','') }}>
+                        <input type="hidden" name="hoten" value='{{ request.args.get('hoten','') }}'>
                         <input type="hidden" name="macongdoan" value={{ request.args.get('search_macongdoan','') }}>
                         <button type="submit" class="btn btn-success btn-sm" style="height: 40px;"><i class="fas fa-fw fa-download"></i></button>
                     </form>
