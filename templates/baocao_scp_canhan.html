@@ -1,0 +1,71 @@
+{% extends "baocao.html" %}
+{% block title %}Báo cáo SCP cá nhân{% endblock title %}
+{% block page_title %}Báo cáo SCP cá nhân{% endblock page_title %}
+{% block filter %}
+ <div id="filter">
+    <form method="get">
+        <div class="form-group">
+            <select type="text" name="macongty" class="form-control" id="macongty" value="{{ request.args.get('macongty','') }}" onchange="form.submit()">
+                {% if request.args.get('macongty')=='' %}
+                <option value="" selected>Tất cả</option>
+                {% else %}
+                <option value="">Tất cả</option>
+                {% endif %}
+                {% if request.args.get('macongty')=='1' %}
+                <option value="1" selected>NT1</option>
+                {% else %}
+                <option value="1">NT1</option>
+                {% endif %}
+                {% if request.args.get('macongty')=='2' %}
+                <option value="2" selected>NT2</option>
+                {% else %}
+                <option value="2">NT2</option>
+                {% endif %}
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="text" name="mst" class="form-control" id="mst" placeholder="MST" value="{{ request.args.get('mst','') }}" onchange="form.submit()">
+        </div>
+        <div class="form-group">
+            <input type="date" name="tungay" class="form-control" id="tungay" value="{{ request.args.get('tungay','') }}" onchange="form.submit()">
+        </div>
+        <div class="form-group">
+            <input type="date" name="denngay" class="form-control" id="denngay" placeholder="Chuyền" value="{{ request.args.get('denngay','') }}" onchange="form.submit()">
+        </div>
+    </form>
+    </div>
+{% endblock filter %}
+{% block export %}
+<form method="post">
+    <input type="hidden" name="macongty" value="{{ request.args.get('macongty','') }}">
+    <input type="hidden" name="mst" value="{{ request.args.get('mst','') }}">
+    <input type="hidden" name="tungay" value="{{ request.args.get('tungay','') }}">
+    <input type="hidden" name="denngay" value="{{ request.args.get('denngay','') }}">
+    <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-fw fa-download"></i></button>
+</form>
+{% endblock export %}
+{% block content %}
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr class="bg-primary">
+            <th>MST</th>
+            <th>Họ tên</th>
+            <th>Từ ngày</th>
+            <th>Đến ngày</th>
+            <th>SCP</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in danhsach %}
+            <tr>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td class="ngay">{{ row[3] }}</td>
+                <td class="ngay">{{ row[4] }}</td>
+                <td>{{ row[5] }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}
+

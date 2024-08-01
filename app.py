@@ -640,6 +640,26 @@ def lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen):
         return rows
     except:
         return []
+    
+def lay_baocao_scp_canhan(macongty,mst,tungay,denngay):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[SCP_CA_NHAN] WHERE 1=1" 
+        if macongty:
+            query += f" AND NHA_MAY = 'NT{macongty}'"
+        if mst:
+            query += f" AND MST = '{mst}'"
+        if tungay:
+            query += f" AND TU_NGAY <= '{tungay}'"
+        if denngay:
+            query += f" AND DEN_NGAY >= '%{denngay}%'"
+        query += " ORDER BY CAST(MST As INT) ASC"
+        print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except:
+        return []
 
 def login_required(f):
     @wraps(f)
@@ -1037,7 +1057,7 @@ def baocao_may():
                     "SAH":round(row[4],2) if row[4] else "",
                     "SCP":row[5],
                     "Số giờ":row[6],
-                    "Hiệu suất":f"{row[7]:.0%}" if row[7] else "",
+                    "Hiệu suất": round(row[7],2) if row[7] else "",
                     "Thưởng": round(row[8]) if row[8] else ""
                 })
             df = DataFrame(data)
@@ -1046,6 +1066,7 @@ def baocao_may():
             df['SAH'] = to_numeric(df['SAH'], errors='coerce')
             df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
             df['Thưởng'] = to_numeric(df['Thưởng'], errors='coerce')
+            df['Hiệu suất'] = to_numeric(df['Hiệu suất'], errors='coerce')
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
                 df.to_excel(writer, index=False)
@@ -1116,7 +1137,7 @@ def baocao_la():
                     "Chuyền":row[2],
                     "SAH": round(row[4],2) if row[4] else "",
                     "Số giờ":row[5],
-                    "Hiệu suất cá nhân": f"{row[6]:.0%}" if row[6] else "",
+                    "Hiệu suất cá nhân": round(row[6],2) if row[6] else "",
                     "SAH nhóm": round(row[7],2) if row[7] else "",
                     "Thưởng nhóm": round(row[8]) if row[8] else "",
                     "Thưởng cá nhân": round(row[9]) if row[9] else ""
@@ -1128,6 +1149,7 @@ def baocao_la():
             df['SAH nhóm'] = to_numeric(df['SAH nhóm'], errors='coerce')
             df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
             df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['Hiệu suất cá nhân'] = to_numeric(df['Hiệu suất cá nhân'], errors='coerce')
             df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
@@ -1199,7 +1221,7 @@ def baocao_qc1():
                     "Chuyền":row[3],
                     "SAH": round(row[4],2) if row[4] else "",
                     "Số giờ":row[5],
-                    "Hiệu suất cá nhân": f"{row[6]:.0%}" if row[6] else "",
+                    "Hiệu suất cá nhân": round(row[6],2) if row[6] else "",
                     "SAH nhóm": round(row[7],2) if row[7] else "",
                     "Thưởng nhóm": round(row[8]) if row[8] else "",
                     "Thưởng cá nhân": round(row[9]) if row[9] else ""
@@ -1209,6 +1231,7 @@ def baocao_qc1():
             df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
             df['SAH'] = to_numeric(df['SAH'], errors='coerce')
             df['SAH nhóm'] = to_numeric(df['SAH nhóm'], errors='coerce')
+            df['Hiệu suất cá nhân'] = to_numeric(df['Hiệu suất cá nhân'], errors='coerce')
             df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
             df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
             df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
@@ -1282,7 +1305,7 @@ def baocao_qc2():
                     "Chuyền":row[3],
                     "SAH": round(row[4],2) if row[4] else "",
                     "Số giờ":row[5],
-                    "Hiệu suất cá nhân": f"{row[6]:.0%}" if row[6] else "",
+                    "Hiệu suất cá nhân": round(row[6],2) if row[6] else "",
                     "SAH nhóm": round(row[7],2) if row[7] else "",
                     "Thưởng nhóm": round(row[8]) if row[8] else "",
                     "Thưởng cá nhân": round(row[9]) if row[9] else ""
@@ -1293,6 +1316,7 @@ def baocao_qc2():
             df['SAH'] = to_numeric(df['SAH'], errors='coerce')
             df['SAH nhóm'] = to_numeric(df['SAH nhóm'], errors='coerce')
             df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['Hiệu suất cá nhân'] = to_numeric(df['Hiệu suất cá nhân'], errors='coerce')
             df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
             df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
             output = BytesIO()
@@ -1682,9 +1706,9 @@ def baocao_nhommay():
                 data.append({
                     "Ngày": datetime.datetime.strptime(row[0],"%Y-%m-%d").strftime("%d/%m/%Y"),
                     "Chuyền":row[1],
-                    "SAH":round(row[2],2) if row[2] else "",
+                    "SAH": round(row[2],2) if row[2] else "",
                     "Số giờ":row[3],
-                    "Hiệu suất": f"{row[4]:.0%}"if row[4] else "",
+                    "Hiệu suất": round(row[4],2) if row[4] else "",
                     "Style": row[5],
                     "Trạng thái đơn hàng": row[6],
                     "Chuyền mới": row[7],
@@ -1698,6 +1722,7 @@ def baocao_nhommay():
             df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
             df['SAH'] = to_numeric(df['SAH'], errors='coerce')
             df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['Hiệu suất'] = to_numeric(df['Hiệu suất'], errors='coerce')
             df['Thưởng 1'] = to_numeric(df['Thưởng 1'], errors='coerce')
             df['Thưởng 2'] = to_numeric(df['Thưởng 2'], errors='coerce')
             df['Tổng thưởng'] = to_numeric(df['Tổng thưởng'], errors='coerce')
@@ -1768,15 +1793,15 @@ def baocao_nhomcat():
                     "Chuyền":row[1],
                     "SAH":round(row[2],2) if row[2] else "",
                     "Số giờ":round(row[3],1),
-                    "Hiệu suất": f"{row[4]:.0%}"if row[4] else "",
+                    "Hiệu suất": round(row[4],2) if row[4] else "",
                     "Cắt kẻ": row[5],
                     "Nhà máy": row[6],
                     "UI": row[7],
-                    "BE": f"{row[8]:.0%}" if row[8] else "",
-                    "BE TOPUP 1":f"{row[9]:.0%}" if row[9] else "",
-                    "TOP UP 1": f"{row[10]:.0%}" if row[10] else "",
-                    "Tỉ lệ lỗi": f"{row[11]:.0%}" if row[11] else "",
-                    "AQL": f"{row[12]:.0%}" if row[12] else "",
+                    "BE": round(row[8],2) if row[8] else "",
+                    "BE TOPUP 1":round(row[9],2) if row[9] else "",
+                    "TOP UP 1": round(row[10],2) if row[10] else "",
+                    "Tỉ lệ lỗi": round(row[11],2) if row[11] else "",
+                    "AQL": round(row[12],2) if row[12] else "",
                     "Thưởng nhóm": round(row[13]) if row[13] else "",
                     "Kích cầu 1": round(row[14]) if row[14] else "",
                     "Tổng thưởng nhóm": round(row[15]) if row[15] else "",
@@ -1788,7 +1813,12 @@ def baocao_nhomcat():
             df['UI'] = to_numeric(df['UI'], errors='coerce')
             df['Kích cầu 1'] = to_numeric(df['Kích cầu 1'], errors='coerce')
             df['Tổng thưởng nhóm'] = to_numeric(df['Tổng thưởng nhóm'], errors='coerce')
-            df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['Hiệu suất'] = to_numeric(df['Hiệu suất'], errors='coerce')
+            df['BE'] = to_numeric(df['BE'], errors='coerce')
+            df['BE TOPUP 1'] = to_numeric(df['BE TOPUP 1'], errors='coerce')
+            df['TOP UP 1'] = to_numeric(df['TOP UP 1'], errors='coerce')
+            df['Tỉ lệ lỗi'] = to_numeric(df['Tỉ lệ lỗi'], errors='coerce')
+            df['AQL'] = to_numeric(df['AQL'], errors='coerce')
             output = BytesIO()
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
@@ -1856,16 +1886,16 @@ def baocao_nhomla():
                     "Chuyền":row[1],
                     "SAH":round(row[2],2) if row[2] else "",
                     "Số giờ":round(row[3],1),
-                    "Hiệu suất": f"{row[4]:.0%}"if row[4] else "",
+                    "Hiệu suất": round(row[4],2)if row[4] else "",
                     "Nhà máy": row[5],
                     "UI": row[6],
-                    "BE": f"{row[7]:.0%}" if row[7] else "",
-                    "BE TOPUP 1":f"{row[8]:.0%}" if row[8] else "",
-                    "TOP UP 1": f"{row[9]:.0%}" if row[9] else "",
-                    "BE TOPUP 2":f"{row[10]:.0%}" if row[10] else "",
-                    "TOP UP 2": f"{row[11]:.0%}" if row[11] else "",
-                    "Tỉ lệ lỗi": f"{row[12]:.0%}" if row[12] else "",
-                    "AQL": f"{row[13]:.0%}" if row[13] else "",
+                    "BE": round(row[7],2) if row[7] else "",
+                    "BE TOPUP 1":round(row[8],2) if row[8] else "",
+                    "TOP UP 1": round(row[9],2) if row[9] else "",
+                    "BE TOPUP 2":round(row[10],2) if row[10] else "",
+                    "TOP UP 2": round(row[11],2) if row[11] else "",
+                    "Tỉ lệ lỗi": round(row[12],2) if row[12] else "",
+                    "AQL": round(row[13],2) if row[13] else "",
                     "Thưởng nhóm": round(row[14]) if row[14] else "",
                     "Kích cầu 1": round(row[15]) if row[15] else "",
                     "Kích cầu 2": round(row[16]) if row[16] else "",
@@ -1880,6 +1910,14 @@ def baocao_nhomla():
             df['Kích cầu 2'] = to_numeric(df['Kích cầu 2'], errors='coerce')
             df['Tổng thưởng nhóm'] = to_numeric(df['Tổng thưởng nhóm'], errors='coerce')
             df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['Hiệu suất'] = to_numeric(df['Hiệu suất'], errors='coerce')
+            df['BE'] = to_numeric(df['BE'], errors='coerce')
+            df['BE TOPUP 1'] = to_numeric(df['BE TOPUP 1'], errors='coerce')
+            df['TOP UP 1'] = to_numeric(df['TOP UP 1'], errors='coerce')
+            df['BE TOPUP 2'] = to_numeric(df['BE TOPUP 2'], errors='coerce')
+            df['TOP UP 2'] = to_numeric(df['TOP UP 2'], errors='coerce')
+            df['Tỉ lệ lỗi'] = to_numeric(df['Tỉ lệ lỗi'], errors='coerce')
+            df['AQL'] = to_numeric(df['AQL'], errors='coerce')
             output = BytesIO()
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
@@ -1947,14 +1985,14 @@ def baocao_nhomdonggoi():
                     "Chuyền":row[1],
                     "SAH":round(row[2],2) if row[2] else "",
                     "Số giờ":round(row[3],1),
-                    "Hiệu suất": f"{row[4]:.0%}"if row[4] else "",
+                    "Hiệu suất": round(row[4],2) if row[4] else "",
                     "Nhà máy": row[5],
                     "UI": row[6],
                     "BE": f"{row[7]:.0%}" if row[7] else "",
-                    "BE TOPUP 1":f"{row[8]:.0%}" if row[8] else "",
-                    "TOP UP 1": f"{row[9]:.0%}" if row[9] else "",
-                    "Tỉ lệ lỗi": f"{row[10]:.0%}" if row[10] else "",
-                    "AQL": f"{row[11]:.0%}" if row[11] else "",
+                    "BE TOPUP 1":round(row[8],2)if row[8] else "",
+                    "TOP UP 1": round(row[9],2) if row[9] else "",
+                    "Tỉ lệ lỗi": round(row[10],2) if row[10] else "",
+                    "AQL": round(row[11],2) if row[11] else "",
                     "Thưởng nhóm": round(row[12]) if row[12] else "",
                     "Kích cầu 1": round(row[13]) if row[13] else "",
                     "Tổng thưởng nhóm": round(row[14]) if row[14] else "",
@@ -2112,14 +2150,14 @@ def baocao_nhomqc1():
                     "Chuyền":row[1],
                     "SAH":round(row[2],2) if row[2] else "",
                     "Số giờ":round(row[3],1),
-                    "Hiệu suất": f"{row[4]:.0%}"if row[4] else "",
+                    "Hiệu suất": round(row[4],2) if row[4] else "",
                     "Nhà máy": row[5],
                     "UI": row[6],
-                    "BE": f"{row[7]:.0%}" if row[7] else "",
-                    "BE TOPUP 1":f"{row[8]:.0%}" if row[8] else "",
-                    "TOP UP 1": f"{row[9]:.0%}" if row[9] else "",
-                    "Tỉ lệ lỗi": f"{row[10]:.0%}" if row[10] else "",
-                    "AQL": f"{row[11]:.0%}" if row[11] else "",
+                    "BE": round(row[7],2) if row[7] else "",
+                    "BE TOPUP 1":round(row[8],2) if row[8] else "",
+                    "TOP UP 1": round(row[9],2) if row[9] else "",
+                    "Tỉ lệ lỗi": round(row[10],2) if row[10] else "",
+                    "AQL": round(row[11],2) if row[11] else "",
                     "Thưởng nhóm": round(row[12]) if row[12] else "",
                     "Kích cầu 1": round(row[13]) if row[13] else "",
                     "Tổng thưởng nhóm": round(row[14]) if row[14] else "",
@@ -2133,6 +2171,11 @@ def baocao_nhomqc1():
             df['Kích cầu 1'] = to_numeric(df['Kích cầu 1'], errors='coerce')
             df['Tổng thưởng nhóm'] = to_numeric(df['Tổng thưởng nhóm'], errors='coerce')
             df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['BE'] = to_numeric(df['BE'], errors='coerce')
+            df['BE TOPUP 1'] = to_numeric(df['BE TOPUP 1'], errors='coerce')
+            df['TOP UP 1'] = to_numeric(df['TOP UP 1'], errors='coerce')
+            df['Tỉ lệ lỗi'] = to_numeric(df['Tỉ lệ lỗi'], errors='coerce')
+            df['AQL'] = to_numeric(df['AQL'], errors='coerce')
             output = BytesIO()
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
@@ -2200,14 +2243,14 @@ def baocao_nhomqc2():
                     "Chuyền":row[1],
                     "SAH":round(row[2],2) if row[2] else "",
                     "Số giờ":round(row[3],1),
-                    "Hiệu suất": f"{row[4]:.0%}"if row[4] else "",
+                    "Hiệu suất": round(row[4],2) if row[4] else "",
                     "Nhà máy": row[5],
                     "UI": row[6],
-                    "BE": f"{row[7]:.0%}" if row[7] else "",
-                    "BE TOPUP 1":f"{row[8]:.0%}" if row[8] else "",
-                    "TOP UP 1": f"{row[9]:.0%}" if row[9] else "",
-                    "Tỉ lệ lỗi": f"{row[10]:.0%}" if row[10] else "",
-                    "AQL": f"{row[11]:.0%}" if row[11] else "",
+                    "BE": round(row[7],2) if row[7] else "",
+                    "BE TOPUP 1":round(row[8],2) if row[8] else "",
+                    "TOP UP 1": round(row[9],2) if row[9] else "",
+                    "Tỉ lệ lỗi": round(row[10],2) if row[10] else "",
+                    "AQL": round(row[11],2) if row[11] else "",
                     "Thưởng nhóm": round(row[12]) if row[12] else "",
                     "Kích cầu 1": round(row[13]) if row[13] else "",
                     "Tổng thưởng nhóm": round(row[14]) if row[14] else "",
@@ -2221,6 +2264,11 @@ def baocao_nhomqc2():
             df['Kích cầu 1'] = to_numeric(df['Kích cầu 1'], errors='coerce')
             df['Tổng thưởng nhóm'] = to_numeric(df['Tổng thưởng nhóm'], errors='coerce')
             df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
+            df['BE'] = to_numeric(df['BE'], errors='coerce')
+            df['BE TOPUP 1'] = to_numeric(df['BE TOPUP 1'], errors='coerce')
+            df['TOP UP 1'] = to_numeric(df['TOP UP 1'], errors='coerce')
+            df['Tỉ lệ lỗi'] = to_numeric(df['Tỉ lệ lỗi'], errors='coerce')
+            df['AQL'] = to_numeric(df['AQL'], errors='coerce')
             output = BytesIO()
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
@@ -2405,7 +2453,80 @@ def baocao_sanluong_canhan():
         except Exception as e:
             print(e)
             return redirect("/baocao_sanluong_canhan")
-        
+
+@app.route("/baocao_scp_canhan", methods=["GET","POST"])
+def baocao_scp_canhan():
+    if request.method == "GET":
+        try:
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay") 
+            danhsach = lay_baocao_scp_canhan(macongty,mst,tungay,denngay)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_scp_canhan.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_scp_canhan.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            macongty = request.form.get("macongty")
+            mst = request.args.form("mst")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay") 
+            danhsach = lay_baocao_scp_canhan(macongty,mst,tungay,denngay)
+            data = []
+            for row in danhsach:
+                data.append({
+                    "Nhà máy": row[0],
+                    "Mã số thẻ": row[1],
+                    "Họ tên": row[2],
+                    "Từ ngày": datetime.datetime.strptime(row[3],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Đến ngày": datetime.datetime.strptime(row[4],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "SCP" : row[5]
+                })
+            df = DataFrame(data)
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocaoscpcanhan_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_scp_canhan")
+       
 @app.route("/taithuongchitiet", methods=["GET","POST"])
 def taithuongchitiet():
     try:
@@ -2419,26 +2540,26 @@ def taithuongchitiet():
                 "Chuyền": row[3],
                 "SAH nhóm": round(row[4],1) if row[4] else "",
                 "Thời gian làm việc nhóm": round(row[5]) if row[5] else "",
-                "Hiệu suất nhóm": f"{row[6]:.0%}" if row[6] else "",
+                "Hiệu suất nhóm": round(row[6],2) if row[6] else "",
                 "Style": row[7] if row[7] else "",
                 "Chuyền mới": row[8] if row[8] else "",
                 "Ngày vào chuyền": row[9] if row[9] else "",
                 "Trạng thái": row[10] if row[10] else "",
                 "UI": row[11] if row[11] else "",
-                "BE": f"{row[12]:.0%}" if row[12] else "",
-                "BE TOPUP 1": f"{row[13]:.0%}" if row[13] else "",
-                "TOPUP 1": f"{row[14]:.0%}" if row[14] else "",
-                "BE TOPUP 2": f"{row[15]:.0%}" if row[15] else "",
-                "TOPUP 2": f"{row[16]:.0%}" if row[16] else "",
-                "OQL": f"{row[17]:.0%}" if row[17] else "",
-                "AQL": row[18] if row[18] else "",
+                "BE": round(row[12],2) if row[12] else "",
+                "BE TOPUP 1": round(row[13],2) if row[13] else "",
+                "TOPUP 1": round(row[14],2) if row[14] else "",
+                "BE TOPUP 2": round(row[15],2) if row[15] else "",
+                "TOPUP 2": round(row[16],2) if row[16] else "",
+                "OQL": round(row[17],2) if row[17] else "",
+                "AQL": round(row[18],2) if row[18] else "",
                 "Group incentive": round(row[19]) if row[19] else "",
                 "Group incentive topup 1": round(row[20]) if row[20] else "",
                 "Group incentive topup 2": round(row[21]) if row[21] else "",
                 "Tổng thưởng": round(row[22]) if row[22] else "",
                 "SAH": round(row[23],1) if row[23] else "",
                 "Thời gian làm việc": row[24] if row[24] else "",
-                "Hiệu suất": f"{row[25]:.0%}" if row[25] else "",
+                "Hiệu suất": round(row[25],2) if row[25] else "",
                 "SCP": row[26] if row[26] else "",
                 "Hệ số SCP": row[27] if row[27] else "",
                 "Hệ số thưởng cá nhân": round(row[28],1) if row[28] else "",
@@ -2459,6 +2580,15 @@ def taithuongchitiet():
         df["Hệ số thưởng cá nhân"] = to_numeric(df['Hệ số thưởng cá nhân'], errors='coerce')
         df["Hệ số thưởng nhóm"] = to_numeric(df['Hệ số thưởng nhóm'], errors='coerce')
         df["Thưởng cá nhân"] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
+        df["Hiệu suất nhóm"] = to_numeric(df['Hiệu suất nhóm'], errors='coerce')
+        df["BE"] = to_numeric(df['BE'], errors='coerce')
+        df["BE TOPUP 1"] = to_numeric(df['BE TOPUP 1'], errors='coerce')
+        df["TOPUP 1"] = to_numeric(df['TOPUP 1'], errors='coerce')
+        df["BE TOPUP 2"] = to_numeric(df['BE TOPUP 2'], errors='coerce')
+        df["TOPUP 2"] = to_numeric(df['TOPUP 2'], errors='coerce')
+        df["OQL"] = to_numeric(df['OQL'], errors='coerce')
+        df["AQL"] = to_numeric(df['AQL'], errors='coerce')
+        df["Hiệu suất"] = to_numeric(df['Hiệu suất'], errors='coerce')
         output = BytesIO()
         with ExcelWriter(output, engine='openpyxl') as writer:
             df.to_excel(writer, index=False)
