@@ -34,6 +34,10 @@
             text-align: center;
             vertical-align: middle;
           }
+          td {
+            font-size: 14px;
+            white-space: nowrap;
+          }
           .icon-btn {
             background: none;
             border: none;
@@ -213,7 +217,62 @@
                     </div>
                 </div>
             </div>
-            
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#tncAllModal">
+                Danh sách TNC
+            </button>
+            <div class="modal fade" id="tncAllModal" tabindex="-1" role="dialog" aria-labelledby="tncAllModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="tncAllModalLabel">Công nhân TNC</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            
+                                <div class="form-group">
+                                    {% if g.notice['line']|length == 1 %} 
+                                        <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ g.notice['line'][0] }}" readonly> 
+                                    {% else %}
+                                        <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" readonly>
+                                    {% endif %}
+                                </div>
+                                <table class="table table-bordered table-sm">
+                                    <thead>
+                                        <tr class="bg-primary">
+                                            <th>MST</th>
+                                            <th>Họ tên</th>
+                                            <th>Từ ngày</th>
+                                            <th>Đến ngày</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for tnc in danhsach_tnc_ngoichuyen %}
+                                            <tr>
+                                                <td>{{ tnc[2] }}</td>
+                                                <td>{{ tnc[3] }}</td>
+                                                <td>
+                                                    <form action="/capnhat_tungay_tnc" method="POST">
+                                                        <input type="hidden" name="id" value="{{ tnc[0] }}">
+                                                        <input type="date" name="ngay" value="{{ tnc[6] }}" onchange="form.submit()">
+                                                    </form>
+                                                </td>
+                                                <td>
+                                                    <form action="/capnhat_dengay_tnc" method="POST">
+                                                        <input type="hidden" name="id_tnc" value="{{ tnc[0] }}">
+                                                        <input type="date" name="ngay" value="{{ tnc[7] }}" onchange="form.submit()">
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <button class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <a href="/baocao_thuong_may" class="btn btn-warning btn-sm" >Báo cáo</a>
         </div>        
             <div style="display:flex; justify-content: space-around; padding:10px">

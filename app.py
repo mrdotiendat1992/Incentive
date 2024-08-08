@@ -240,10 +240,47 @@ def lay_danhsach_tnc_chua_lenchuyen(chuyen):
     except:
         return []
     
+def lay_danhsach_tnc_ngoichuyen(chuyen):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[CN_TNC_NGOI_CHUYEN] WHERE CHUYEN_NGOI_LV = '{chuyen}' ORDER BY CAST(MST as INT) ASC"
+        print(query)
+        cursor = execute_query(conn, query)
+        result = cursor.fetchall()
+        close_db(conn)
+        return list(result)
+    except:
+        return []
+
+def thaydoi_tungay_cn_tnc(id,ngay):
+    try:
+        conn = connect_db()
+        query = f"update [INCENTIVE].[dbo].[CN_TNC_NGOI_CHUYEN] SET TU_NGAY='{ngay}' WHERE ID='{id}'"
+        print(query)
+        execute_query(conn, query)
+        conn.commit()
+        close_db(conn)
+        return True
+    except:
+        return False
+    
+def thaydoi_denngay_cn_tnc(id,ngay):
+    try:
+        conn = connect_db()
+        query = f"update [INCENTIVE].[dbo].[CN_TNC_NGOI_CHUYEN] SET DEN_NGAY='{ngay}' WHERE ID='{id}'"
+        print(query)
+        execute_query(conn, query)
+        conn.commit()
+        close_db(conn)
+        return True
+    except:
+        return False
+
 def nhan_tnc_len_chuyen(id,chuyen):
     try:
         conn = connect_db()
-        query = f"update [INCENTIVE].[dbo].[CN_TNC_NGOI_CHUYEN] SET CHUYEN_NGOI_LV='{chuyen}' WHERE ID='{id}'"
+        query = f"update [INCENTIVE].[dbo].[CN_TNC_NGOI_CHUYEN] SET CHUYEN_NGOI_LV='{chuyen.replace('[','').replace(']','').replace("'","")}' WHERE ID='{id}'"
+        print(query)
         execute_query(conn, query)
         conn.commit()
         close_db(conn)
@@ -747,11 +784,13 @@ def home():
         danhsach_chuyen = lay_danhsach_chuyen_hotro(chuyen)
         danhsach_sanluong = lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan)
         danhsach_tnc = lay_danhsach_tnc_chua_lenchuyen(chuyen)
+        danhsach_tnc_ngoichuyen = lay_danhsach_tnc_ngoichuyen(chuyen)
         danhsach_di_hotro = lay_danhsach_di_hotro(chuyen)
         return render_template("home.html",styles=styles,danhsach_sanluong=danhsach_sanluong,
                                danhsach_congnhan_hotro=danhsach_congnhan_hotro,
                                danhsach_chuyen=danhsach_chuyen,danhsach_tnc=danhsach_tnc,
-                               danhsach_di_hotro=danhsach_di_hotro,sanluongtong=sanluongtong)
+                               danhsach_di_hotro=danhsach_di_hotro,sanluongtong=sanluongtong,
+                               danhsach_tnc_ngoichuyen=danhsach_tnc_ngoichuyen)
     elif request.method == "POST":
         try:
             ngay = request.form.get("ngay")   
@@ -2623,8 +2662,26 @@ def taithuongchitiet():
         print(f"Loi lay thuong may chi tiet: {e}")
         return redirect("/")
 
-
-
+@app.route("/capnhat_tungay_tnc", methods=["POST"])
+def capnhat_tungay_cn_tnc():
+    id = request.form.get("id")
+    ngay = request.form.get("ngay")
+    try:
+        thaydoi_tungay_cn_tnc(id, ngay)
+    except Exception as e:
+        print(f"Loi : {e}")
+    return redirect("/")
+    
+@app.route("/capnhat_denngay_tnc", methods=["POST"])
+def capnhat_denngay_cn_tnc():
+    id = request.form.get("id")
+    ngay = request.form.get("ngay")
+    try:
+        thaydoi_denngay_cn_tnc(id, ngay)
+    except Exception as e:
+        print(f"Loi : {e}")
+    return redirect("/")
+    
 if __name__ == "__main__":
     try:
         if sys.argv[1]=="1":
