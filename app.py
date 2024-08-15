@@ -170,7 +170,7 @@ def capnhat_sanluong(mst,hoten,chuyen,ngay,style,macongdoan,sanluong):
     try:
         conn = connect_db()
         query = f"INSERT INTO [INCENTIVE].[dbo].[SL_CA_NHAN] (MST,HO_TEN,CHUYEN,NGAY,STYLE,MA_CONG_DOAN,SL_CA_NHAN) VALUES('{mst}', N'{hoten}', '{chuyen}', '{ngay}', '{style}', '{macongdoan}', '{sanluong}')"
-        # print(query)
+        print(query)
         execute_query(conn, query)
         conn.commit()
         close_db(conn)
