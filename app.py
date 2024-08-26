@@ -396,13 +396,13 @@ def lay_baocao_thuong_congnhan_qc1(macongty,mst,ngay,chuyen):
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_QC1_HANG_NGAY] WHERE 1=1" 
         if macongty:
-            query += f" AND CHUYEN LIKE '{macongty}%'"
+            query += f" AND NHOM LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
         if chuyen:
-            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+            query += f" AND NHOM LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, NHOM ASC"
         # print(query)
         rows = execute_query(conn, query).fetchall()
@@ -416,13 +416,13 @@ def lay_baocao_thuong_congnhan_qc2(macongty,mst,ngay,chuyen):
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_QC2_HANG_NGAY] WHERE 1=1" 
         if macongty:
-            query += f" AND CHUYEN LIKE '{macongty}%'"
+            query += f" AND NHOM LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
         if chuyen:
-            query += f" AND CHUYEN LIKE '%{chuyen}%'"
+            query += f" AND NHOM LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, NHOM ASC"
         # print(query)
         rows = execute_query(conn, query).fetchall()
