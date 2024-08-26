@@ -553,7 +553,7 @@ def lay_baocao_thuong_congnhan_nhomla(macongty,ngay,chuyen):
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_LA_HANG_NGAY] WHERE 1=1"
         if macongty:
-            query += f" AND CHUYEN LIKE '{macongty}%'"
+            query += f" AND NHOM LIKE '{macongty}%'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
         if chuyen:
@@ -571,7 +571,7 @@ def lay_baocao_thuong_congnhan_nhomdonggoi(macongty,ngay,chuyen):
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_DONG_GOI_HANG_NGAY] WHERE 1=1"
         if macongty:
-            query += f" AND CHUYEN LIKE '{macongty}%'"
+            query += f" AND NHOM LIKE '{macongty}%'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
         if chuyen:
@@ -589,7 +589,7 @@ def lay_baocao_thuong_congnhan_nhomndc(macongty,ngay,chuyen):
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_NDC_HANG_NGAY] WHERE 1=1"
         if macongty:
-            query += f" AND CHUYEN LIKE '{macongty}%'"
+            query += f" AND NHOM LIKE '{macongty}%'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
         if chuyen:
