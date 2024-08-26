@@ -553,7 +553,7 @@ def lay_baocao_thuong_congnhan_nhomla(macongty,ngay,chuyen):
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_LA_HANG_NGAY] WHERE 1=1"
         if macongty:
-            query += f" AND NHOM LIKE '{macongty}%'"
+            query += f" AND CHUYEN LIKE '{macongty}%'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
         if chuyen:
