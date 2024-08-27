@@ -274,6 +274,9 @@
                 </div>
             </div>
             <a href="/baocao_thuong_may" class="btn btn-warning btn-sm" >Báo cáo</a>
+            {% if "IED" in current_user.phongban %}
+            <a href="/danhsach_dihotro" class="btn btn-secondary btn-sm" >Danh sách đi hỗ trợ</a>
+            {% endif %}
         </div>        
             <div style="display:flex; justify-content: space-around; padding:10px">
                 <p><b>{{ current_user.masothe}} - {{ current_user.hoten}}</b></p>

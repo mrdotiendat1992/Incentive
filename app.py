@@ -8,7 +8,7 @@ from functools import wraps
 import logging
 from logging.handlers import RotatingFileHandler
 import urllib.parse
-from pandas import DataFrame,read_excel,ExcelWriter,to_numeric
+from pandas import DataFrame,read_excel,ExcelWriter,to_numeric,to_datetime
 from openpyxl import load_workbook
 import os
 import time
@@ -228,7 +228,25 @@ def lay_danhsach_di_hotro(chuyen):
         return list(result)
     except:
         return []
- 
+
+def lay_danhsach_di_hotro_tatca(mst,chuyen,ngay):
+    try:
+        conn = connect_db()
+        query = f"SELECT * FROM [INCENTIVE].[dbo].[CN_MAY_DI_HO_TRO] WHERE 1=1 "
+        if mst:
+            query +=f" AND MST='{mst}'"
+        if chuyen:
+            query +=f" AND CHUYEN='{chuyen}'"
+        if ngay:
+            query +=f" AND NGAY_DI_HO_TRO='{ngay}'"
+        query += " ORDER BY NGAY_DI_HO_TRO DESC, GIO_DI_HO_TRO ASC"
+        cursor = execute_query(conn, query)
+        result = cursor.fetchall()
+        close_db(conn)
+        return list(result)
+    except:
+        return []
+
 def lay_danhsach_tnc_chua_lenchuyen(chuyen):
     try:
         conn = connect_db()
@@ -655,7 +673,8 @@ def lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen):
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
-    except:
+    except Exception as e:
+        print(e)
         return []
     
 def lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen):
@@ -675,7 +694,8 @@ def lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen):
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
-    except:
+    except Exception as e:
+        print(e)
         return []
     
 def lay_baocao_scp_canhan(macongty,mst,tungay,denngay):
@@ -695,8 +715,26 @@ def lay_baocao_scp_canhan(macongty,mst,tungay,denngay):
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
-    except:
+    except Exception as e:
+        print(e)
         return []
+
+def capnhat_danhsach_dihotro(chuyendihotro,ngay,gio,sogio,id):
+    try:
+        conn = connect_db()
+        query = f"""
+            update INCENTIVE.dbo.CN_MAY_DI_HO_TRO
+            set CHUYEN_DI_HO_TRO='{chuyendihotro}',NGAY_DI_HO_TRO='{ngay}',GIO_DI_HO_TRO='{gio}',SO_GIO_HO_TRO='{sogio}'
+            where ID='{id}'
+        """
+        print(query)
+        execute_query(conn, query)
+        conn.commit()
+        close_db(conn)
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
 def login_required(f):
     @wraps(f)
@@ -730,7 +768,7 @@ def inject_notice():
     
 @login_manager.user_loader
 def load_user(user_id):
-    return Nhanvien.query.get(int(user_id))
+    return db.session.query(Nhanvien).get(int(user_id))
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -952,9 +990,6 @@ def taidulieulen():
     if request.method == "POST":
         try:
             file = request.files["file"]
-            if not file:
-                print("No file")
-                return redirect("/")
             thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
             filepath = f"tailen/data_{thoigian}.xlsx"
             file.save(filepath)
@@ -2682,6 +2717,95 @@ def capnhat_denngay_cn_tnc():
         print(f"Loi : {e}")
     return redirect("/")
     
+@app.route("/danhsach_dihotro", methods=["GET","POST"])
+def danhsach_dihotro():
+    if request.method == "GET":
+        mst = request.args.get("mst")
+        chuyen = request.args.get("chuyen")
+        ngay = request.args.get("ngay")
+        danhsach = lay_danhsach_di_hotro_tatca(mst,chuyen,ngay)
+        page = request.args.get(get_page_parameter(), type=int, default=1)
+        per_page = 10
+        total = len(danhsach)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_rows = danhsach[start:end]
+        pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+        return render_template("danhsach_dihotro.html", danhsach=paginated_rows,pagination=pagination)
+        
+    elif request.method == "POST":
+        mst = request.form.get("mst")
+        chuyen = request.form.get("chuyen")
+        ngay = request.form.get("ngay")
+        danhsach = lay_danhsach_di_hotro_tatca(mst,chuyen,ngay)
+        data = []
+        for row in danhsach:
+            data.append({
+                "Nhà máy": row[0],
+                "Mã số thẻ": row[1],
+                "Họ tên": row[2],
+                "Chức danh": row[3],
+                "Chuyền": row[4],
+                "Chuyền đi hỗ trợ": row[5],
+                "Ngày": row[6],
+                "Giờ": row[7],
+                "Số giờ": row[8],
+                "ID": row[9]
+            })
+        df = DataFrame(data)
+        df["Mã số thẻ"] = to_numeric(df['Mã số thẻ'], errors='coerce')
+        df["Số giờ"] = to_numeric(df['Số giờ'], errors='coerce')
+        df["Ngày"] = to_datetime(df['Ngày'], errors='coerce').dt.date
+        df["Giờ"] = to_datetime(df['Giờ'], errors='coerce').dt.time
+        output = BytesIO()
+        with ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False)
+
+        output.seek(0)
+        workbook = load_workbook(output)
+        sheet = workbook.active
+
+        for column in sheet.columns:
+            max_length = 0
+            column_letter = column[0].column_letter
+            for cell in column:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 2)
+            sheet.column_dimensions[column_letter].width = adjusted_width
+
+        output = BytesIO()
+        workbook.save(output)
+        output.seek(0)
+        time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+        response = make_response(output.read())
+        response.headers['Content-Disposition'] = f'attachment; filename=danhsachdihotro_{time_stamp}.xlsx'
+        response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        return response  
+        
+@app.route("/tailen_danhsach_dihotro", methods=["POST"])
+def tailen_danhsach_dihotro():       
+    if request.method == "POST":
+        file = request.files["file"]
+        thoigian = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+        filepath = f"tailen/dshotro_{thoigian}.xlsx"
+        file.save(filepath)
+        data = read_excel(filepath).to_dict(orient="records")
+        for row in data:
+            chuyendihotro = row["Chuyền đi hỗ trợ"]
+            ngay = row["Ngày"].date()
+            gio = row["Giờ"]
+            sogio = row["Số giờ"]
+            id = row["ID"]
+            if capnhat_danhsach_dihotro(chuyendihotro,ngay,gio,sogio,id):
+                flash("Đã cập nhật thành công !!!")
+            else:
+                flash("Đã cập nhật thất bại !!!")
+        return redirect("/danhsach_dihotro")
+        
 if __name__ == "__main__":
     try:
         if sys.argv[1]=="1":
