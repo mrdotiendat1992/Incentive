@@ -220,12 +220,18 @@ def them_nguoi_di_hotro(nhamay,chuyen,mst,hoten,chucdanh,chuyendihotro,ngaydieuc
 
 def lay_danhsach_di_hotro(chuyen):
     try:
-        conn = connect_db()
-        query = f"SELECT * FROM [INCENTIVE].[dbo].[CN_MAY_DI_HO_TRO] WHERE CHUYEN='{chuyen}'"
-        cursor = execute_query(conn, query)
-        result = cursor.fetchall()
-        close_db(conn)
-        return list(result)
+        if chuyen:
+            conn = connect_db()
+            if chuyen[2]=="S" and len(chuyen)==5:
+                query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_CHUYEN_MAY] WHERE LINE LIKE '{chuyen[0]}_S__' ORDER BY LINE"
+            else:
+                query = f"SELECT * FROM [INCENTIVE].[dbo].[DS_CHUYEN_MAY] WHERE LINE LIKE '{chuyen[0]}%' ORDER BY LINE"
+            cursor = execute_query(conn, query) 
+            result = cursor.fetchall()
+            close_db(conn)
+            return [line[0] for line in result]
+        else:
+            return []
     except:
         return []
 
