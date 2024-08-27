@@ -102,10 +102,30 @@
                         <td>{{ row[2] }}</td>
                         <td>{{ row[3] }}</td>
                         <td>{{ row[4] }}</td>
-                        <td><input type='text' name='chuyendihotro' value={{ row[5] }}></td>
-                        <td><input type='date' name='ngay' value={{ row[6] }}></td>
-                        <td><input type='time' name='gio' value={{ row[7][:8] }}></td>
-                        <td><input type='number' name='sogio' value={{ row[8] }}></td>
+                        <td>
+                            <form method="POST" action="/sua_chuyendi_hotro">
+                                <input type='text' name='chuyen' onchange="form.submit()" value={{ row[5] }}>
+                                <input type="hidden" name="id" value={{ row[9] }}>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="/sua_ngay_hotro">
+                                <input type='date' name='ngay' onchange="form.submit()" value={{ row[6] }}>
+                                <input type="hidden" name="id" value={{ row[9] }}>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="/sua_gio_hotro">
+                                <input type='time' name='gio' onchange="form.submit()" value={{ row[7][:8] }}>
+                                <input type="hidden" name="id" value={{ row[9] }}>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="/sua_sogio_hotro">
+                                <input type='number' name='sogio' onchange="form.submit()" value={{ row[8] }}>
+                                <input type="hidden" name="id" value={{ row[9] }}>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -739,6 +739,74 @@ def capnhat_danhsach_dihotro(chuyendihotro,ngay,gio,sogio,id):
         print(e)
         return False
 
+def doichuyendihotro(chuyen,id):
+    try:
+        conn = connect_db()
+        query = f"""
+            update INCENTIVE.dbo.CN_MAY_DI_HO_TRO
+            set CHUYEN_DI_HO_TRO='{chuyen}'
+            where ID='{id}'
+        """
+        print(query)
+        execute_query(conn, query)
+        conn.commit()
+        close_db(conn)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+        
+def doingaydihotro(ngay,id):
+    try:
+        conn = connect_db()
+        query = f"""
+            update INCENTIVE.dbo.CN_MAY_DI_HO_TRO
+            set NGAY_DI_HO_TRO='{ngay}'
+            where ID='{id}'
+        """
+        print(query)
+        execute_query(conn, query)
+        conn.commit()
+        close_db(conn)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+        
+def doigiodihotro(gio,id):
+    try:
+        conn = connect_db()
+        query = f"""
+            update INCENTIVE.dbo.CN_MAY_DI_HO_TRO
+            set GIO_DI_HO_TRO='{gio}'
+            where ID='{id}'
+        """
+        print(query)
+        execute_query(conn, query)
+        conn.commit()
+        close_db(conn)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+        
+def doisogiodihotro(sogio,id):
+    try:
+        conn = connect_db()
+        query = f"""
+            update INCENTIVE.dbo.CN_MAY_DI_HO_TRO
+            set SO_GIO_HO_TRO='{sogio}'
+            where ID='{id}'
+        """
+        print(query)
+        execute_query(conn, query)
+        conn.commit()
+        close_db(conn)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+        
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -2808,7 +2876,40 @@ def tailen_danhsach_dihotro():
             else:
                 flash("Đã cập nhật thất bại !!!")
         return redirect("/danhsach_dihotro")
+
+@app.route("/sua_chuyendi_hotro", methods=["POST"])       
+def sua_chuyendi_hotro():
+    if request.method == "POST":
+        chuyen = request.form.get("chuyen")
+        id = request.form.get("id")
+        doichuyendihotro(chuyen,id)
+        return redirect("/danhsach_dihotro")     
         
+@app.route("/sua_ngay_hotro", methods=["POST"])       
+def sua_ngay_hotro():
+    if request.method == "POST":
+        ngay = request.form.get("ngay")
+        id = request.form.get("id")
+        doingaydihotro(ngay,id)
+        return redirect("/danhsach_dihotro")    
+        
+@app.route("/sua_gio_hotro", methods=["POST"])       
+def sua_gio_hotro():
+    if request.method == "POST":
+        gio = request.form.get("gio")
+        id = request.form.get("id")
+        doigiodihotro(gio,id)
+        return redirect("/danhsach_dihotro")
+        
+@app.route("/sua_sogio_hotro", methods=["POST"])       
+def sua_sogio_hotro():
+    if request.method == "POST":
+        sogio = request.form.get("sogio")
+        id = request.form.get("id")
+        doisogiodihotro(sogio,id)
+        return redirect("/danhsach_dihotro")         
+        
+           
 if __name__ == "__main__":
     try:
         if sys.argv[1]=="1":
