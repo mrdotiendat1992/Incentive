@@ -1770,19 +1770,25 @@ def baocao_quanly():
             data = []
             for row in danhsach:
                 data.append({
-                    "Mã số thẻ": row[0],
-                    "Họ tên":row[1],
-                    "Ngày": datetime.datetime.strptime(row[4],"%Y-%m-%d").strftime("%d/%m/%Y"),
-                    "Chuyền":row[3],
-                    "Hệ số cá nhân": round(row[5],2) if row[5] else "",
-                    "Hệ số nhóm": round(row[7],2) if row[7] else "",
-                    "Thưởng nhóm": round(row[6]) if row[6] else "",
-                    "Thưởng cá nhân": round(row[8]) if row[8] else ""
+                    "Mã số thẻ": row[2],
+                    "Họ tên":row[3],
+                    "Ngày": datetime.datetime.strptime(row[0],"%Y-%m-%d").strftime("%d/%m/%Y"),
+                    "Chuyền":row[1],
+                    "Chức vụ": row[4],
+                    "Số giờ": row[5],
+                    "Hệ số": row[6],
+                    "Đánh giá": row[7], 
+                    "Hệ số đánh giá": row[8] if row[8] else "",
+                    "Tổng TGLV nhóm": row[9] if row[9] else "",
+                    "Thưởng nhóm": round(row[10]) if row[10] else "",
+                    "Thưởng cá nhân": round(row[11]) if row[11] else ""
                 })
             df = DataFrame(data)
             df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
-            df['Hệ số cá nhân'] = to_numeric(df['Hệ số cá nhân'], errors='coerce')
-            df['Hệ số nhóm'] = to_numeric(df['Hệ số nhóm'], errors='coerce')
+            df['Hệ số'] = to_numeric(df['Hệ số'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['Hệ số đánh giá'] = to_numeric(df['Hệ số đánh giá'], errors='coerce')
+            df['Tổng TGLV nhóm'] = to_numeric(df['Tổng TGLV nhóm'], errors='coerce')
             df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
             df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
             output = BytesIO()
