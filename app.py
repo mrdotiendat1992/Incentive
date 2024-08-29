@@ -1590,7 +1590,7 @@ def baocao_ndc():
             mst = request.args.get("mst")
             ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -1608,7 +1608,7 @@ def baocao_ndc():
             mst = request.form.get("mst")
             ngay = request.form.get("ngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -1766,7 +1766,7 @@ def baocao_quanly():
             mst = request.form.get("mst")
             ngay = request.form.get("ngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
