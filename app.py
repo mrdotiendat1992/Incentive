@@ -1598,10 +1598,10 @@ def baocao_ndc():
             end = start + per_page
             paginated_rows = danhsach[start:end]
             pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-            return render_template("baocao_thuong_quanly.html", danhsach=paginated_rows,pagination=pagination)
+            return render_template("baocao_thuong_ndc.html", danhsach=paginated_rows,pagination=pagination)
         except Exception as e:
             print(e)
-            return render_template("baocao_thuong_quanly.html", danhsach=[])
+            return render_template("baocao_thuong_ndc.html", danhsach=[])
     elif request.method == "POST":
         try:
             macongty = request.form.get("macongty")
@@ -1659,7 +1659,7 @@ def baocao_ndc():
             return response  
         except Exception as e:
             print(e)
-            return redirect("/baocao_thuong_quanly")
+            return redirect("/baocao_thuong_ndc")
         
 @app.route("/baocao_thuong_cnphu", methods=["GET","POST"])
 def baocao_cn_phu():
