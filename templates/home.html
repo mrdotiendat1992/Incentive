@@ -84,7 +84,7 @@
                                     <label for="info">Người đi hỗ trợ</label>
                                     <select class="form-control" id="nguoiduocdieuchuyen" name="nguoiduocdieuchuyen">
                                         {% for nguoi in danhsach_congnhan_hotro %}
-                                            <option value='{{ nguoi[1] }}_{{ nguoi[2] }}'>{{ nguoi[1] }} - {{ nguoi[2] }}</option>
+                                            <option value='{{ nguoi[1] }}_{{ nguoi[2] }}_{{ nguoi[3] }}'>{{ nguoi[1] }} - {{ nguoi[2] }}</option>
                                         {% endfor %}
                                     </select>
                                     <label for="chuyenhotro">Chuyền hỗ trợ</label>
@@ -110,14 +110,14 @@
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#tncchualenchuyenModal">
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#congnhandihotroModal">
                 DS đi hỗ trợ
             </button>
-            <div class="modal fade" id="tncchualenchuyenModal" tabindex="-1" role="dialog" aria-labelledby="tncchualenchuyenModalLabel" aria-hidden="true">
+            <div class="modal fade" id="congnhandihotroModal" tabindex="-1" role="dialog" aria-labelledby="congnhandihotroModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="tncchualenchuyenModalLabel">Danh sách công nhân đi hỗ trợ</h5>
+                            <h5 class="modal-title" id="congnhandihotroModalLabel">Danh sách công nhân đi hỗ trợ</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -165,6 +165,64 @@
                     </div>
                 </div>
             </div>
+
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#congnhandenhotroModal">
+                DS đến hỗ trợ
+            </button>
+            <div class="modal fade" id="congnhandenhotroModal" tabindex="-1" role="dialog" aria-labelledby="congnhandenhotroModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="congnhandenhotroModalLabel">Danh sách công nhân đến chuyền hỗ trợ</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            
+                                <div class="form-group">
+                                    {% if g.notice['line']|length == 1 %} 
+                                        <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ g.notice['line'][0] }}" readonly> 
+                                        {% else %}
+                                        <input type="text" class="form-control" id="line_dieuchuyendi" name="line_dieuchuyendi" value="{{ request.args.get('chuyen') }}" readonly>
+                                        {% endif %}
+                                </div>
+                                <table class="table table-bordered table-sm">
+                                    <thead>
+                                        <tr class="bg-primary">
+                                            <th>MST</th>
+                                            <th>Họ tên</th>
+                                            <th>Chuyền</th>
+                                            <th>Ngày</th>
+                                            <th>Giờ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for nguoi in danhsach_den_hotro %}
+                                            <tr>
+                                                <td>{{ nguoi[1] }}</td>
+                                                <td>{{ nguoi[2] }}</td>
+                                                <td>{{ nguoi[5] }}</td>
+                                                <td class="date_en">{{ nguoi[6] }}</td>
+                                                <td>
+                                                    <form action="/capnhatsogiodenhotro" method="POST">
+                                                        <input type="hidden" name="id_hotro" value="{{ nguoi[-1] }}">
+                                                        <input type="hidden" name="chuyen" value={{ request.args.get('chuyen','') }}>
+                                                        <input type="hidden" name="ngay" value={{ request.args.get('ngay','') }}>
+                                                        <input type="number" name="sogio" value="{{ nguoi[8] }}" onchange="form.submit()">
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <button class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#tncModal">
                 Nhận công nhân TNC
             </button>
