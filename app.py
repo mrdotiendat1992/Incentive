@@ -24,6 +24,7 @@ params = urllib.parse.quote_plus(
     "DRIVER={ODBC Driver 17 for SQL Server};"
     "SERVER=172.16.60.100;"
     "DATABASE=HR;"
+    
     "UID=huynguyen;"
     "PWD=Namthuan@123;"
 )
@@ -831,7 +832,32 @@ def doisogiodihotro(sogio,id):
     except Exception as e:
         print(e)
         return False
-        
+
+def lay_baocao_hieusuat_chitiet_may(nam,thang,macongty,mst,chuyen):
+    try:
+        conn = connect_db()
+        query = f"""select * from [INCENTIVE].[dbo].[TONG_HOP_EFF_MST_CHUYEN_LV] Where 1=1 """
+        if not thang:
+            thang = datetime.datetime.now().month
+        if not nam:
+            nam =  datetime.datetime.now().year
+        query += f" and Thang={thang} and Nam={nam}"
+        if macongty:
+            query += f" and CHUYEN like '{macongty}%'"
+        if mst:
+            query += f" and MST = '{thang}' "
+        if chuyen:
+            query += f" and CHUYEN = '{chuyen}' "
+        query += " order by NAM desc, THANG desc, CHUYEN asc, MST asc"
+        print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except Exception as e:
+        print(e)
+        return []
+
+      
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -2901,7 +2927,72 @@ def danhsach_dihotro():
         response.headers['Content-Disposition'] = f'attachment; filename=danhsachdihotro_{time_stamp}.xlsx'
         response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         return response  
-        
+
+@app.route("/baocao_hieusuat_may_chitiet", methods=["GET","POST"])
+def baocao_hieusuat_may_chitiet():
+    if request.method == "GET":
+        try:
+            nam = request.args.get("nam")
+            thang = request.args.get("thang")
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_hieusuat_chitiet_may(nam,thang,macongty,mst,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_hieusuat_may_chitiet.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_hieusuat_may_chitiet.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            nam = request.form.get("nam")
+            thang = request.form.get("thang")
+            macongty = request.form.get("macongty")
+            mst = request.args.form("mst")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_hieusuat_chitiet_may(nam,thang,macongty,mst,chuyen)
+            df = DataFrame(danhsach)
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocao_hieusuat_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_hieusuat_may_chitiet")
+       
 @app.route("/tailen_danhsach_dihotro", methods=["POST"])
 def tailen_danhsach_dihotro():       
     if request.method == "POST":
@@ -2971,3 +3062,5 @@ if __name__ == "__main__":
                     time.sleep(1)
     except:
         app.run(host="0.0.0.0", port=83, debug=True)
+        
+    
