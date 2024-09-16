@@ -17,6 +17,7 @@ import subprocess
 import numpy as np
 from waitress import serve
 import sys
+from openpyxl.styles import Font, PatternFill, NamedStyle
 
 used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
 
@@ -940,7 +941,7 @@ def inject_notice():
     
 @login_manager.user_loader
 def load_user(user_id):
-    return db.session.query(Nhanvien).get(int(user_id))
+    return db.session.get(Nhanvien, user_id)
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -3052,20 +3053,68 @@ def baocao_hieusuat_may_chitiet():
             df = DataFrame(data)
             if data:
                 df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+                df["01"] = to_numeric(df['01'], errors='coerce') 
+                df["02"] = to_numeric(df['02'], errors='coerce') 
+                df["03"] = to_numeric(df['03'], errors='coerce') 
+                df["04"] = to_numeric(df['04'], errors='coerce') 
+                df["05"] = to_numeric(df['05'], errors='coerce') 
+                df["06"] = to_numeric(df['06'], errors='coerce') 
+                df["07"] = to_numeric(df['07'], errors='coerce') 
+                df["08"] = to_numeric(df['08'], errors='coerce')
+                df["09"] = to_numeric(df['09'], errors='coerce') 
+                df["10"] = to_numeric(df['10'], errors='coerce') 
+                df["11"] = to_numeric(df['11'], errors='coerce') 
+                df["12"] = to_numeric(df['12'], errors='coerce') 
+                df["13"] = to_numeric(df['13'], errors='coerce') 
+                df["14"] = to_numeric(df['14'], errors='coerce') 
+                df["15"] = to_numeric(df['15'], errors='coerce') 
+                df["16"] = to_numeric(df['16'], errors='coerce') 
+                df["17"] = to_numeric(df['17'], errors='coerce') 
+                df["18"] = to_numeric(df['18'], errors='coerce') 
+                df["19"] = to_numeric(df['19'], errors='coerce') 
+                df["20"] = to_numeric(df['20'], errors='coerce') 
+                df["21"] = to_numeric(df['21'], errors='coerce') 
+                df["22"] = to_numeric(df['22'], errors='coerce') 
+                df["23"] = to_numeric(df['23'], errors='coerce') 
+                df["24"] = to_numeric(df['24'], errors='coerce') 
+                df["25"] = to_numeric(df['25'], errors='coerce') 
+                df["26"] = to_numeric(df['26'], errors='coerce') 
+                df["27"] = to_numeric(df['27'], errors='coerce') 
+                df["28"] = to_numeric(df['28'], errors='coerce') 
+                df["29"] = to_numeric(df['29'], errors='coerce') 
+                df["30"] = to_numeric(df['30'], errors='coerce') 
+                df["31"] = to_numeric(df['31'], errors='coerce') 
+                df["Trung bình"] = to_numeric(df['Trung bình'], errors='coerce') 
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
                 df.to_excel(writer, index=False)
 
-            # Điều chỉnh độ rộng cột
+            # Adjust column width and format the header row
             output.seek(0)
             workbook = load_workbook(output)
             sheet = workbook.active
 
+            # Style the header row
+            header_fill = PatternFill(start_color="0000FF", end_color="0000FF", fill_type="solid")
+            header_font = Font(bold=True, color="FFFFFF")
+
+            for cell in sheet[1]:
+                cell.fill = header_fill
+                cell.font = header_font
+
+            # Create a date format for short date
+            date_format = NamedStyle(name="Percentage", number_format="0.00%")
+            if "Percentage" not in workbook.named_styles:
+                workbook.add_named_style(date_format)
             for column in sheet.columns:
                 max_length = 0
                 column_letter = column[0].column_letter
                 for cell in column:
                     try:
+                        # Apply the date format to column L (assuming 'Ngày thực hiện' is in column 'L')
+                        if cell.column_letter in ['D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+                        'AA','AB','AC','AD','AE','AF','AG','AH','AI'] and cell.value is not None:
+                            cell.number_format = '0.00%'
                         if len(str(cell.value)) > max_length:
                             max_length = len(cell.value)
                     except:
@@ -3073,6 +3122,7 @@ def baocao_hieusuat_may_chitiet():
                 adjusted_width = (max_length + 2)
                 sheet.column_dimensions[column_letter].width = adjusted_width
 
+            # Save the modified workbook to the output BytesIO object
             output = BytesIO()
             workbook.save(output)
             output.seek(0)
@@ -3115,22 +3165,109 @@ def baocao_hieusuat_may_tonghop():
             mst = request.form.get("mst")
             chuyen = request.form.get("chuyen")
             danhsach = lay_baocao_hieusuat_tonghop_may(nam,thang,macongty,mst,chuyen)
-            df = DataFrame(danhsach)
-            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            data = [{
+                "Mã số thẻ": row[3],
+                "Họ tên" : row[4],
+                "Chuyền" : row[5],
+                "SCP": row[6],
+                "01" : row[7],
+                "02" : row[8],
+                "03" : row[9],
+                "04" : row[10],
+                "05" : row[11],
+                "06" : row[12],
+                "07" : row[13],
+                "08" : row[14],
+                "09" : row[15],
+                "10" : row[16],
+                "11" : row[17],
+                "12" : row[18],
+                "13" : row[19],
+                "14" : row[20],
+                "15" : row[21],
+                "16" : row[22],
+                "17" : row[23],
+                "18" : row[24],
+                "19" : row[25],
+                "20" : row[26],
+                "21" : row[27],
+                "22" : row[28],
+                "23" : row[29],
+                "24" : row[30],
+                "25" : row[31],
+                "26" : row[32],
+                "27" : row[33],
+                "28" : row[34],
+                "29" : row[35],
+                "30" : row[36],
+                "31" : row[37],
+                "Trung bình" : row[38]
+            } for row in danhsach]
+            df = DataFrame(data)
+            if data:
+                df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+                df["01"] = to_numeric(df['01'], errors='coerce') 
+                df["02"] = to_numeric(df['02'], errors='coerce') 
+                df["03"] = to_numeric(df['03'], errors='coerce') 
+                df["04"] = to_numeric(df['04'], errors='coerce') 
+                df["05"] = to_numeric(df['05'], errors='coerce') 
+                df["06"] = to_numeric(df['06'], errors='coerce') 
+                df["07"] = to_numeric(df['07'], errors='coerce') 
+                df["08"] = to_numeric(df['08'], errors='coerce')
+                df["09"] = to_numeric(df['09'], errors='coerce') 
+                df["10"] = to_numeric(df['10'], errors='coerce') 
+                df["11"] = to_numeric(df['11'], errors='coerce') 
+                df["12"] = to_numeric(df['12'], errors='coerce') 
+                df["13"] = to_numeric(df['13'], errors='coerce') 
+                df["14"] = to_numeric(df['14'], errors='coerce') 
+                df["15"] = to_numeric(df['15'], errors='coerce') 
+                df["16"] = to_numeric(df['16'], errors='coerce') 
+                df["17"] = to_numeric(df['17'], errors='coerce') 
+                df["18"] = to_numeric(df['18'], errors='coerce') 
+                df["19"] = to_numeric(df['19'], errors='coerce') 
+                df["20"] = to_numeric(df['20'], errors='coerce') 
+                df["21"] = to_numeric(df['21'], errors='coerce') 
+                df["22"] = to_numeric(df['22'], errors='coerce') 
+                df["23"] = to_numeric(df['23'], errors='coerce') 
+                df["24"] = to_numeric(df['24'], errors='coerce') 
+                df["25"] = to_numeric(df['25'], errors='coerce') 
+                df["26"] = to_numeric(df['26'], errors='coerce') 
+                df["27"] = to_numeric(df['27'], errors='coerce') 
+                df["28"] = to_numeric(df['28'], errors='coerce') 
+                df["29"] = to_numeric(df['29'], errors='coerce') 
+                df["30"] = to_numeric(df['30'], errors='coerce') 
+                df["31"] = to_numeric(df['31'], errors='coerce') 
+                df["Trung bình"] = to_numeric(df['Trung bình'], errors='coerce') 
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
                 df.to_excel(writer, index=False)
 
-            # Điều chỉnh độ rộng cột
+            # Adjust column width and format the header row
             output.seek(0)
             workbook = load_workbook(output)
             sheet = workbook.active
 
+            # Style the header row
+            header_fill = PatternFill(start_color="0000FF", end_color="0000FF", fill_type="solid")
+            header_font = Font(bold=True, color="FFFFFF")
+
+            for cell in sheet[1]:
+                cell.fill = header_fill
+                cell.font = header_font
+
+            # Create a date format for short date
+            date_format = NamedStyle(name="Percentage", number_format="0.00%")
+            if "Percentage" not in workbook.named_styles:
+                workbook.add_named_style(date_format)
             for column in sheet.columns:
                 max_length = 0
                 column_letter = column[0].column_letter
                 for cell in column:
                     try:
+                        # Apply the date format to column L (assuming 'Ngày thực hiện' is in column 'L')
+                        if cell.column_letter in ['E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+                        'AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ'] and cell.value is not None:
+                            cell.number_format = '0.00%'
                         if len(str(cell.value)) > max_length:
                             max_length = len(cell.value)
                     except:
@@ -3138,6 +3275,7 @@ def baocao_hieusuat_may_tonghop():
                 adjusted_width = (max_length + 2)
                 sheet.column_dimensions[column_letter].width = adjusted_width
 
+            # Save the modified workbook to the output BytesIO object
             output = BytesIO()
             workbook.save(output)
             output.seek(0)
@@ -3180,22 +3318,109 @@ def baocao_tienthuong_may():
             mst = request.form.get("mst")
             chuyen = request.form.get("chuyen")
             danhsach = lay_baocao_tienthuong_may(nam,thang,macongty,mst,chuyen)
-            df = DataFrame(danhsach)
-            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            data = [{
+                "Mã số thẻ": row[3],
+                "Họ tên" : row[4],
+                "Chuyền" : row[5],
+                "SCP": row[6],
+                "01" : row[7],
+                "02" : row[8],
+                "03" : row[9],
+                "04" : row[10],
+                "05" : row[11],
+                "06" : row[12],
+                "07" : row[13],
+                "08" : row[14],
+                "09" : row[15],
+                "10" : row[16],
+                "11" : row[17],
+                "12" : row[18],
+                "13" : row[19],
+                "14" : row[20],
+                "15" : row[21],
+                "16" : row[22],
+                "17" : row[23],
+                "18" : row[24],
+                "19" : row[25],
+                "20" : row[26],
+                "21" : row[27],
+                "22" : row[28],
+                "23" : row[29],
+                "24" : row[30],
+                "25" : row[31],
+                "26" : row[32],
+                "27" : row[33],
+                "28" : row[34],
+                "29" : row[35],
+                "30" : row[36],
+                "31" : row[37],
+                "Tổng thưởng" : row[38]
+            } for row in danhsach]
+            df = DataFrame(data)
+            if data:
+                df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+                df["01"] = to_numeric(df['01'], errors='coerce') 
+                df["02"] = to_numeric(df['02'], errors='coerce') 
+                df["03"] = to_numeric(df['03'], errors='coerce') 
+                df["04"] = to_numeric(df['04'], errors='coerce') 
+                df["05"] = to_numeric(df['05'], errors='coerce') 
+                df["06"] = to_numeric(df['06'], errors='coerce') 
+                df["07"] = to_numeric(df['07'], errors='coerce') 
+                df["08"] = to_numeric(df['08'], errors='coerce')
+                df["09"] = to_numeric(df['09'], errors='coerce') 
+                df["10"] = to_numeric(df['10'], errors='coerce') 
+                df["11"] = to_numeric(df['11'], errors='coerce') 
+                df["12"] = to_numeric(df['12'], errors='coerce') 
+                df["13"] = to_numeric(df['13'], errors='coerce') 
+                df["14"] = to_numeric(df['14'], errors='coerce') 
+                df["15"] = to_numeric(df['15'], errors='coerce') 
+                df["16"] = to_numeric(df['16'], errors='coerce') 
+                df["17"] = to_numeric(df['17'], errors='coerce') 
+                df["18"] = to_numeric(df['18'], errors='coerce') 
+                df["19"] = to_numeric(df['19'], errors='coerce') 
+                df["20"] = to_numeric(df['20'], errors='coerce') 
+                df["21"] = to_numeric(df['21'], errors='coerce') 
+                df["22"] = to_numeric(df['22'], errors='coerce') 
+                df["23"] = to_numeric(df['23'], errors='coerce') 
+                df["24"] = to_numeric(df['24'], errors='coerce') 
+                df["25"] = to_numeric(df['25'], errors='coerce') 
+                df["26"] = to_numeric(df['26'], errors='coerce') 
+                df["27"] = to_numeric(df['27'], errors='coerce') 
+                df["28"] = to_numeric(df['28'], errors='coerce') 
+                df["29"] = to_numeric(df['29'], errors='coerce') 
+                df["30"] = to_numeric(df['30'], errors='coerce') 
+                df["31"] = to_numeric(df['31'], errors='coerce') 
+                df["Tổng thưởng"] = to_numeric(df['Tổng thưởng'], errors='coerce') 
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
                 df.to_excel(writer, index=False)
 
-            # Điều chỉnh độ rộng cột
+            # Adjust column width and format the header row
             output.seek(0)
             workbook = load_workbook(output)
             sheet = workbook.active
 
+            # Style the header row
+            header_fill = PatternFill(start_color="0000FF", end_color="0000FF", fill_type="solid")
+            header_font = Font(bold=True, color="FFFFFF")
+
+            for cell in sheet[1]:
+                cell.fill = header_fill
+                cell.font = header_font
+
+            # Create a date format for short date
+            date_format = NamedStyle(name="Percentage", number_format="0.00%")
+            if "Percentage" not in workbook.named_styles:
+                workbook.add_named_style(date_format)
             for column in sheet.columns:
                 max_length = 0
                 column_letter = column[0].column_letter
                 for cell in column:
                     try:
+                        # Apply the date format to column L (assuming 'Ngày thực hiện' is in column 'L')
+                        if cell.column_letter in ['E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+                        'AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ'] and cell.value is not None:
+                            cell.number_format = '0'
                         if len(str(cell.value)) > max_length:
                             max_length = len(cell.value)
                     except:
@@ -3203,6 +3428,7 @@ def baocao_tienthuong_may():
                 adjusted_width = (max_length + 2)
                 sheet.column_dimensions[column_letter].width = adjusted_width
 
+            # Save the modified workbook to the output BytesIO object
             output = BytesIO()
             workbook.save(output)
             output.seek(0)
