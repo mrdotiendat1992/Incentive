@@ -3420,7 +3420,7 @@ def baocao_tienthuong_may():
                         # Apply the date format to column L (assuming 'Ngày thực hiện' is in column 'L')
                         if cell.column_letter in ['E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
                         'AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ'] and cell.value is not None:
-                            cell.number_format = '0'
+                            cell.number_format = '_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)'
                         if len(str(cell.value)) > max_length:
                             max_length = len(cell.value)
                     except:
