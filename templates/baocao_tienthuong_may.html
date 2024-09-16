@@ -1,0 +1,139 @@
+{% extends "baocao.html" %}
+{% block title %}Báo cáo tiền thưởng bộ phận May{% endblock title %}
+{% block page_title %}Báo cáo tiền thưởng bộ phận May{% endblock page_title %}
+{% block filter %}
+ <div id="filter">
+    <form method="get">
+        <div class="form-group">
+            <select type="text" name="macongty" class="form-control" id="macongty" value="{{ request.args.get('macongty','') }}" onchange="form.submit()">
+                {% if request.args.get('macongty')=='' %}
+                <option value="" selected>Tất cả</option>
+                {% else %}
+                <option value="">Tất cả</option>
+                {% endif %}
+                {% if request.args.get('macongty')=='1' %}
+                <option value="1" selected>NT1</option>
+                {% else %}
+                <option value="1">NT1</option>
+                {% endif %}
+                {% if request.args.get('macongty')=='2' %}
+                <option value="2" selected>NT2</option>
+                {% else %}
+                <option value="2">NT2</option>
+                {% endif %}
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="text" name="nam" class="form-control" id="nam" placeholder="Nam" onchange="form.submit()" value="{{ request.args.get('nam','') }}" >
+        </div>
+        <div class="form-group">
+            <input type="text" name="thang" class="form-control" id="thang" placeholder="Thang" onchange="form.submit()" value="{{ request.args.get('thang','') }}">
+        </div>
+        <div class="form-group">
+            <input type="text" name="mst" class="form-control" id="mst" placeholder="MST" value="{{ request.args.get('mst','') }}" onchange="form.submit()">
+        </div>
+        <div class="form-group">
+            <input type="text" name="chuyen" class="form-control" id="chuyen" placeholder="Chuyền" value="{{ request.args.get('chuyen','') }}" onchange="form.submit()">
+        </div>
+    </form>
+    </div>
+{% endblock filter %}
+{% block export %}
+<form method="post">
+    <input type="hidden" name="macongty" value="{{ request.args.get('macongty','') }}">
+    <input type="hidden" name="mst" value="{{ request.args.get('mst','') }}">
+    <input type="hidden" name="nam" value="{{ request.args.get('nam','') }}">
+    <input type="hidden" name="thang" value="{{ request.args.get('thang','') }}">
+    <input type="hidden" name="chuyen" value="{{ request.args.get('chuyen','') }}">
+    <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-fw fa-download"></i></button>
+</form>
+{% endblock export %}
+{% block content %}
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr class="bg-primary">
+            <th>MST</th>
+            <th>Họ tên</th>
+            <th>Chuyền</th>
+            <th>SCP</th>
+            <th>01</th>
+            <th>02</th>
+            <th>03</th>
+            <th>04</th>
+            <th>05</th>
+            <th>06</th>
+            <th>07</th>
+            <th>08</th>
+            <th>09</th>
+            <th>10</th>
+            <th>11</th>
+            <th>12</th>
+            <th>13</th>
+            <th>14</th>
+            <th>15</th>
+            <th>16</th>
+            <th>17</th>
+            <th>18</th>
+            <th>19</th>
+            <th>20</th>
+            <th>21</th>
+            <th>22</th>
+            <th>23</th>
+            <th>24</th>
+            <th>25</th>
+            <th>26</th>
+            <th>27</th>
+            <th>28</th>
+            <th>29</th>
+            <th>30</th>
+            <th>31</th>
+            <th>Trung bình</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in danhsach %}
+            <tr>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+                <td>{{ row[5] }}</td>
+                <td>{{ row[6] }}</td>
+                <td class="thuong">{{ row[7] }}</td>
+                <td class="thuong">{{ row[8] }}</td>
+                <td class="thuong">{{ row[9] }}</td>
+                <td class="thuong">{{ row[10] }}</td>
+                <td class="thuong">{{ row[11] }}</td>
+                <td class="thuong">{{ row[12] }}</td>
+                <td class="thuong">{{ row[13] }}</td>
+                <td class="thuong">{{ row[14] }}</td>
+                <td class="thuong">{{ row[15] }}</td>
+                <td class="thuong">{{ row[16] }}</td>
+                <td class="thuong">{{ row[17] }}</td>
+                <td class="thuong">{{ row[18] }}</td>
+                <td class="thuong">{{ row[19] }}</td>
+                <td class="thuong">{{ row[20] }}</td>
+                <td class="thuong">{{ row[21] }}</td>
+                <td class="thuong">{{ row[22] }}</td>
+                <td class="thuong">{{ row[23] }}</td>
+                <td class="thuong">{{ row[24] }}</td>
+                <td class="thuong">{{ row[25] }}</td>
+                <td class="thuong">{{ row[26] }}</td>
+                <td class="thuong">{{ row[27] }}</td>
+                <td class="thuong">{{ row[28] }}</td>
+                <td class="thuong">{{ row[29] }}</td>
+                <td class="thuong">{{ row[30] }}</td>
+                <td class="thuong">{{ row[31] }}</td>
+                <td class="thuong">{{ row[32] }}</td>
+                <td class="thuong">{{ row[33] }}</td>
+                <td class="thuong">{{ row[34] }}</td>
+                <td class="thuong">{{ row[35] }}</td>
+                <td class="thuong">{{ row[36] }}</td>
+                <td class="thuong">{{ row[37] }}</td>
+                <td class="thuong">{{ row[38] }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script>
+</script>
+{% endblock content %}
+

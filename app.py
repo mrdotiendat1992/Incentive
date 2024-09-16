@@ -171,17 +171,20 @@ def lay_danhsach_sanluong(ngay, chuyen, style,mst,hoten,macongdoan):
         return []
 
 def capnhat_sanluong(mst,hoten,chuyen,ngay,style,macongdoan,sanluong):
-    try:
-        conn = connect_db()
-        query = f"INSERT INTO [INCENTIVE].[dbo].[SL_CA_NHAN] (MST,HO_TEN,CHUYEN,NGAY,STYLE,MA_CONG_DOAN,SL_CA_NHAN) VALUES('{mst}', N'{hoten}', '{chuyen}', '{ngay}', '{style}', '{macongdoan}', '{sanluong}')"
-        
+    conn = connect_db()
+    query = f"INSERT INTO [INCENTIVE].[dbo].[SL_CA_NHAN] (MST,HO_TEN,CHUYEN,NGAY,STYLE,MA_CONG_DOAN,SL_CA_NHAN) VALUES('{mst}', N'{hoten}', '{chuyen}', '{ngay}', '{style}', '{macongdoan}', '{sanluong}')"
+    # print(query)
+    try:   
         execute_query(conn, query)
         conn.commit()
         close_db(conn)
-        return True
+        return {"ketqua":True}
     except Exception as e:
-        print(e)
-        return False
+        
+        return {
+                "ketqua":False,
+                "lido":e,
+                "query": query}
 
 def xoa_sanluong(id):
     conn = connect_db()
@@ -849,7 +852,31 @@ def lay_baocao_hieusuat_chitiet_may(nam,thang,macongty,mst,chuyen):
         if chuyen:
             query += f" and CHUYEN = '{chuyen}' "
         query += " order by NAM desc, THANG desc, CHUYEN asc, MST asc"
-        print(query)
+        # print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except Exception as e:
+        print(e)
+        return []
+        
+def lay_baocao_hieusuat_tonghop_may(nam,thang,macongty,mst,chuyen):
+    try:
+        conn = connect_db()
+        query = f"""select * from [INCENTIVE].[dbo].[TONG_HOP_EFF_CN_MAY] Where 1=1 """
+        if not thang:
+            thang = datetime.datetime.now().month
+        if not nam:
+            nam =  datetime.datetime.now().year
+        query += f" and Thang={thang} and Nam={nam}"
+        if macongty:
+            query += f" and CHUYEN like '{macongty}%'"
+        if mst:
+            query += f" and MST = '{thang}' "
+        if chuyen:
+            query += f" and CHUYEN = '{chuyen}' "
+        query += " order by NAM desc, THANG desc, CHUYEN asc, MST asc"
+        # print(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -857,7 +884,30 @@ def lay_baocao_hieusuat_chitiet_may(nam,thang,macongty,mst,chuyen):
         print(e)
         return []
 
-      
+def lay_baocao_tienthuong_may(nam,thang,macongty,mst,chuyen):
+    try:
+        conn = connect_db()
+        query = f"""select * from [INCENTIVE].[dbo].[TONG_HOP_TIEN_THUONG_CN_MAY] Where 1=1 """
+        if not thang:
+            thang = datetime.datetime.now().month
+        if not nam:
+            nam =  datetime.datetime.now().year
+        query += f" and Thang={thang} and Nam={nam}"
+        if macongty:
+            query += f" and CHUYEN like '{macongty}%'"
+        if mst:
+            query += f" and MST = '{thang}' "
+        if chuyen:
+            query += f" and CHUYEN = '{chuyen}' "
+        query += " order by NAM desc, THANG desc, CHUYEN asc, MST asc"
+        # print(query)
+        rows = execute_query(conn, query).fetchall()
+        close_db(conn)
+        return rows
+    except Exception as e:
+        print(e)
+        return []
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -1130,15 +1180,20 @@ def taidulieulen():
             filepath = f"tailen/data_{thoigian}.xlsx"
             file.save(filepath)
             data = read_excel(filepath).to_dict(orient="records")
+            x=1
             for row in data:
-                capnhat_sanluong(
+                # print(row['Ngày'])
+                ketqua =  capnhat_sanluong(
                     row["Mã số thẻ"],
                     row["Họ tên"],
                     row["Chuyền"],
-                    datetime.datetime.strptime(row["Ngày"],"%d/%m/%Y").strftime("%Y-%m-%d"),
+                    datetime.datetime.strptime(row["Ngày"],"%d/%m/%Y").strftime("%Y-%m-%d") if type(row['Ngày'])==str else row['Ngày'].date(),
                     row["Style"],
                     row["Mã công đoạn"],
                     row["Sản lượng"])
+                # print(ketqua)
+                if not ketqua["ketqua"]:
+                    print(f"Loi dong so {x}, li do {ketqua["lido"]}, query {ketqua["query"]}")
         except Exception as e:
             print(e)
     chuyen = request.form.get('chuyen')
@@ -2954,9 +3009,112 @@ def baocao_hieusuat_may_chitiet():
             nam = request.form.get("nam")
             thang = request.form.get("thang")
             macongty = request.form.get("macongty")
-            mst = request.args.form("mst")
+            mst = request.form.get("mst")
             chuyen = request.form.get("chuyen")
             danhsach = lay_baocao_hieusuat_chitiet_may(nam,thang,macongty,mst,chuyen)
+            data = [{
+                "Mã số thẻ": row[3],
+                "Họ tên" : row[4],
+                "Chuyền" : row[5],
+                "01" : row[6],
+                "02" : row[7],
+                "03" : row[8],
+                "04" : row[9],
+                "05" : row[10],
+                "06" : row[11],
+                "07" : row[12],
+                "08" : row[13],
+                "09" : row[14],
+                "10" : row[15],
+                "11" : row[16],
+                "12" : row[17],
+                "13" : row[18],
+                "14" : row[19],
+                "15" : row[20],
+                "16" : row[21],
+                "17" : row[22],
+                "18" : row[23],
+                "19" : row[24],
+                "20" : row[25],
+                "21" : row[26],
+                "22" : row[27],
+                "23" : row[28],
+                "24" : row[29],
+                "25" : row[30],
+                "26" : row[31],
+                "27" : row[32],
+                "28" : row[33],
+                "29" : row[34],
+                "30" : row[35],
+                "31" : row[36],
+                "Trung bình" : row[37]
+            } for row in danhsach]
+            df = DataFrame(data)
+            if data:
+                df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocao_hieusuat_chitiet_may_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_hieusuat_may_chitiet")
+
+@app.route("/baocao_hieusuat_may_tonghop", methods=["GET","POST"])
+def baocao_hieusuat_may_tonghop():
+    if request.method == "GET":
+        try:
+            nam = request.args.get("nam")
+            thang = request.args.get("thang")
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_hieusuat_tonghop_may(nam,thang,macongty,mst,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_hieusuat_may_tonghop.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_hieusuat_may_tonghop.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            nam = request.form.get("nam")
+            thang = request.form.get("thang")
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_hieusuat_tonghop_may(nam,thang,macongty,mst,chuyen)
             df = DataFrame(danhsach)
             df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
             output = BytesIO()
@@ -2986,13 +3144,78 @@ def baocao_hieusuat_may_chitiet():
             time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
             # Trả file về cho client
             response = make_response(output.read())
-            response.headers['Content-Disposition'] = f'attachment; filename=baocao_hieusuat_{time_stamp}.xlsx'
+            response.headers['Content-Disposition'] = f'attachment; filename=baocao_hieusuat_tonghop_may_{time_stamp}.xlsx'
             response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             return response  
         except Exception as e:
             print(e)
-            return redirect("/baocao_hieusuat_may_chitiet")
-       
+            return redirect("/baocao_hieusuat_may_tonghop")
+
+@app.route("/baocao_tienthuong_may", methods=["GET","POST"])
+def baocao_tienthuong_may():
+    if request.method == "GET":
+        try:
+            nam = request.args.get("nam")
+            thang = request.args.get("thang")
+            macongty = request.args.get("macongty")
+            mst = request.args.get("mst")
+            chuyen = request.args.get("chuyen")
+            danhsach = lay_baocao_tienthuong_may(nam,thang,macongty,mst,chuyen)
+            page = request.args.get(get_page_parameter(), type=int, default=1)
+            per_page = 10
+            total = len(danhsach)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_rows = danhsach[start:end]
+            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+            return render_template("baocao_tienthuong_may.html", danhsach=paginated_rows,pagination=pagination)
+        except Exception as e:
+            print(e)
+            return render_template("baocao_tienthuong_may.html", danhsach=[])
+    elif request.method == "POST":
+        try:
+            nam = request.form.get("nam")
+            thang = request.form.get("thang")
+            macongty = request.form.get("macongty")
+            mst = request.form.get("mst")
+            chuyen = request.form.get("chuyen")
+            danhsach = lay_baocao_tienthuong_may(nam,thang,macongty,mst,chuyen)
+            df = DataFrame(danhsach)
+            df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
+            output = BytesIO()
+            with ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
+
+            # Điều chỉnh độ rộng cột
+            output.seek(0)
+            workbook = load_workbook(output)
+            sheet = workbook.active
+
+            for column in sheet.columns:
+                max_length = 0
+                column_letter = column[0].column_letter
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                sheet.column_dimensions[column_letter].width = adjusted_width
+
+            output = BytesIO()
+            workbook.save(output)
+            output.seek(0)
+            time_stamp = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            # Trả file về cho client
+            response = make_response(output.read())
+            response.headers['Content-Disposition'] = f'attachment; filename=baocao_tienthuong_may_{time_stamp}.xlsx'
+            response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            return response  
+        except Exception as e:
+            print(e)
+            return redirect("/baocao_hieusuat_may_tonghop")
+           
 @app.route("/tailen_danhsach_dihotro", methods=["POST"])
 def tailen_danhsach_dihotro():       
     if request.method == "POST":
