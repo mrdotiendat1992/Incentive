@@ -1812,19 +1812,27 @@ def baocao_cn_phu():
             data = []
             for row in danhsach:
                 data.append({
-                    "Mã số thẻ": row[0],
-                    "Họ tên":row[1],
-                    "Ngày": datetime.datetime.strptime(row[4],"%Y-%m-%d").strftime("%d/%m/%Y"),
-                    "Chuyền":row[3],
-                    "Hệ số cá nhân": round(row[5],2) if row[5] else "",
-                    "Hệ số nhóm": round(row[7],2) if row[7] else "",
-                    "Thưởng nhóm": round(row[6]) if row[6] else "",
-                    "Thưởng cá nhân": round(row[8]) if row[8] else ""
+                    "Mã số thẻ": row[2],
+                    "Họ tên":row[3],
+                    "Ngày": row[0],
+                    "Chuyền":row[1],
+                    "Chức danh": row[4],
+                    "Số giờ": round(row[5],2) if row[5] else 0.0,
+                    "Hệ số": round(row[6],2) if row[6] else 0.0,
+                    "Đánh giá": row[7] if row[7] else "",
+                    "Hệ số đánh giá": round(row[8],2) if row[8] else 0.0,
+                    "Tổng TGLV nhóm": round(row[9]) if row[9] else 0.0,
+                    "Thưởng nhóm": round(row[10]) if row[10] else 0,
+                    "Thưởng cá nhân": round(row[11]) if row[11] else 0
                 })
             df = DataFrame(data)
+            df['Ngày'] = to_datetime(df['Ngày'], errors='coerce')
             df['Mã số thẻ'] = to_numeric(df['Mã số thẻ'], errors='coerce')
-            df['Hệ số cá nhân'] = to_numeric(df['Hệ số cá nhân'], errors='coerce')
-            df['Hệ số nhóm'] = to_numeric(df['Hệ số nhóm'], errors='coerce')
+            df['Số giờ'] = to_numeric(df['Số giờ'], errors='coerce')
+            df['Hệ số'] = to_numeric(df['Hệ số'], errors='coerce')
+            df['Hệ số đánh giá'] = to_numeric(df['Hệ số đánh giá'], errors='coerce')
+            df['Hệ số đánh giá'] = to_numeric(df['Hệ số đánh giá'], errors='coerce')
+            df['Tổng TGLV nhóm'] = to_numeric(df['Tổng TGLV nhóm'], errors='coerce')
             df['Thưởng nhóm'] = to_numeric(df['Thưởng nhóm'], errors='coerce')
             df['Thưởng cá nhân'] = to_numeric(df['Thưởng cá nhân'], errors='coerce')
             output = BytesIO()
@@ -2339,23 +2347,25 @@ def baocao_nhomndc():
             data = []
             for row in danhsach:
                 data.append({
-                    "Ngày": datetime.datetime.strptime(row[0],"%Y-%m-%d").strftime("%d/%m/%Y"),
-                    "Chuyền":row[1],
-                    "Số công nhân":round(row[2],2) if row[2] else "",
+                    "Ngày": row[1],
+                    "Chuyền":row[0],
+                    "Số công nhân":row[2],
                     "Nhà máy": row[3],
                     "UI": row[4],
-                    "Đánh giá 6S": row[5],
-                    "HS 6S": row[6],
-                    "OT FNS": row[7],
-                    "OT NDC": row[8],
-                    "Hệ số OT": row[9],
-                    "Số ngày công": row[10],
-                    "Tổng thưởng nhóm": round(row[11]) if row[11] else "",
+                    "OT FNS": row[5],
+                    "OT NDC": row[6],
+                    "Hệ số OT": row[7],
+                    "Số ngày công": row[8],
+                    "Tổng thưởng nhóm": round(row[9]) if row[9] else 0,
                 })
             df = DataFrame(data)
             
             df['Tổng thưởng nhóm'] = to_numeric(df['Tổng thưởng nhóm'], errors='coerce')
-            output = BytesIO()
+            df['UI'] = to_numeric(df['UI'], errors='coerce')
+            df['OT FNS'] = to_numeric(df['OT FNS'], errors='coerce')
+            df['OT NDC'] = to_numeric(df['OT NDC'], errors='coerce')
+            df['Hệ số OT'] = to_numeric(df['Hệ số OT'], errors='coerce')
+            df['Số ngày công'] = to_numeric(df['Số ngày công'], errors='coerce')
             output = BytesIO()
             with ExcelWriter(output, engine='openpyxl') as writer:
                 df.to_excel(writer, index=False)
