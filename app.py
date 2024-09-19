@@ -307,7 +307,7 @@ def thaydoi_denngay_cn_tnc(id,ngay):
     try:
         conn = connect_db()
         query = f"update [INCENTIVE].[dbo].[CN_TNC_NGOI_CHUYEN] SET DEN_NGAY='{ngay}' WHERE ID='{id}'"
-        
+        print(query)
         execute_query(conn, query)
         conn.commit()
         close_db(conn)
