@@ -1,5 +1,5 @@
 from helper.utils import connect_db, execute_query, close_db, execute_query_data
-from flask import make_response, redirect
+from flask import make_response
 from openpyxl import Workbook
 from openpyxl.styles import Border, Side, Alignment
 from io import BytesIO
@@ -14,7 +14,6 @@ def get_data(filters, page, size, table, order_by):
 
         conditions = []
         for key, value in filters.items():
-            print(value, value.get('value'))
             if value.get('value'):
                 match value.get("type"):
                     case "approximately":
