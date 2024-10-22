@@ -29,7 +29,9 @@
                 <th scope="col">Họ tên</th>
                 <th scope="col">Chuyền</th>
                 <th scope="col">Ngày</th>
-                <th scope="col">Hiệu suất</th>
+                <th scope="col">Style</th>
+                <th scope="col">Mã công đoạn</th>
+                <th scope="col">Sản lượng</th>
               </tr>
             </thead>
             <tbody>
@@ -41,12 +43,14 @@
                             <td>{{row[2]}}</td>
                             <td>{{row[3]}}</td>
                             <td>{{row[4]}}</td>
-                            <td>{{row[5]}}%</td>
+                            <td>{{row[5]}}</td>
+                            <td>{{row[6]}}</td>
+                            <td>{{row[7]}}</td>
                         </tr>
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colSpan="6" style="text-align:center">Không có dữ liệu</td>
+                        <td colSpan="8" style="text-align:center">Không có dữ liệu</td>
                     </tr> 
                 {% endif %}
             </tbody>
