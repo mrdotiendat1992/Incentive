@@ -1,0 +1,88 @@
+{% extends "nhap_excel.html" %}
+{% block content %}
+    <div class="flex gap-10 border-b">
+        <button type="button" class="btn btn-primary" onclick="handeGetFile()">Tải file</button>
+        <form class="flex gap-10">
+            <input type="file" class="form-control input_custom">
+            <input class="btn btn-success" type="submit" value="Lưu"/>
+        </form>
+    </div>
+    <div class="flex gap-10">
+        <form class="flex gap-10 mt-10" action="/sam_sew/filter" method="POST">
+            <input type="text" class="form-control" placeholder="Nhập Style" name="style" value="{{request.args.get("style", "")}}"/>
+            <input type="text" class="form-control" placeholder="Nhập mã công đoạn" name="macongdoan" value="{{request.args.get("macongdoan", "")}}"/>
+            <button type="submit" class="btn btn-success">Tìm kiếm</button>
+        </form>
+        <form class="mt-10" action="/sam_sew" method="GET">
+            <button class="btn btn-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </buton>
+        </form>
+    </div>
+    <div class="mt-20">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Style</th>
+                    <th scope="col">Mã công đoạn</th>
+                    <th scope="col">Tên công đoạn</th>
+                    <th scope="col">SAM</th>
+                    <th scope="col">Phân loại công đoạn</th>
+                    <th scope="col">Khách hàng</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if danhsach %}
+                    {% for row in danhsach %}
+                        <tr>
+                            <td>{{row[0]}}</td>
+                            <td>{{row[1]}}</td>
+                            <td>{{row[2]}}</td>
+                            <td>{{row[3]}}</td>
+                            <td>{{row[4]}}</td>
+                            <td>{{row[5]}}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colSpan="6" style="text-align:center;">Không có dữ liệu</td>
+                    </tr> 
+                {% endif %}
+            </tbody>
+        </table>
+        <div style="display: flex; justify-content: space-around;">
+            <div class="pagination">{{ pagination.links }}</div>
+        </div>
+    </div>
+    <script>
+        const handeGetFile = () => {
+            fetch("/sam_sew/excel")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Có lỗi từ hệ thống!');
+                }
+
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = 'sam_sew.xlsx'
+                if (contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
+                    const matches = contentDisposition.match(/filename="([^"]+)"/);
+                    if (matches && matches[1]) {
+                        filename = matches[1];
+                    }
+                }
+        
+                return response.blob().then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename; 
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                });
+            })
+            .catch(error => console.error('Có lỗi khi tải về: ', error));
+        }
+    </script>
+{% endblock content %}
