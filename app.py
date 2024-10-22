@@ -1,13 +1,8 @@
-from flask import Flask, render_template, request, url_for, redirect, g, flash, jsonify, send_file, session, flash, get_flashed_messages, render_template_string,make_response
-from flask_sqlalchemy import SQLAlchemy
+from flask import render_template, request, url_for, redirect, g, flash, jsonify, send_file, session, flash, get_flashed_messages, render_template_string,make_response
 from flask_paginate import Pagination, get_page_parameter
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
-import pyodbc
 import datetime
 from functools import wraps
-import logging
-from logging.handlers import RotatingFileHandler
-import urllib.parse
 from pandas import DataFrame,read_excel,ExcelWriter,to_numeric,to_datetime
 from openpyxl import load_workbook
 import os
@@ -18,33 +13,8 @@ import numpy as np
 from waitress import serve
 import sys
 from openpyxl.styles import Font, PatternFill, NamedStyle
-
-used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
-
-params = urllib.parse.quote_plus(
-    "DRIVER={ODBC Driver 17 for SQL Server};"
-    "SERVER=172.16.60.100;"
-    "DATABASE=HR;"
-    
-    "UID=huynguyen;"
-    "PWD=Namthuan@123;"
-)
-
-app = Flask("incentive_system")
-app.config["SQLALCHEMY_DATABASE_URI"] = f"mssql+pyodbc:///?odbc_connect={params}"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config["SECRET_KEY"] = "incentive_system"
-
-db = SQLAlchemy(app)
-
-handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1, encoding='utf-8')
-handler.setLevel(logging.INFO)
-formatter = logging.Formatter(
-    '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-)
-handler.setFormatter(formatter)
-app.logger.addHandler(handler)
-app.logger.setLevel(logging.INFO)
+from config_app import *
+from utils import *
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -66,18 +36,6 @@ class Nhanvien(UserMixin, db.Model):
 
 def chuyen_so_thanh_sotien(so):
     return "{:,.0f}".format(so)
-    
-def connect_db():
-    conn = pyodbc.connect(r'DRIVER={SQL Server};SERVER=172.16.60.100;DATABASE=HR;UID=huynguyen;PWD=Namthuan@123')
-    return conn
-
-def close_db(conn):
-    conn.close()
-    
-def execute_query(conn, query):
-    cursor = conn.cursor()
-    cursor.execute(query)
-    return cursor
 
 def get_line(masothe,macongty):
     try:
@@ -3503,7 +3461,17 @@ def sua_sogio_hotro():
         id = request.form.get("id")
         doisogiodihotro(sogio,id)
         return redirect("/danhsach_dihotro")         
-        
+
+@app.route("/nhap_excel", methods=["GET"])
+def nhap_excel():
+    if request.method == "GET":
+        try:    
+            return redirect("hieusuat_tnc")
+        except Exception as e:
+            print(e)
+            return redirect("hieusuat_tnc")
+
+
            
 if __name__ == "__main__":
     try:
