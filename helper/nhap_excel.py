@@ -14,20 +14,17 @@ def get_data(filters, page, size, table, order_by):
 
         conditions = []
         for key, value in filters.items():
+            print(value, value.get('value'))
             if value.get('value'):
                 match value.get("type"):
                     case "approximately":
                         conditions.append(f"{key} LIKE '%{value.get('value')}%'")
-                        break
                     case "gte":
                         conditions.append(f"{key} >= '{value.get('value')}'")
-                        break
                     case "lte":
                         conditions.append(f"{key} <= '{value.get('value')}'")
-                        break
-                    case default: 
+                    case _: 
                         conditions.append(f"{key} = '{value.get('value')}'")
-                        break
 
         if conditions:
             query += " WHERE " + " AND ".join(conditions)

@@ -27,6 +27,7 @@ app.register_blueprint(scp)
 app.register_blueprint(samsew)
 app.register_blueprint(donhang)
 app.register_blueprint(quanly)
+app.register_blueprint(loi)
 
 db = SQLAlchemy(app)
 handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1, encoding='utf-8')

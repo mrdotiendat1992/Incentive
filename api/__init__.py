@@ -4,3 +4,4 @@ from .scp_ca_nhan import scp
 from .sam_sew import samsew
 from .trang_thai_don_hang import donhang
 from .danh_gia_quan_ly import quanly
+from .ti_le_loi import loi

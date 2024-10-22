@@ -3467,10 +3467,14 @@ def sua_sogio_hotro():
 def nhap_excel():
     if request.method == "GET":
         try:    
-            return redirect("hieusuat_tnc")
+            if "IED" in current_user.phongban:
+                return redirect("/hieusuat_tnc")
+            if "QAD" in current_user.phongban:
+                return redirect("/ti_le_loi")
+            return redirect("/")
         except Exception as e:
             print(e)
-            return redirect("hieusuat_tnc")
+            return redirect("/")
 
 if __name__ == "__main__":
     try:
