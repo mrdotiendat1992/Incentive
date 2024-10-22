@@ -8,18 +8,17 @@
         </form>
     </div>
     <div class="flex gap-10">
-        <form class="flex gap-10 mt-10" action="/scp_canhan/filter" method="POST">
-            <select class="form-select" name="nhamay" value={{request.args.get("nhamay", "")}}>
+        <form class="flex gap-10 mt-10" action="/danh_gia_quan_ly/filter" method="POST">
+            <select class="form-select" name="nhamay">
                 <option value="" {% if request.args.get("nhamay", "") == "" %}selected{% endif %}>Tất cả</option>
                 <option value="NT1" {% if request.args.get("nhamay", "") == "NT1" %}selected{% endif %}> NT1</option>
                 <option value="NT2" {% if request.args.get("nhamay", "") == "NT2" %}selected{% endif %}>{{selected if request.args.get("nhamay", "") == "NT1" else ""}} NT2</option>
             </select>
+            <input type="date" class="form-control" name="ngay" value="{{request.args.get("ngay", "")}}"/>
             <input type="text" class="form-control" placeholder="Nhập mã số thẻ" name="mst" value="{{request.args.get("mst", "")}}"/>
-            <input type="date" class="form-control" title="Từ ngày" name="tungay" value="{{request.args.get("tungay", "")}}"/>
-            <input type="date" class="form-control" title="Đến ngày" name="denngay" value="{{request.args.get("denngay", "")}}"/>
             <button type="submit" class="btn btn-success">Tìm kiếm</button>
         </form>
-        <form class="mt-10" action="/scp_canhan" method="GET">
+        <form class="mt-10" action="/danh_gia_quan_ly" method="GET">
             <button class="btn btn-danger">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </buton>
@@ -31,10 +30,8 @@
                 <tr>
                     <th scope="col">Nhà máy</th>
                     <th scope="col">Mã số thẻ</th>
-                    <th scope="col">Họ tên</th>
-                    <th scope="col">Từ ngày</th>
-                    <th scope="col">Đến ngày</th>
-                    <th scope="col">SCP</th>
+                    <th scope="col">Ngày</th>
+                    <th scope="col">Đánh giá</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,13 +42,11 @@
                             <td>{{row[1]}}</td>
                             <td>{{row[2]}}</td>
                             <td>{{row[3]}}</td>
-                            <td>{{row[4]}}</td>
-                            <td>{{row[5]}}</td>
                         </tr>
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colSpan="6" style="text-align:center;">Không có dữ liệu</td>
+                        <td colSpan="4" style="text-align:center;">Không có dữ liệu</td>
                     </tr> 
                 {% endif %}
             </tbody>
@@ -62,14 +57,14 @@
     </div>
     <script>
         const handeGetFile = () => {
-            fetch("/scp_canhan/excel")
+            fetch("/danh_gia_quan_ly/excel")
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Có lỗi từ hệ thống!');
                 }
 
                 const contentDisposition = response.headers.get('Content-Disposition');
-                let filename = 'scp_canhan.xlsx'
+                let filename = 'danh_gia_quan_ly.xlsx'
                 if (contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
                     const matches = contentDisposition.match(/filename="([^"]+)"/);
                     if (matches && matches[1]) {

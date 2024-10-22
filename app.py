@@ -2896,6 +2896,7 @@ def danhsach_dihotro():
         start = (page - 1) * per_page
         end = start + per_page
         paginated_rows = danhsach[start:end]
+        print(paginated_rows)
         pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
         return render_template("danhsach_dihotro.html", danhsach=paginated_rows,pagination=pagination)
         
