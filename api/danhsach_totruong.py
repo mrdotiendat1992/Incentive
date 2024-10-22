@@ -15,11 +15,20 @@ def danhsach_totruong():
         mst = request.args.get("mst")
         page = request.args.get(get_page_parameter(), type=int, default=1)
         filters = {
-            "nha_may": nhamay,
-            "chuyen": chuyen,
-            "mst": mst
+            "nha_may": {
+                "type": "equal",
+                "value": nhamay
+            },
+            "chuyen": {
+                "type": "approximately",
+                "value": chuyen
+            },
+            "mst": {
+                "type": "equal",
+                "value": mst
+            }
         }
-        data, total = get_data(filters, page, SIZE, "[INCENTIVE].[dbo].[DS_TO_TRUONG]").values()
+        data, total = get_data(filters, page, SIZE, "[INCENTIVE].[dbo].[DS_TO_TRUONG]", "NHA_MAY").values()
         pagination = Pagination(page=page, per_page=SIZE, total=total, css_framework='bootstrap4')
         return render_template("danhsach_totruong.html", danhsach=data, pagination=pagination)
     except Exception as e:

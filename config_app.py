@@ -23,6 +23,7 @@ app.config["SECRET_KEY"] = "incentive_system"
 
 app.register_blueprint(totruong)
 app.register_blueprint(tnc)
+app.register_blueprint(scp)
 
 db = SQLAlchemy(app)
 handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1, encoding='utf-8')

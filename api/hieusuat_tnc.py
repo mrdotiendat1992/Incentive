@@ -20,12 +20,21 @@ def danhsach_totruong():
         mst = request.args.get("mst")
         page = request.args.get(get_page_parameter(), type=int, default=1)
         filters = {
-            "ngay": ngay,
-            "chuyen": chuyen,
-            "mst": mst
+            "ngay": {
+                "type": "equal",
+                "value": ngay
+            },
+            "chuyen": {
+                "type": "approximately",
+                "value": chuyen
+            },
+            "mst": {
+                "type": "equal",
+                "value": mst
+            }
         }
         
-        data, total = get_data(filters, page, SIZE, "[INCENTIVE].[dbo].[HIEU_SUAT_CN_TNC]").values()
+        data, total = get_data(filters, page, SIZE, "[INCENTIVE].[dbo].[HIEU_SUAT_CN_TNC]", "NGAY DESC").values()
         for row in data:
             row_list = list(row)
             row_list[4] = datetime.strftime(datetime.strptime(row_list[4], "%Y-%m-%d"), "%d/%m/%Y")

@@ -6,25 +6,34 @@ from io import BytesIO
 from datetime import datetime
 import pandas as pd
 
-def get_data(filters, page, size, table):
+def get_data(filters, page, size, table, order_by):
     try: 
         conn = connect_db()
         offset = (page - 1) * size + 1
-        query = f"SELECT *, ROW_NUMBER() OVER (ORDER BY NHA_MAY) AS RowNum FROM {table}"
+        query = f"SELECT *, ROW_NUMBER() OVER (ORDER BY {order_by}) AS RowNum FROM {table}"
 
         conditions = []
         for key, value in filters.items():
-            if value:
-                if key != "chuyen":
-                    conditions.append(f"{key} = '{value}'")
-                else:
-                    conditions.append(f"{key} LIKE '%{value}%'")
+            if value.get('value'):
+                match value.get("type"):
+                    case "approximately":
+                        conditions.append(f"{key} LIKE '%{value.get('value')}%'")
+                        break
+                    case "gte":
+                        conditions.append(f"{key} >= '{value.get('value')}'")
+                        break
+                    case "lte":
+                        conditions.append(f"{key} <= '{value.get('value')}'")
+                        break
+                    case default: 
+                        conditions.append(f"{key} = '{value.get('value')}'")
+                        break
 
         if conditions:
             query += " WHERE " + " AND ".join(conditions)
 
         last_query = f"WITH TEMP AS ({query}) SELECT * FROM TEMP WHERE RowNum BETWEEN {offset} AND {offset + size - 1}"
-
+        print(last_query)
         cursor = execute_query(conn, last_query)
         rows = cursor.fetchall()
 

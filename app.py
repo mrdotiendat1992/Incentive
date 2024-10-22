@@ -3471,8 +3471,6 @@ def nhap_excel():
             print(e)
             return redirect("hieusuat_tnc")
 
-
-           
 if __name__ == "__main__":
     try:
         if sys.argv[1]=="1":
