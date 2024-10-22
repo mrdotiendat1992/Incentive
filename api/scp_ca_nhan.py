@@ -1,4 +1,5 @@
 from flask import render_template, request, Blueprint, redirect
+from flask_login import current_user
 from flask_paginate import Pagination, get_page_parameter
 import pandas as pd
 from helper.utils import *
@@ -10,7 +11,10 @@ scp = Blueprint('scp_canhan', __name__)
 SIZE = 20
 @scp.route("/scp_canhan", methods=["GET"])
 def scp_canhan():
-    try:    
+    try:
+        if "IED" not in current_user.phongban:
+            return redirect("/")
+
         nhamay = request.args.get("nhamay")
         tungay = request.args.get("tungay")
         denngay = request.args.get("denngay")

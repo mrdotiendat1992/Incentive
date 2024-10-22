@@ -1,4 +1,5 @@
 from flask import render_template, request, Blueprint, redirect
+from flask_login import current_user
 from flask_paginate import Pagination, get_page_parameter
 import pandas as pd
 from helper.utils import *
@@ -11,6 +12,9 @@ SIZE = 20
 @quanly.route("/danh_gia_quan_ly", methods=["GET"])
 def danh_gia_quan_ly():
     try:    
+        if "IED" not in current_user.phongban:
+            return redirect("/")
+        
         ngay = request.args.get("ngay")
         nhamay = request.args.get("nhamay")
         mst = request.args.get("mst")

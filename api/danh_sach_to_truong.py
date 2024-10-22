@@ -1,4 +1,5 @@
 from flask import render_template, request, Blueprint, redirect
+from flask_login import current_user
 from flask_paginate import Pagination, get_page_parameter
 import pandas as pd
 from helper.utils import *
@@ -9,7 +10,10 @@ totruong = Blueprint('danhsach_totruong', __name__)
 SIZE = 20
 @totruong.route("/danhsach_totruong", methods=["GET"])
 def danhsach_totruong():
-    try:    
+    try:
+        if "IED" not in current_user.phongban:
+            return redirect("/")
+
         nhamay = request.args.get("nhamay")
         chuyen = request.args.get("chuyen")
         mst = request.args.get("mst")

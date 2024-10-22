@@ -1,4 +1,5 @@
 from flask import render_template, request, Blueprint, redirect
+from flask_login import current_user
 from flask_paginate import Pagination, get_page_parameter
 import pandas as pd
 from helper.utils import *
@@ -10,7 +11,10 @@ samsew = Blueprint('sam_sew', __name__)
 SIZE = 20
 @samsew.route("/sam_sew", methods=["GET"])
 def sam_sew():
-    try:    
+    try:
+        if "IED" not in current_user.phongban:
+            return redirect("/")
+
         style = request.args.get("style")
         macongdoan = request.args.get("macongdoan")
         page = request.args.get(get_page_parameter(), type=int, default=1)

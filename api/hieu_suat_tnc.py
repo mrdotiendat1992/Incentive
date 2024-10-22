@@ -1,4 +1,5 @@
 from flask import render_template, request, Blueprint, make_response, redirect
+from flask_login import current_user
 from flask_paginate import Pagination, get_page_parameter
 from openpyxl import Workbook
 from openpyxl.styles import Border, Side, Alignment
@@ -15,6 +16,9 @@ SIZE = 20
 @tnc.route("/hieusuat_tnc", methods=["GET"])
 def danhsach_totruong():
     try:    
+        if "IED" not in current_user.phongban:
+            return redirect("/")
+        
         ngay = request.args.get("ngay")
         chuyen = request.args.get("chuyen")
         mst = request.args.get("mst")
