@@ -14,7 +14,7 @@ from waitress import serve
 import sys
 from openpyxl.styles import Font, PatternFill, NamedStyle
 from config_app import *
-from utils import *
+from helper.utils import *
 
 login_manager = LoginManager()
 login_manager.init_app(app)
