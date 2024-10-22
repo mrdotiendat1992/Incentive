@@ -29,7 +29,7 @@ def get_data(filters, page, size, table, order_by):
             query += " WHERE " + " AND ".join(conditions)
 
         last_query = f"WITH TEMP AS ({query}) SELECT * FROM TEMP WHERE RowNum BETWEEN {offset} AND {offset + size - 1}"
-        print(last_query)
+
         cursor = execute_query(conn, last_query)
         rows = cursor.fetchall()
 
