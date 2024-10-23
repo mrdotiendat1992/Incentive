@@ -52,7 +52,7 @@ def scp_canhan():
         
 @scp.route("/scp_canhan/excel", methods=["GET"])
 def get_excel():
-    return get_excel_from_table("INCENTIVE", "SCP_CA_NHAN", "scp_canhan")
+    return get_excel_from_table("INCENTIVE", "SCP_CA_NHAN", "scp_canhan", ["tu_ngay", "den_ngay"])
     
 @scp.route("/scp_canhan/upload_excel", methods=["POST"])
 def upload_excel():

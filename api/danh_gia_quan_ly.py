@@ -46,7 +46,7 @@ def danh_gia_quan_ly():
         
 @quanly.route("/danh_gia_quan_ly/excel", methods=["GET"])
 def get_excel():
-    return get_excel_from_table("INCENTIVE", "DANH_GIA_QUAN_LY", "danh_gia_quan_ly")
+    return get_excel_from_table("INCENTIVE", "DANH_GIA_QUAN_LY", "danh_gia_quan_ly", ["ngay"])
     
 @quanly.route("/danh_gia_quan_ly/upload_excel", methods=["POST"])
 def upload_excel():

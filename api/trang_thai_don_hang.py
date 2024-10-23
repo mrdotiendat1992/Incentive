@@ -46,7 +46,7 @@ def trang_thai_don_hang():
         
 @donhang.route("/trang_thai_don_hang/excel", methods=["GET"])
 def get_excel():
-    return get_excel_from_table("INCENTIVE", "TRANG_THAI_DON_HANG", "trang_thai_don_hang")
+    return get_excel_from_table("INCENTIVE", "TRANG_THAI_DON_HANG", "trang_thai_don_hang", ["ngay"])
     
 @donhang.route("/trang_thai_don_hang/upload_excel", methods=["POST"])
 def upload_excel():

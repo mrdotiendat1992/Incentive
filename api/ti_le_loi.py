@@ -41,7 +41,7 @@ def ti_le_loi():
         
 @loi.route("/ti_le_loi/excel", methods=["GET"])
 def get_excel():
-    return get_excel_from_table("INCENTIVE", "TI_LE_LOI", "ti_le_loi")
+    return get_excel_from_table("INCENTIVE", "TI_LE_LOI", "ti_le_loi", ["ngay"])
     
 @loi.route("/ti_le_loi/upload_excel", methods=["POST"])
 def upload_excel():

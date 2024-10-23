@@ -1,7 +1,8 @@
 from helper.utils import connect_db, execute_query, close_db, execute_query_data
 from flask import make_response
 from openpyxl import Workbook
-from openpyxl.styles import Border, Side, Alignment
+from openpyxl.styles import Alignment, NamedStyle, Border, Side, PatternFill
+from openpyxl.utils import get_column_letter
 from io import BytesIO
 from datetime import datetime
 import pandas as pd
@@ -50,16 +51,18 @@ def get_data(filters, page, size, table, order_by):
             "total": 0
         }
 
-def get_excel_from_table(database, table, filename):
+def get_excel_from_table(database, table, filename, dateCols = []):
     try:
         conn = connect_db()
         query_header = f"""SELECT COLUMN_NAME
                 FROM [{database}].INFORMATION_SCHEMA.COLUMNS
                 WHERE TABLE_NAME = '{table}';"""
-        print(query_header)
+
         cursor = execute_query(conn, query_header)
         rows = cursor.fetchall()
         headers = [row[0] for row in rows]
+        lower_headers = [h.lower() for h in headers]
+        date_indexs = [lower_headers.index(col) for col in dateCols if col in lower_headers]
 
         wb = Workbook()
         ws = wb.active
@@ -71,6 +74,8 @@ def get_excel_from_table(database, table, filename):
         data = cursor.fetchall()
         for row in data:
             ws.append(list(row))
+            
+        date_format = NamedStyle(name="date", number_format="DD/MM/YYYY")
 
         thin_border = Border(left=Side(border_style="thin"),
                     right=Side(border_style="thin"),
@@ -80,19 +85,24 @@ def get_excel_from_table(database, table, filename):
         for row in ws.iter_rows(min_row=1, max_row=1, max_col=len(headers)):
             for cell in row:
                 cell.border = thin_border
-                cell.alignment = Alignment(horizontal='center', vertical='center')
-            
-        for col in ws.columns:
+                cell.fill = PatternFill(start_color='D3D3D3', end_color='D3D3D3', fill_type='solid')
+
+        for i, col in enumerate(ws.columns, 0):
             max_length = 0
-            column = col[0].column_letter
+            column = get_column_letter(i + 1)
             for cell in col:
                 try:
+                    cell.alignment = Alignment(horizontal='center', vertical='center')
+                    if i in date_indexs:
+                        cell.value = datetime.strptime(str(cell.value), "%Y-%m-%d") if cell.value else cell.value       
+                        cell.style = date_format   
                     if len(str(cell.value)) > max_length:
-                        max_length = len(cell.value)
+                        max_length = len(str(cell.value))
                 except:
                     pass
-            adjusted_width = (max_length + 2)
+            adjusted_width = (max_length + 5)
             ws.column_dimensions[column].width = max(adjusted_width,7)
+        
 
         buffer = BytesIO()
         wb.save(buffer)

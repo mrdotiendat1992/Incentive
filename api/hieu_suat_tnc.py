@@ -52,7 +52,7 @@ def danhsach_totruong():
         
 @tnc.route("/hieusuat_tnc/excel", methods=["GET"])
 def get_excel():
-    return get_excel_from_table("INCENTIVE", "HIEU_SUAT_CN_TNC", "hieusuat_tnc")
+    return get_excel_from_table("INCENTIVE", "HIEU_SUAT_CN_TNC", "hieusuat_tnc", ["ngay"])
     
 @tnc.route("/hieusuat_tnc/upload_excel", methods=["POST"])
 def upload_excel():
