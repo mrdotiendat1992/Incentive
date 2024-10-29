@@ -46,7 +46,21 @@ def trang_thai_don_hang():
         
 @donhang.route("/trang_thai_don_hang/excel", methods=["GET"])
 def get_excel():
-    return get_excel_from_table("INCENTIVE", "TRANG_THAI_DON_HANG", "trang_thai_don_hang", ["ngay"])
+    filters = {
+        "ngay": {
+            "type": "equal",
+            "value": request.args.get("ngay")
+        },
+        "chuyen": {
+            "type": "approximately",
+            "value": request.args.get("chuyen")
+        },
+        "style": {
+            "type": "approximately",
+            "value": request.args.get("style")
+        }
+    }
+    return get_excel_from_table("INCENTIVE", "TRANG_THAI_DON_HANG", "trang_thai_don_hang", filters, ["ngay"])
     
 @donhang.route("/trang_thai_don_hang/upload_excel", methods=["POST"])
 def upload_excel():

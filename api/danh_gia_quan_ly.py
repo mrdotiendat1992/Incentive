@@ -22,7 +22,7 @@ def danh_gia_quan_ly():
         filters = {
             "nha_may": {
                 "type": "equal",
-                "value": nhamay
+                "value": current_user.macongty
             },
             "mst": {
                 "type": "equal",
@@ -46,7 +46,21 @@ def danh_gia_quan_ly():
         
 @quanly.route("/danh_gia_quan_ly/excel", methods=["GET"])
 def get_excel():
-    return get_excel_from_table("INCENTIVE", "DANH_GIA_QUAN_LY", "danh_gia_quan_ly", ["ngay"])
+    filters = {
+        "nha_may": {
+            "type": "equal",
+            "value": current_user.macongty
+        },
+        "mst": {
+            "type": "equal",
+            "value": request.args.get("mst")
+        },
+        "ngay": {
+            "type": "equal",
+            "value": request.args.get("ngay")
+        }
+    }
+    return get_excel_from_table("INCENTIVE", "DANH_GIA_QUAN_LY", "danh_gia_quan_ly", filters, ["ngay"])
     
 @quanly.route("/danh_gia_quan_ly/upload_excel", methods=["POST"])
 def upload_excel():
@@ -65,9 +79,8 @@ def upload_excel():
 def filter():
     try:
         ngay = request.form.get("ngay")
-        nhamay = request.form.get("nhamay")
         mst = request.form.get("mst")
-        return redirect(f"/danh_gia_quan_ly?ngay={ngay}&nhamay={nhamay}&mst={mst}")
+        return redirect(f"/danh_gia_quan_ly?ngay={ngay}&mst={mst}")
     except Exception as e:
         print(e)
         return None

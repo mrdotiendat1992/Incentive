@@ -24,6 +24,10 @@ def danhsach_totruong():
         mst = request.args.get("mst")
         page = request.args.get(get_page_parameter(), type=int, default=1)
         filters = {
+            "nha_may": {
+                "type": "equal",
+                "value": current_user.macongty
+            },
             "ngay": {
                 "type": "equal",
                 "value": ngay
@@ -41,6 +45,9 @@ def danhsach_totruong():
         data, total = get_data(filters, page, SIZE, "[INCENTIVE].[dbo].[HIEU_SUAT_CN_TNC]", "NGAY DESC").values()
         for row in data:
             row_list = list(row)
+            for i in range(len(row_list)):
+                if row_list[i] is None:
+                    row_list[i] = ""
             row_list[4] = datetime.strftime(datetime.strptime(row_list[4], "%Y-%m-%d"), "%d/%m/%Y")
             data[data.index(row)] = tuple(row_list)
 
@@ -52,7 +59,25 @@ def danhsach_totruong():
         
 @tnc.route("/hieusuat_tnc/excel", methods=["GET"])
 def get_excel():
-    return get_excel_from_table("INCENTIVE", "HIEU_SUAT_CN_TNC", "hieusuat_tnc", ["ngay"])
+    filters = {
+        "nha_may": {
+            "type": "equal",
+            "value": current_user.macongty
+        },
+        "ngay": {
+            "type": "equal",
+            "value": request.args.get("ngay")
+        },
+        "chuyen": {
+            "type": "approximately",
+            "value": request.args.get("chuyen")
+        },
+        "mst": {
+            "type": "equal",
+            "value": request.args.get("mst")
+        }
+    }
+    return get_excel_from_table("INCENTIVE", "HIEU_SUAT_CN_TNC", "hieusuat_tnc", filters, ["ngay"])
     
 @tnc.route("/hieusuat_tnc/upload_excel", methods=["POST"])
 def upload_excel():

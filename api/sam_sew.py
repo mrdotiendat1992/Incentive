@@ -37,7 +37,17 @@ def sam_sew():
         
 @samsew.route("/sam_sew/excel", methods=["GET"])
 def get_excel():
-    return get_excel_from_table("INCENTIVE", "SAM_SEW", "sam_sew")
+    filters = {
+        "style": {
+            "type": "approximately",
+            "value": request.args.get("style")
+        },
+        "ma_cong_doan": {
+            "type": "equal",
+            "value": request.args.get("macongdoan")
+        }
+    }
+    return get_excel_from_table("INCENTIVE", "SAM_SEW", "sam_sew", filters)
     
 @samsew.route("/sam_sew/upload_excel", methods=["POST"])
 def upload_excel():

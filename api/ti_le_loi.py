@@ -41,7 +41,17 @@ def ti_le_loi():
         
 @loi.route("/ti_le_loi/excel", methods=["GET"])
 def get_excel():
-    return get_excel_from_table("INCENTIVE", "TI_LE_LOI", "ti_le_loi", ["ngay"])
+    filters = {
+        "ngay": {
+            "type": "equal",
+            "value": request.args.get("ngay")
+        },
+        "chuyen": {
+            "type": "approximately",
+            "value": request.args.get("chuyen")
+        },    
+    }
+    return get_excel_from_table("INCENTIVE", "TI_LE_LOI", "ti_le_loi", filters, ["ngay"])
     
 @loi.route("/ti_le_loi/upload_excel", methods=["POST"])
 def upload_excel():

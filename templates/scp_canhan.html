@@ -9,11 +9,6 @@
     </div>
     <div class="flex gap-10">
         <form class="flex gap-10 mt-10" action="/scp_canhan/filter" method="POST">
-            <select class="form-select" name="nhamay" value={{request.args.get("nhamay", "")}}>
-                <option value="" {% if request.args.get("nhamay", "") == "" %}selected{% endif %}>Tất cả</option>
-                <option value="NT1" {% if request.args.get("nhamay", "") == "NT1" %}selected{% endif %}> NT1</option>
-                <option value="NT2" {% if request.args.get("nhamay", "") == "NT2" %}selected{% endif %}>{{selected if request.args.get("nhamay", "") == "NT1" else ""}} NT2</option>
-            </select>
             <input type="text" class="form-control" placeholder="Nhập mã số thẻ" name="mst" value="{{request.args.get("mst", "")}}"/>
             <input type="date" class="form-control" title="Từ ngày" name="tungay" value="{{request.args.get("tungay", "")}}"/>
             <input type="date" class="form-control" title="Đến ngày" name="denngay" value="{{request.args.get("denngay", "")}}"/>
@@ -62,7 +57,9 @@
     </div>
     <script>
         const handeGetFile = () => {
-            fetch("/scp_canhan/excel")
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            fetch(`/scp_canhan/excel?mst${urlParams.get("mst")}&tungay=${urlParams.get("tungay")}&denngay=${urlParams.get("denngay")}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Có lỗi từ hệ thống!');

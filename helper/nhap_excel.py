@@ -7,27 +7,33 @@ from io import BytesIO
 from datetime import datetime
 import pandas as pd
 
+def getConditionQuery(filters):
+    conditions = []
+    for key, value in filters.items():
+        if value.get('value'):
+            match value.get("type"):
+                case "approximately":
+                    conditions.append(f"{key} LIKE '%{value.get('value')}%'")
+                case "gte":
+                    conditions.append(f"{key} >= '{value.get('value')}'")
+                case "lte":
+                    conditions.append(f"{key} <= '{value.get('value')}'")
+                case _: 
+                    conditions.append(f"{key} = '{value.get('value')}'")
+    if conditions:
+        query = " WHERE " + " AND ".join(conditions)
+    else:
+        query = ""
+    return query
+
 def get_data(filters, page, size, table, order_by):
     try: 
         conn = connect_db()
         offset = (page - 1) * size + 1
         query = f"SELECT *, ROW_NUMBER() OVER (ORDER BY {order_by}) AS RowNum FROM {table}"
 
-        conditions = []
-        for key, value in filters.items():
-            if value.get('value'):
-                match value.get("type"):
-                    case "approximately":
-                        conditions.append(f"{key} LIKE '%{value.get('value')}%'")
-                    case "gte":
-                        conditions.append(f"{key} >= '{value.get('value')}'")
-                    case "lte":
-                        conditions.append(f"{key} <= '{value.get('value')}'")
-                    case _: 
-                        conditions.append(f"{key} = '{value.get('value')}'")
-
-        if conditions:
-            query += " WHERE " + " AND ".join(conditions)
+        conditionQuery = getConditionQuery(filters)
+        query += conditionQuery
 
         last_query = f"WITH TEMP AS ({query}) SELECT * FROM TEMP WHERE RowNum BETWEEN {offset} AND {offset + size - 1}"
 
@@ -35,8 +41,7 @@ def get_data(filters, page, size, table, order_by):
         rows = cursor.fetchall()
 
         count_query = f"SELECT COUNT(*) FROM {table}"
-        if conditions:
-            count_query += " WHERE " + " AND ".join(conditions)
+        count_query += conditionQuery
         cursor2 = execute_query(conn, count_query)
         total = cursor2.fetchall()[0][0]
         close_db(conn)
@@ -51,7 +56,7 @@ def get_data(filters, page, size, table, order_by):
             "total": 0
         }
 
-def get_excel_from_table(database, table, filename, dateCols = []):
+def get_excel_from_table(database, table, filename, filters, dateCols = []):
     try:
         conn = connect_db()
         query_header = f"""SELECT COLUMN_NAME
@@ -70,8 +75,13 @@ def get_excel_from_table(database, table, filename, dateCols = []):
         
         ws.append(headers)
 
-        cursor = execute_query(conn, f"SELECT * FROM [{database}].[dbo].[{table}]")
+        query = f"SELECT * FROM [{database}].[dbo].[{table}]"
+        conditionQuery = getConditionQuery(filters)
+        query += conditionQuery
+
+        cursor = execute_query(conn, query)
         data = cursor.fetchall()
+
         for row in data:
             ws.append(list(row))
             

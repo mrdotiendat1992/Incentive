@@ -14,14 +14,13 @@ def danhsach_totruong():
         if "IED" not in current_user.phongban:
             return redirect("/")
 
-        nhamay = request.args.get("nhamay")
         chuyen = request.args.get("chuyen")
         mst = request.args.get("mst")
         page = request.args.get(get_page_parameter(), type=int, default=1)
         filters = {
             "nha_may": {
                 "type": "equal",
-                "value": nhamay
+                "value": current_user.macongty
             },
             "chuyen": {
                 "type": "approximately",
@@ -41,7 +40,21 @@ def danhsach_totruong():
         
 @totruong.route("/danhsach_totruong/excel", methods=["GET"])
 def get_excel():
-    return get_excel_from_table("INCENTIVE", "DS_TO_TRUONG", "danhsach_totruong")
+    filters = {
+        "nha_may": {
+            "type": "equal",
+            "value": current_user.macongty
+        },
+        "chuyen": {
+            "type": "approximately",
+            "value": request.args.get("chuyen")
+        },
+        "mst": {
+            "type": "equal",
+            "value": request.args.get("mst")
+        }
+    }
+    return get_excel_from_table("INCENTIVE", "DS_TO_TRUONG", "danhsach_totruong", filters)
     
 @totruong.route("/danhsach_totruong/upload_excel", methods=["POST"])
 def upload_excel():
@@ -60,9 +73,8 @@ def upload_excel():
 def filter():
     try:
         mst = request.form.get("mst")
-        nhamay = request.form.get("nhamay")
         chuyen = request.form.get("chuyen")
-        return redirect(f"/danhsach_totruong?mst={mst}&nhamay={nhamay}&chuyen={chuyen}")
+        return redirect(f"/danhsach_totruong?mst={mst}&chuyen={chuyen}")
     except Exception as e:
         print(e)
         return None

@@ -61,7 +61,9 @@
     </div>
     <script>
         const handeGetFile = () => {
-            fetch("/hieusuat_tnc/excel")
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            fetch(`/hieusuat_tnc/excel?mst=${urlParams.get("mst")}&ngay=${urlParams.get("ngay")}&chuyen=${urlParams.get("chuyen")}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Có lỗi từ hệ thống!');

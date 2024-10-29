@@ -57,7 +57,9 @@
     </div>
     <script>
         const handeGetFile = () => {
-            fetch("/trang_thai_don_hang/excel")
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            fetch(`/trang_thai_don_hang/excel?ngay=${urlParams.get("ngay")}&chuyen=${urlParams.get("chuyen")}&style=${urlParams.get("style")}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Có lỗi từ hệ thống!');

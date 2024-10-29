@@ -15,7 +15,6 @@ def scp_canhan():
         if "IED" not in current_user.phongban:
             return redirect("/")
 
-        nhamay = request.args.get("nhamay")
         tungay = request.args.get("tungay")
         denngay = request.args.get("denngay")
         mst = request.args.get("mst")
@@ -23,7 +22,7 @@ def scp_canhan():
         filters = {
             "nha_may": {
                 "type": "equal",
-                "value": nhamay
+                "value": current_user.macongty
             },
             "tu_ngay": {
                 "type": "gte",
@@ -52,7 +51,25 @@ def scp_canhan():
         
 @scp.route("/scp_canhan/excel", methods=["GET"])
 def get_excel():
-    return get_excel_from_table("INCENTIVE", "SCP_CA_NHAN", "scp_canhan", ["tu_ngay", "den_ngay"])
+    filters = {
+        "nha_may": {
+            "type": "equal",
+            "value": current_user.macongty
+        },
+        "tu_ngay": {
+            "type": "gte",
+            "value": request.args.get("tungay")
+        },
+        "den_ngay": {
+            "type": "lte",
+            "value": request.args.get("denngay")
+        },
+        "mst": {
+            "type": "equal",
+            "value": request.args.get("mst")
+        }
+    }
+    return get_excel_from_table("INCENTIVE", "SCP_CA_NHAN", "scp_canhan", filters, ["tu_ngay", "den_ngay"])
     
 @scp.route("/scp_canhan/upload_excel", methods=["POST"])
 def upload_excel():
@@ -71,10 +88,9 @@ def upload_excel():
 def filter():
     try:
         mst = request.form.get("mst")
-        nhamay = request.form.get("nhamay")
         tungay = request.form.get("tungay")
         denngay = request.form.get("denngay")
-        return redirect(f"/scp_canhan?mst={mst}&nhamay={nhamay}&tungay={tungay}&denngay={denngay}")
+        return redirect(f"/scp_canhan?mst={mst}&tungay={tungay}&denngay={denngay}")
     except Exception as e:
         print(e)
         return None
