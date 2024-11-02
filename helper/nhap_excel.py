@@ -151,7 +151,7 @@ def upload_excel_to_db(database, table, file):
 def getDataTNC():
     try:
         conn = connect_db()
-        queryLine = f"SELECT DISTINCT Line FROM HR.dbo.Danh_sach_CBCNV WHERE LINE LIKE '{current_user.macongty[2]}[0-9]S[0-9][0-9]%'"
+        queryLine = f"SELECT DISTINCT Line FROM HR.dbo.Danh_sach_CBCNV WHERE LINE LIKE '{current_user.macongty[2]}[0-9]S[0-9][1-9]%'"
         cursor = execute_query(conn, queryLine)
         lines = cursor.fetchall()
         lines = [line[0] for line in lines]
