@@ -37,7 +37,7 @@
 }
 
 .content_container {
-    position: fixed;
+    position: relative;
     left: 17%;
     width: 83%;
     height: 100vh;

@@ -1,13 +1,10 @@
-from flask import render_template, request, Blueprint, make_response, redirect
+from helper.utils import connect_db, execute_query, close_db
+from flask import render_template, request, Blueprint, redirect
 from flask_login import current_user
 from flask_paginate import Pagination, get_page_parameter
-from openpyxl import Workbook
-from openpyxl.styles import Border, Side, Alignment
-from io import BytesIO
 from datetime import datetime
-import pandas as pd
 from helper.utils import *
-from helper.nhap_excel import get_data, get_excel_from_table, upload_excel_to_db
+from helper.nhap_excel import get_data, get_excel_from_table, upload_excel_to_db, getDataTNC
 
 tnc = Blueprint('hieusuat_tnc', __name__)
 
@@ -51,8 +48,9 @@ def danhsach_totruong():
             row_list[4] = datetime.strftime(datetime.strptime(row_list[4], "%Y-%m-%d"), "%d/%m/%Y")
             data[data.index(row)] = tuple(row_list)
 
+        lines, tnc = getDataTNC().values()
         pagination = Pagination(page=page, per_page=SIZE, total=total, css_framework='bootstrap4')
-        return render_template("hieusuat_tnc.html", danhsach=data, pagination=pagination)
+        return render_template("hieusuat_tnc.html", danhsach=data, lines=lines, tnc=tnc, pagination=pagination)
     except Exception as e:
         print(e)
         return render_template("hieusuat_tnc.html")
@@ -102,3 +100,19 @@ def filter():
     except Exception as e:
         print(e)
         return None
+    
+@tnc.route("/update_line_tnc", methods=["POST"])
+def update_line_tnc():
+    try:
+        data = request.json
+        mst = data["mst"]
+        chuyen = data["chuyen"]
+        conn = connect_db()
+        queryUpdate = f"UPDATE HR.dbo.Danh_sach_CBCNV SET Ghi_chu = '{chuyen}' WHERE The_cham_cong = {mst} AND Factory = '{current_user.macongty}'"
+        execute_query(conn, queryUpdate)
+        conn.commit()
+        close_db(conn)
+        return {"message": "Cập nhật thành công"}
+    except Exception as e:
+        print(e)
+        return {"message": "Cập nhật thất bại"}, 400

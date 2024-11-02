@@ -1,12 +1,12 @@
 from helper.utils import connect_db, execute_query, close_db, execute_query_data
 from flask import make_response
+from flask_login import current_user
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, NamedStyle, Border, Side, PatternFill
 from openpyxl.utils import get_column_letter
 from io import BytesIO
 from datetime import datetime
 import pandas as pd
-import numpy as np
 
 def getConditionQuery(filters):
     conditions = []
@@ -147,3 +147,25 @@ def upload_excel_to_db(database, table, file):
     except Exception as e:
         print(e)
         return None
+    
+def getDataTNC():
+    try:
+        conn = connect_db()
+        queryLine = f"SELECT DISTINCT Line FROM HR.dbo.Danh_sach_CBCNV WHERE LINE LIKE '{current_user.macongty[2]}[0-9]S[0-9][0-9]%'"
+        cursor = execute_query(conn, queryLine)
+        lines = cursor.fetchall()
+        lines = [line[0] for line in lines]
+        queryTNC = f"SELECT The_cham_cong, Ho_ten, Ghi_chu FROM HR.dbo.Danh_sach_CBCNV WHERE Line = '{current_user.macongty[2]}TNC01' AND Trang_thai_lam_viec = N'Đang làm việc'"
+        cursor = execute_query(conn, queryTNC)
+        tnc = cursor.fetchall()
+        close_db(conn)
+        return {
+            "lines": lines,
+            "tnc": tnc
+        }
+    except Exception as e:
+        print(e)
+        return {
+            "lines": [],
+            "tnc": []
+        }
