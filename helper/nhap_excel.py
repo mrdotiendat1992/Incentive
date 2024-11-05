@@ -133,9 +133,8 @@ def get_excel_from_table(database, table, filename, filters, dateCols = []):
 def upload_excel_to_db(database, table, file):
     try:
         df = pd.read_excel(file)
-        df = df.applymap(lambda x: None if pd.isna(x) else x)
+        df = df.astype(object).where(pd.notna(df), None)
         data_tuples = [tuple(row) for row in df.itertuples(index=False, name=None)]
-
         if len(data_tuples) > 0:
             conn = connect_db()
             len_row = len(data_tuples[0])
