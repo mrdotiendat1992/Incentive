@@ -2,8 +2,8 @@
 {% block content %}
     <div class="flex gap-10 border-b">
         <button type="button" class="btn btn-primary" onclick="handeGetFile()">Tải file</button>
-        <form class="flex gap-10">
-            <input type="file" class="form-control input_custom">
+        <form class="flex gap-10" enctype="multipart/form-data" action='/sam_sew/upload_excel' method="POST">
+            <input type="file" name="file" class="form-control input_custom">
             <input class="btn btn-success" type="submit" value="Lưu"/>
         </form>
     </div>
