@@ -16,19 +16,24 @@ def sam_sew():
             return redirect("/")
 
         style = request.args.get("style")
-        macongdoan = request.args.get("macongdoan")
+        phienban = request.args.get("phienban")
         page = request.args.get(get_page_parameter(), type=int, default=1)
         filters = {
             "style": {
                 "type": "approximately",
                 "value": style
             },
-            "ma_cong_doan": {
+            "phien_ban": {
                 "type": "equal",
-                "value": macongdoan
+                "value": phienban
             }
         }
         data, total = get_data(filters, page, SIZE, "[INCENTIVE].[dbo].[SAM_SEW]", "STYLE").values()
+        for row in data:
+            row_list = list(row)
+            row_list[6] = datetime.strftime(datetime.strptime(row_list[6], "%Y-%m-%d"), "%d/%m/%Y")
+            row_list[7] = datetime.strftime(datetime.strptime(row_list[7], "%Y-%m-%d"), "%d/%m/%Y")
+            data[data.index(row)] = tuple(row_list)
         pagination = Pagination(page=page, per_page=SIZE, total=total, css_framework='bootstrap4')
         return render_template("sam_sew.html", danhsach=data, pagination=pagination)
     except Exception as e:
@@ -42,9 +47,9 @@ def get_excel():
             "type": "approximately",
             "value": request.args.get("style")
         },
-        "ma_cong_doan": {
+        "phien_ban": {
             "type": "equal",
-            "value": request.args.get("macongdoan")
+            "value": request.args.get("phienban")
         }
     }
     return get_excel_from_table("INCENTIVE", "SAM_SEW", "sam_sew", filters)
@@ -66,8 +71,8 @@ def upload_excel():
 def filter():
     try:
         style = request.form.get("style")
-        macongdoan = request.form.get("macongdoan")
-        return redirect(f"/sam_sew?style={style}&macongdoan={macongdoan}")
+        phienban = request.form.get("phienban")
+        return redirect(f"/sam_sew?style={style}&phienban={phienban}")
     except Exception as e:
         print(e)
         return None

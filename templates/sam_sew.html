@@ -10,7 +10,7 @@
     <div class="flex gap-10">
         <form class="flex gap-10 mt-10" action="/sam_sew/filter" method="POST">
             <input type="text" class="form-control" placeholder="Nhập Style" name="style" value="{{request.args.get("style", "")}}"/>
-            <input type="text" class="form-control" placeholder="Nhập mã công đoạn" name="macongdoan" value="{{request.args.get("macongdoan", "")}}"/>
+            <input type="text" class="form-control" placeholder="Nhập phiên bản" name="phienban" value="{{request.args.get("phienban", "")}}"/>
             <button type="submit" class="btn btn-success">Tìm kiếm</button>
         </form>
         <form class="mt-10" action="/sam_sew" method="GET">
@@ -29,6 +29,9 @@
                     <th scope="col">SAM</th>
                     <th scope="col">Phân loại công đoạn</th>
                     <th scope="col">Khách hàng</th>
+                    <th scope="col">Từ ngày</th>
+                    <th scope="col">Đến ngày</th>
+                    <th scope="col">Phiên bản</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,6 +44,9 @@
                             <td>{{row[3]}}</td>
                             <td>{{row[4]}}</td>
                             <td>{{row[5]}}</td>
+                            <td>{{row[6]}}</td>
+                            <td>{{row[7]}}</td>
+                            <td>{{row[8]}}</td>
                         </tr>
                     {% endfor %}
                 {% else %}
@@ -58,7 +64,7 @@
         const handeGetFile = () => {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
-            fetch(`/sam_sew/excel?style=${urlParams.get("style")}&macongdoan=${urlParams.get("macongdoan")}`)
+            fetch(`/sam_sew/excel?style=${urlParams.get("style")}&phienban=${urlParams.get("phienban")}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Có lỗi từ hệ thống!');
