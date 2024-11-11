@@ -5,8 +5,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 from api import *
 
-used_db = r"Driver={SQL Server};Server=172.16.60.100;Database=HR;UID=huynguyen;PWD=Namthuan@123;"
-
 params = urllib.parse.quote_plus(
     "DRIVER={ODBC Driver 17 for SQL Server};"
     "SERVER=172.16.60.100;"
