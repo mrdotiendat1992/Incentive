@@ -5,3 +5,9 @@ from .sam_sew import samsew
 from .trang_thai_don_hang import donhang
 from .danh_gia_quan_ly import quanly
 from .ti_le_loi import loi
+from .san_luong_poly import poly
+from .san_luong_cat import cat
+from .san_luong_la import la
+from .san_luong_qc1 import qc1
+from .san_luong_qc2 import qc2
+from .san_luong_ets import ets
