@@ -11,7 +11,8 @@ import pandas as pd
 def getConditionQuery(filters):
     conditions = []
     for key, value in filters.items():
-        if value.get('value') != 'null':
+        if value.get('value') != 'null' and value.get('value') != None:
+            print(value)
             match value.get("type"):
                 case "approximately":
                     conditions.append(f"{key} LIKE '%{value.get('value')}%'")
@@ -23,7 +24,6 @@ def getConditionQuery(filters):
                     conditions.append(f"{key} = '{value.get('value')}'")
     if conditions:
         query = " WHERE " + " AND ".join(conditions)
-        print(query)
     else:
         query = ""
     return query
@@ -136,6 +136,7 @@ def upload_excel_to_db(database, table, file):
         df = pd.read_excel(file)
         df = df.astype(object).where(pd.notna(df), None)
         data_tuples = [tuple(row) for row in df.itertuples(index=False, name=None)]
+        print(data_tuples)
         if len(data_tuples) > 0:
             conn = connect_db()
             len_row = len(data_tuples[0])
