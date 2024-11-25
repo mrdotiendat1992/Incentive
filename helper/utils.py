@@ -11,7 +11,6 @@ database_user = os.environ.get("DATABASE_USER")
 database_password = os.environ.get("DATABASE_PASSWORD")
 
 def connect_db():
-    print(f'DRIVER={{SQL Server}};SERVER={database_server};DATABASE={database_name};UID={database_user};PWD={database_password}')
     conn = pyodbc.connect(f'DRIVER={{SQL Server}};SERVER={database_server};DATABASE={database_name};UID={database_user};PWD={database_password}')
     return conn
 
