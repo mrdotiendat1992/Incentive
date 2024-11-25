@@ -55,7 +55,7 @@ def get_excel():
             "value": request.args.get("chuyen")
         },
         "ngay": {
-            "type": "approximately",
+            "type": "equal",
             "value": request.args.get("ngay")
         },
         "mst": {

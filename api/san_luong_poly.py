@@ -54,7 +54,7 @@ def get_excel():
             "value": current_user.macongty
         },
         "ngay": {
-            "type": "approximately",
+            "type": "ngay",
             "value": request.args.get("ngay")
         },
         "mst": {

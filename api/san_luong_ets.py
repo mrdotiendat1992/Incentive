@@ -64,6 +64,7 @@ def get_excel():
             "value": request.args.get("style")
         }
     }
+    print(filters)
     return get_excel_from_table("DW", "ETS_Qty_NHAP_TAY", "san_luong_ets", filters)
     
 @ets.route("/san_luong_ets/upload_excel", methods=["POST"])
@@ -79,13 +80,14 @@ def upload_excel():
         print(e)
         return None
 
-@ets.route("/san_luong_cat/filter", methods=["POST"])
+@ets.route("/san_luong_ets/filter", methods=["POST"])
 def filter():
     try:
-        ngay = request.args.get("ngay")
-        chuyen = request.args.get("chuyen")
-        style = request.args.get("style")
-        return redirect(f"/san_luong_cat?chuyen={chuyen}&ngay={ngay}&style={style}")
+        ngay = request.form.get("ngay")
+        chuyen = request.form.get("chuyen")
+        style = request.form.get("style")
+        print(ngay)
+        return redirect(f"/san_luong_ets?chuyen={chuyen}&ngay={ngay}&style={style}")
     except Exception as e:
         print(e)
         return None

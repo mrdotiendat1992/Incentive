@@ -77,3 +77,8 @@
     border-bottom: 1px solid #ccc;
     padding-bottom: 10px;
 }
+
+.nav-item {
+    display: block;
+    width: 100%;
+}
