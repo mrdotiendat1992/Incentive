@@ -38,7 +38,7 @@ def san_luong_poly():
             for i in range(len(row_list)):
                 if row_list[i] is None:
                     row_list[i] = ""
-            row_list[2] = datetime.strftime(datetime.strptime(row_list[2], "%Y-%m-%d"), "%d/%m/%Y")
+            row_list[2] = datetime.strftime(datetime.strptime(row_list[2], "%Y-%m-%d"), "%d/%m/%Y") if row_list[2] else ""
             data[data.index(row)] = tuple(row_list)
         pagination = Pagination(page=page, per_page=SIZE, total=total, css_framework='bootstrap4')
         return render_template("san_luong_poly.html", danhsach=data, pagination=pagination)

@@ -39,7 +39,7 @@ def san_luong_ets():
             for i in range(len(row_list)):
                 if row_list[i] is None:
                     row_list[i] = ""
-            row_list[0] = datetime.strftime(datetime.strptime(row_list[0], "%Y-%m-%d"), "%d/%m/%Y")
+            row_list[0] = datetime.strftime(datetime.strptime(row_list[0], "%Y-%m-%d"), "%d/%m/%Y") if row_list[0] else ""
             data[data.index(row)] = tuple(row_list)
             
         pagination = Pagination(page=page, per_page=SIZE, total=total, css_framework='bootstrap4')
