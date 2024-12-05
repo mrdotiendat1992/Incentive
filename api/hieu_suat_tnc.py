@@ -45,7 +45,7 @@ def danhsach_totruong():
             for i in range(len(row_list)):
                 if row_list[i] is None:
                     row_list[i] = ""
-            row_list[4] = datetime.strftime(datetime.strptime(row_list[4], "%Y-%m-%d"), "%d/%m/%Y")
+            row_list[4] = datetime.strftime(datetime.strptime(row_list[4], "%Y-%m-%d"), "%d/%m/%Y") if row_list[4] else ""
             data[data.index(row)] = tuple(row_list)
 
         lines, tnc = getDataTNC().values()

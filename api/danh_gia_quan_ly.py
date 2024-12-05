@@ -36,7 +36,7 @@ def danh_gia_quan_ly():
         data, total = get_data(filters, page, SIZE, "[INCENTIVE].[dbo].[DANH_GIA_QUAN_LY]", "NGAY DESC").values()
         for row in data:
             row_list = list(row)
-            row_list[2] = datetime.strftime(datetime.strptime(row_list[2], "%Y-%m-%d"), "%d/%m/%Y")
+            row_list[2] = datetime.strftime(datetime.strptime(row_list[2], "%Y-%m-%d"), "%d/%m/%Y") if row_list[2] else ""
             data[data.index(row)] = tuple(row_list)
         pagination = Pagination(page=page, per_page=SIZE, total=total, css_framework='bootstrap4')
         return render_template("danh_gia_quan_ly.html", danhsach=data, pagination=pagination)
