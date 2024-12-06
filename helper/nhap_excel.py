@@ -11,8 +11,7 @@ import pandas as pd
 def getConditionQuery(filters):
     conditions = []
     for key, value in filters.items():
-        if value.get('value') != 'null' and value.get('value') != None:
-            print(value)
+        if value.get('value') and value.get('value') != 'null':
             match value.get("type"):
                 case "approximately":
                     conditions.append(f"{key} LIKE '%{value.get('value')}%'")
