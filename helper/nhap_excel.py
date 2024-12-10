@@ -41,7 +41,6 @@ def get_data(filters, page, size, table, order_by):
         cursor = execute_query(conn, last_query)
         rows = cursor.fetchall()
 
-        print(query)
         count_query = f"SELECT COUNT(*) FROM {table}"
         count_query += conditionQuery
         cursor2 = execute_query(conn, count_query)
