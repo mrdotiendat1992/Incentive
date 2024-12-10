@@ -169,8 +169,8 @@
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#congnhandenhotroModal">
                 DS đến hỗ trợ
             </button>
-            <div class="modal fade" id="congnhandenhotroModal" tabindex="-1" role="dialog" aria-labelledby="congnhandenhotroModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
+            <div class="modal fade bd-example-modal-lg" id="congnhandenhotroModal" tabindex="-1" role="dialog" aria-labelledby="congnhandenhotroModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="congnhandenhotroModalLabel">Danh sách công nhân đến chuyền hỗ trợ</h5>
@@ -192,7 +192,8 @@
                                         <tr class="bg-primary">
                                             <th>MST</th>
                                             <th>Họ tên</th>
-                                            <th>Chuyền</th>
+                                            <th>Chuyền đi hỗ trợ</th>
+                                            <th>Chuyền đến hỗ trợ</th>
                                             <th>Ngày</th>
                                             <th>Giờ</th>
                                         </tr>
@@ -202,6 +203,7 @@
                                             <tr>
                                                 <td>{{ nguoi[1] }}</td>
                                                 <td>{{ nguoi[2] }}</td>
+                                                <td>{{ nguoi[4] }}</td>
                                                 <td>{{ nguoi[5] }}</td>
                                                 <td class="date_en">{{ nguoi[6] }}</td>
                                                 <td>
