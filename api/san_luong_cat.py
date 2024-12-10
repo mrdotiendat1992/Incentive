@@ -32,7 +32,7 @@ def san_luong_cat():
                 "value": ngay
             }
         }
-        data, total = get_data(filters, page, SIZE, "[INCENTIVE].[dbo].[SL_CN_CUT_NHAP_TAY]", "NGAY").values()
+        data, total = get_data(filters, page, SIZE, "[INCENTIVE].[dbo].[SL_CN_CUT_NHAP_TAY]", "NGAY DESC").values()
         for row in data:
             row_list = list(row)
             for i in range(len(row_list)):

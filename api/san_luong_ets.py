@@ -33,7 +33,7 @@ def san_luong_ets():
                 "value": style
             }
         }
-        data, total = get_data(filters, page, SIZE, "[DW].[dbo].[ETS_Qty_NHAP_TAY]", "WORKDATE").values()
+        data, total = get_data(filters, page, SIZE, "[DW].[dbo].[ETS_Qty_NHAP_TAY]", "WORKDATE DESC").values()
         for row in data:
             row_list = list(row)
             for i in range(len(row_list)):
