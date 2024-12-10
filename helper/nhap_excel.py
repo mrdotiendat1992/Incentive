@@ -31,7 +31,7 @@ def get_data(filters, page, size, table, order_by):
     try: 
         conn = connect_db()
         offset = (page - 1) * size + 1
-        query = f"SELECT *, ROW_NUMBER() OVER (ORDER BY {order_by}) AS RowNum FROM {table}"
+        query = f"SELECT *, ROW_NUMBER() OVER (ORDER BY {order_by} DESC) AS RowNum FROM {table}"
 
         conditionQuery = getConditionQuery(filters)
         query += conditionQuery
