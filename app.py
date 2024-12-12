@@ -1849,7 +1849,7 @@ def baocao_quanly():
                 print(e)
                 return render_template("baocao_thuong_quanly.html", danhsach=[])
         else:
-            return redirect("/")
+            return redirect("/baocao_thuong_may")
     elif request.method == "POST":
         try:
             macongty = request.form.get("macongty")
