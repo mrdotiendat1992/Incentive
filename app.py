@@ -1830,23 +1830,26 @@ def baocao_cn_phu():
 @app.route("/baocao_thuong_quanly", methods=["GET","POST"])
 def baocao_quanly():
     if request.method == "GET":
-        try:
-            macongty = request.args.get("macongty")
-            mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
-            chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
-            page = request.args.get(get_page_parameter(), type=int, default=1)
-            per_page = 10
-            total = len(danhsach)
-            start = (page - 1) * per_page
-            end = start + per_page
-            paginated_rows = danhsach[start:end]
-            pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-            return render_template("baocao_thuong_quanly.html", danhsach=paginated_rows,pagination=pagination)
-        except Exception as e:
-            print(e)
-            return render_template("baocao_thuong_quanly.html", danhsach=[])
+        if ((current_user.phanquyen=="sa" or current_user.phanquyen=="gd") or ("IE" in current_user.phongban and not "W" in current_user.capbac)):
+            try:
+                macongty = request.args.get("macongty")
+                mst = request.args.get("mst")
+                ngay = request.args.get("ngay")
+                chuyen = request.args.get("chuyen")
+                danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
+                page = request.args.get(get_page_parameter(), type=int, default=1)
+                per_page = 10
+                total = len(danhsach)
+                start = (page - 1) * per_page
+                end = start + per_page
+                paginated_rows = danhsach[start:end]
+                pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+                return render_template("baocao_thuong_quanly.html", danhsach=paginated_rows,pagination=pagination)
+            except Exception as e:
+                print(e)
+                return render_template("baocao_thuong_quanly.html", danhsach=[])
+        else:
+            return redirect("/baocao_thuong_may")
     elif request.method == "POST":
         try:
             macongty = request.form.get("macongty")
