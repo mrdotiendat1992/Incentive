@@ -11,7 +11,7 @@ import pandas as pd
 def getConditionQuery(filters):
     conditions = []
     for key, value in filters.items():
-        if value.get('value') and value.get('value') != 'null':
+        if value.get('value') and value.get('value') != "None" and value.get('value') != 'null':
             match value.get("type"):
                 case "approximately":
                     conditions.append(f"{key} LIKE '%{value.get('value')}%'")
@@ -37,7 +37,6 @@ def get_data(filters, page, size, table, order_by):
         query += conditionQuery
 
         last_query = f"WITH TEMP AS ({query}) SELECT * FROM TEMP WHERE RowNum BETWEEN {offset} AND {offset + size - 1}"
-
         cursor = execute_query(conn, last_query)
         rows = cursor.fetchall()
 
