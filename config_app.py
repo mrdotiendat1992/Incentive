@@ -32,6 +32,7 @@ app.register_blueprint(la)
 app.register_blueprint(qc1)
 app.register_blueprint(qc2)
 app.register_blueprint(ets)
+app.register_blueprint(maymac)
 
 db = SQLAlchemy(app)
 handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1, encoding='utf-8')
