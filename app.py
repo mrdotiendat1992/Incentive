@@ -1250,7 +1250,7 @@ def baocao_may():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1331,7 +1331,7 @@ def baocao_la():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_la(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1415,7 +1415,7 @@ def baocao_qc1():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_qc1(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1499,7 +1499,7 @@ def baocao_qc2():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_qc2(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1583,7 +1583,7 @@ def baocao_donggoi():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_donggoi(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1667,7 +1667,7 @@ def baocao_ndc():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1746,7 +1746,7 @@ def baocao_cn_phu():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_phu(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1834,7 +1834,7 @@ def baocao_quanly():
             try:
                 macongty = request.args.get("macongty")
                 mst = request.args.get("mst")
-                ngay = request.args.get("ngay")
+                ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
                 chuyen = request.args.get("chuyen")
                 danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
                 page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1920,7 +1920,7 @@ def baocao_nhommay():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             style = request.args.get("style")
             danhsach = lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style)
@@ -2007,7 +2007,7 @@ def baocao_nhomcat():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_nhomcat(macongty,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2100,7 +2100,7 @@ def baocao_nhomla():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_nhomla(macongty,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2199,7 +2199,7 @@ def baocao_nhomdonggoi():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_nhomdonggoi(macongty,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2285,7 +2285,7 @@ def baocao_nhomndc():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_nhomndc(macongty,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2366,7 +2366,7 @@ def baocao_nhomqc1():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_nhomqc1(macongty,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2459,7 +2459,7 @@ def baocao_nhomqc2():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_nhomqc2(macongty,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2553,7 +2553,7 @@ def baocao_sogio_lamviec():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2627,7 +2627,7 @@ def baocao_sanluong_canhan():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
