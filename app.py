@@ -353,7 +353,7 @@ def lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen):
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        # 
+        print
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -1166,7 +1166,7 @@ def baocao_cat():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_cat(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
