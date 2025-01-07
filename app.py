@@ -1455,7 +1455,8 @@ def baocao_cat():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.form.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_cat(macongty,mst,tungay,denngay,chuyen)
             data = []
@@ -2143,7 +2144,8 @@ def baocao_quanly():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.form.get("chuyen")
             danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
             data = []
@@ -2951,7 +2953,8 @@ def sanluong_canhan():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.form.get("chuyen")
             danhsach = lay_baocao_sanluong_canhan(macongty,mst,tungay,denngay,chuyen)
             data = []
