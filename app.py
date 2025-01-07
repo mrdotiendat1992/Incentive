@@ -350,10 +350,22 @@ def lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen):
             query += f" AND MST='{mst}'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        print
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -370,10 +382,22 @@ def lay_baocao_thuong_congnhan_cat(macongty,mst,ngay,chuyen):
             query += f" AND MST='{mst}'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        # 
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -390,10 +414,22 @@ def lay_baocao_thuong_congnhan_la(macongty,mst,ngay,chuyen):
             query += f" AND MST='{mst}'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        # 
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -410,6 +446,19 @@ def lay_baocao_thuong_congnhan_qc1(macongty,mst,ngay,chuyen):
             query += f" AND MST='{mst}'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, NHOM ASC"
@@ -430,6 +479,19 @@ def lay_baocao_thuong_congnhan_qc2(macongty,mst,ngay,chuyen):
             query += f" AND MST='{mst}'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, NHOM ASC"
@@ -450,6 +512,19 @@ def lay_baocao_thuong_congnhan_donggoi(macongty,mst,ngay,chuyen):
             query += f" AND MST='{mst}'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
@@ -469,6 +544,19 @@ def lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen):
             query += f" AND MST='{mst}'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, NHOM ASC"
@@ -489,6 +577,19 @@ def lay_baocao_thuong_congnhan_phu(macongty,mst,ngay,chuyen):
             query += f" AND MST='{mst}'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
@@ -509,10 +610,23 @@ def lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen):
             query += f" AND MST='{mst}'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        # 
+        print(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -522,16 +636,30 @@ def lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen):
 def lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style):
     try:
         conn = connect_db()
-        query = f"SELECT Workdate,Line,Sah,Total_hours,Eff,Style,TRANG_THAI,CHUYEN_MOI,OQL,GR_INCENTIVE,GR_INCENTIVE_TOPUP1,GR_INCENTIVE_TOPUP2,TONG_THUONG FROM [INCENTIVE].[dbo].[THUONG_NHOM_MAY_HANG_NGAY] WHERE 1=1"
+        query = f"SELECT WorkDate,Line,Sah,Total_hours,Eff,Style,TRANG_THAI,CHUYEN_MOI,OQL,GR_INCENTIVE,GR_INCENTIVE_TOPUP1,GR_INCENTIVE_TOPUP2,TONG_THUONG FROM [INCENTIVE].[dbo].[THUONG_NHOM_MAY_HANG_NGAY] WHERE 1=1"
         if macongty:
             query += f" AND Line LIKE '{macongty}%'"
         if ngay:
-            query += f" AND Workdate='{ngay}'"
+            query += f" AND WorkDate='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( WorkDate < '{year}-{month}-1' AND WorkDate >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( WorkDate < '{year}-{month}-10' AND WorkDate >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND Line LIKE '%{chuyen}%'" 
         if style:
             query += f" AND Style LIKE '%{style}%'"
-        query += "ORDER BY Workdate DESC, Line ASC"
+        query += "ORDER BY WorkDate DESC, Line ASC"
+        print(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -547,6 +675,19 @@ def lay_baocao_thuong_congnhan_nhomcat(macongty,ngay,chuyen):
             query += f" AND NHOM LIKE '{macongty}%'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'" 
         query += "ORDER BY NGAY DESC, NHOM ASC"
@@ -565,6 +706,19 @@ def lay_baocao_thuong_congnhan_nhomla(macongty,ngay,chuyen):
             query += f" AND CHUYEN LIKE '{macongty}%'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'" 
         query += "ORDER BY NGAY DESC, CHUYEN ASC"
@@ -583,6 +737,19 @@ def lay_baocao_thuong_congnhan_nhomdonggoi(macongty,ngay,chuyen):
             query += f" AND NHOM LIKE '{macongty}%'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'" 
         query += "ORDER BY NGAY DESC, NHOM ASC"
@@ -601,9 +768,24 @@ def lay_baocao_thuong_congnhan_nhomndc(macongty,ngay,chuyen):
             query += f" AND NHOM LIKE '{macongty}%'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            month = month if month >= 10 else f"0{month}"
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-01' AND NGAY >= '{old_year}-{old_month}-01')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-01')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'" 
         query += "ORDER BY NGAY DESC, NHOM ASC"
+        print(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -619,6 +801,19 @@ def lay_baocao_thuong_congnhan_nhomqc1(macongty,ngay,chuyen):
             query += f" AND NHOM LIKE '{macongty}%'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'" 
         query += "ORDER BY NGAY DESC, NHOM ASC"
@@ -637,6 +832,19 @@ def lay_baocao_thuong_congnhan_nhomqc2(macongty,ngay,chuyen):
             query += f" AND NHOM LIKE '{macongty}%'"
         if ngay:
             query += f" AND NGAY='{ngay}'"
+        else:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'" 
         query += "ORDER BY NGAY DESC, NHOM ASC"
@@ -1166,7 +1374,7 @@ def baocao_cat():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_cat(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1250,7 +1458,7 @@ def baocao_may():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1331,7 +1539,7 @@ def baocao_la():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_la(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1415,7 +1623,7 @@ def baocao_qc1():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_qc1(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1499,7 +1707,7 @@ def baocao_qc2():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_qc2(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1583,7 +1791,7 @@ def baocao_donggoi():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_donggoi(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1667,7 +1875,7 @@ def baocao_ndc():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1746,7 +1954,7 @@ def baocao_cn_phu():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_phu(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -1828,27 +2036,31 @@ def baocao_cn_phu():
             return redirect("/baocao_thuong_cnphu")
         
 @app.route("/baocao_thuong_quanly", methods=["GET","POST"])
+@login_required
 def baocao_quanly():
     if request.method == "GET":
-        if ((current_user.phanquyen=="sa" or current_user.phanquyen=="gd") or ("IE" in current_user.phongban and not "W" in current_user.capbac)):
-            try:
-                macongty = request.args.get("macongty")
-                mst = request.args.get("mst")
-                ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
-                chuyen = request.args.get("chuyen")
-                danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
-                page = request.args.get(get_page_parameter(), type=int, default=1)
-                per_page = 10
-                total = len(danhsach)
-                start = (page - 1) * per_page
-                end = start + per_page
-                paginated_rows = danhsach[start:end]
-                pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-                return render_template("baocao_thuong_quanly.html", danhsach=paginated_rows,pagination=pagination)
-            except Exception as e:
-                print(e)
-                return render_template("baocao_thuong_quanly.html", danhsach=[])
-        else:
+        try:
+            if ((current_user.phanquyen=="sa" or current_user.phanquyen=="gd") or ("IE" in current_user.phongban and not "W" in current_user.capbac)):
+                try:
+                    macongty = request.args.get("macongty")
+                    mst = request.args.get("mst")
+                    ngay = request.args.get("ngay")
+                    chuyen = request.args.get("chuyen")
+                    danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
+                    page = request.args.get(get_page_parameter(), type=int, default=1)
+                    per_page = 10
+                    total = len(danhsach)
+                    start = (page - 1) * per_page
+                    end = start + per_page
+                    paginated_rows = danhsach[start:end]
+                    pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+                    return render_template("baocao_thuong_quanly.html", danhsach=paginated_rows,pagination=pagination)
+                except Exception as e:
+                    print(e)
+                    return render_template("baocao_thuong_quanly.html", danhsach=[])
+            else:
+                return redirect("/baocao_thuong_may")
+        except:
             return redirect("/baocao_thuong_may")
     elif request.method == "POST":
         try:
@@ -1920,7 +2132,7 @@ def baocao_nhommay():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             style = request.args.get("style")
             danhsach = lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style)
@@ -2007,7 +2219,7 @@ def baocao_nhomcat():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_nhomcat(macongty,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2100,7 +2312,7 @@ def baocao_nhomla():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_nhomla(macongty,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2199,7 +2411,7 @@ def baocao_nhomdonggoi():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_nhomdonggoi(macongty,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2285,7 +2497,7 @@ def baocao_nhomndc():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_nhomndc(macongty,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2366,7 +2578,7 @@ def baocao_nhomqc1():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_nhomqc1(macongty,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2459,7 +2671,7 @@ def baocao_nhomqc2():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_thuong_congnhan_nhomqc2(macongty,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2553,7 +2765,7 @@ def baocao_sogio_lamviec():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -2627,7 +2839,7 @@ def baocao_sanluong_canhan():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay") if request.args.get("ngay") else datetime.datetime.now().strftime("%Y-%m-%d")
+            ngay = request.args.get("ngay")
             chuyen = request.args.get("chuyen")
             danhsach = lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
