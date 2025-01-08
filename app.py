@@ -2524,7 +2524,7 @@ def baocao_nhomdonggoi():
             tungay = request.form.get("tungay")
             denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomdonggoi(macongty,yungay,denngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomdonggoi(macongty,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
