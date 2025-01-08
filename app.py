@@ -345,16 +345,12 @@ def lay_sanluong_tong_theochuyen(ngay, chuyen, style):
 def lay_baocao_thuong_congnhan_may(macongty,mst,tungay,denngay,chuyen):
     try:
         if not macongty and not mst and not tungay and not denngay and not chuyen:
-            ngayhientai = (datetime.datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-            conn = connect_db()
-            query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SAH,SCP,SO_GIO,Eff_CA_NHAN,THUONG_CA_NHAN FROM [INCENTIVE].[dbo].[INCENTIVE_CN_MAY_HANG_NGAY] WHERE NGAY='{ngayhientai}' ORDER BY NGAY DESC, CHUYEN ASC"
-            print(query)
-            data = execute_query(conn, query).fetchall()
-            close_db(conn)
-            return data
+            return []
         else:
             conn = connect_db()
-            query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SAH,SCP,SO_GIO,Eff_CA_NHAN,THUONG_CA_NHAN FROM [INCENTIVE].[dbo].[INCENTIVE_CN_MAY_HANG_NGAY] WHERE 1=1" 
+            query = f"""SELECT MST,HO_TEN,CHUYEN,NGAY,SAH,SCP,SO_GIO,Eff_CA_NHAN,THUONG_CA_NHAN 
+                        FROM [INCENTIVE].[dbo].[INCENTIVE_CN_MAY_HANG_NGAY] 
+                        WHERE MST IS NOT NULL """ 
             if macongty:
                 query += f" AND CHUYEN LIKE '{macongty}%'"
             if mst:
