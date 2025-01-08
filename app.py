@@ -344,36 +344,47 @@ def lay_sanluong_tong_theochuyen(ngay, chuyen, style):
 
 def lay_baocao_thuong_congnhan_may(macongty,mst,tungay,denngay,chuyen):
     try:
-        conn = connect_db()
-        query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SAH,SCP,SO_GIO,Eff_CA_NHAN,THUONG_CA_NHAN FROM [INCENTIVE].[dbo].[INCENTIVE_CN_MAY_HANG_NGAY] WHERE 1=1" 
-        if macongty:
-            query += f" AND CHUYEN LIKE '{macongty}%'"
-        if mst:
-            query += f" AND MST='{mst}'"
-        if tungay:
-            query += f" AND NGAY >= '{tungay}'"
-        if denngay:
-            query += f" AND NGAY <= '{denngay}'"
-        if not tungay and not denngay:
-            month = datetime.datetime.now().month
-            year = datetime.datetime.now().year
-            if month == 1:
-                old_month = 12
-                old_year = year - 1
-            else:
-                old_month = month -1
-                old_year = year
-            if datetime.datetime.now().day <= 10:
-                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
-            else:
-                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
-        if chuyen:
-            query += f" AND CHUYEN LIKE '%{chuyen}%'"
-        query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        rows = execute_query(conn, query).fetchall()
-        close_db(conn)
-        return rows
-    except:
+        if not macongty and not mst and not tungay and not denngay and not chuyen:
+            ngayhientai = (datetime.datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+            conn = connect_db()
+            query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SAH,SCP,SO_GIO,Eff_CA_NHAN,THUONG_CA_NHAN FROM [INCENTIVE].[dbo].[INCENTIVE_CN_MAY_HANG_NGAY] WHERE NGAY='{ngayhientai}' ORDER BY NGAY DESC, CHUYEN ASC"
+            print(query)
+            data = execute_query(conn, query).fetchall()
+            close_db(conn)
+            return data
+        else:
+            conn = connect_db()
+            query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SAH,SCP,SO_GIO,Eff_CA_NHAN,THUONG_CA_NHAN FROM [INCENTIVE].[dbo].[INCENTIVE_CN_MAY_HANG_NGAY] WHERE 1=1" 
+            if macongty:
+                query += f" AND CHUYEN LIKE '{macongty}%'"
+            if mst:
+                query += f" AND MST='{mst}'"
+            if tungay:
+                query += f" AND NGAY >= '{tungay}'"
+            if denngay:
+                query += f" AND NGAY <= '{denngay}'"
+            if not tungay and not denngay:
+                month = datetime.datetime.now().month
+                year = datetime.datetime.now().year
+                if month == 1:
+                    old_month = 12
+                    old_year = year - 1
+                else:
+                    old_month = month -1
+                    old_year = year
+                if datetime.datetime.now().day <= 10:
+                    query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+                else:
+                    query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
+            if chuyen:
+                query += f" AND CHUYEN LIKE '%{chuyen}%'"
+            query += " ORDER BY NGAY DESC, CHUYEN ASC"
+            print(query)
+            rows = execute_query(conn, query).fetchall()
+            close_db(conn)
+            return rows
+    except Exception as e: 
+        print(e)
         return []
     
 def lay_baocao_thuong_congnhan_cat(macongty,mst,tungay,denngay,chuyen):
