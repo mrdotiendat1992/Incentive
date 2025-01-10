@@ -312,6 +312,8 @@ def capnhat_sogio_den_hotro(id,sogio):
 def laytongsanluongtheocongdoan(ngay,chuyen,style,macongdoan):
     try:
         conn = connect_db()
+        if not ngay and not chuyen and not style and not macongdoan:
+            return []
         if macongdoan:
             query = f"select MA_CONG_DOAN,QTY from [INCENTIVE].[dbo].[TONG_SL_CONG_DOAN] where NGAY='{ngay}' and CHUYEN='{chuyen}' and STYLE='{style}' and MA_CONG_DOAN='{macongdoan}' group by MA_CONG_DOAN,QTY"
         else:
@@ -340,27 +342,48 @@ def lay_sanluong_tong_theochuyen(ngay, chuyen, style):
     except:
         return 0
 
-def lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen):
+def lay_baocao_thuong_congnhan_may(macongty,mst,tungay,denngay,chuyen):
     try:
-        conn = connect_db()
-        query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SAH,SCP,SO_GIO,Eff_CA_NHAN,THUONG_CA_NHAN FROM [INCENTIVE].[dbo].[INCENTIVE_CN_MAY_HANG_NGAY] WHERE 1=1" 
-        if macongty:
-            query += f" AND CHUYEN LIKE '{macongty}%'"
-        if mst:
-            query += f" AND MST='{mst}'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
-        if chuyen:
-            query += f" AND CHUYEN LIKE '%{chuyen}%'"
-        query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        # 
-        rows = execute_query(conn, query).fetchall()
-        close_db(conn)
-        return rows
-    except:
+        if not macongty and not mst and not tungay and not denngay and not chuyen:
+            return []
+        else:
+            conn = connect_db()
+            query = f"""SELECT MST,HO_TEN,CHUYEN,NGAY,SAH,SCP,SO_GIO,Eff_CA_NHAN,THUONG_CA_NHAN 
+                        FROM [INCENTIVE].[dbo].[INCENTIVE_CN_MAY_HANG_NGAY] 
+                        WHERE MST IS NOT NULL """ 
+            if macongty:
+                query += f" AND CHUYEN LIKE '{macongty}%'"
+            if mst:
+                query += f" AND MST='{mst}'"
+            if tungay:
+                query += f" AND NGAY >= '{tungay}'"
+            if denngay:
+                query += f" AND NGAY <= '{denngay}'"
+            if not tungay and not denngay:
+                month = datetime.datetime.now().month
+                year = datetime.datetime.now().year
+                if month == 1:
+                    old_month = 12
+                    old_year = year - 1
+                else:
+                    old_month = month -1
+                    old_year = year
+                if datetime.datetime.now().day <= 10:
+                    query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+                else:
+                    query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
+            if chuyen:
+                query += f" AND CHUYEN LIKE '%{chuyen}%'"
+            query += " ORDER BY NGAY DESC, CHUYEN ASC"
+            print(query)
+            rows = execute_query(conn, query).fetchall()
+            close_db(conn)
+            return rows
+    except Exception as e: 
+        print(e)
         return []
     
-def lay_baocao_thuong_congnhan_cat(macongty,mst,ngay,chuyen):
+def lay_baocao_thuong_congnhan_cat(macongty,mst,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,HE_SO,TGLV,HE_SO_CN,TONG_HE_SO,THUONG_NHOM,THUONG_CN FROM [INCENTIVE].[dbo].[INCENTIVE_CN_CAT_HANG_NGAY] WHERE 1=1" 
@@ -368,19 +391,33 @@ def lay_baocao_thuong_congnhan_cat(macongty,mst,ngay,chuyen):
             query += f" AND CHUYEN LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        # 
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
     except:
         return []
     
-def lay_baocao_thuong_congnhan_la(macongty,mst,ngay,chuyen):
+def lay_baocao_thuong_congnhan_la(macongty,mst,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_LA_HANG_NGAY] WHERE 1=1" 
@@ -388,19 +425,33 @@ def lay_baocao_thuong_congnhan_la(macongty,mst,ngay,chuyen):
             query += f" AND CHUYEN LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        # 
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
     except:
         return []
 
-def lay_baocao_thuong_congnhan_qc1(macongty,mst,ngay,chuyen):
+def lay_baocao_thuong_congnhan_qc1(macongty,mst,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_QC1_HANG_NGAY] WHERE 1=1" 
@@ -408,8 +459,23 @@ def lay_baocao_thuong_congnhan_qc1(macongty,mst,ngay,chuyen):
             query += f" AND NHOM LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, NHOM ASC"
@@ -420,7 +486,7 @@ def lay_baocao_thuong_congnhan_qc1(macongty,mst,ngay,chuyen):
     except:
         return []
     
-def lay_baocao_thuong_congnhan_qc2(macongty,mst,ngay,chuyen):
+def lay_baocao_thuong_congnhan_qc2(macongty,mst,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_QC2_HANG_NGAY] WHERE 1=1" 
@@ -428,8 +494,23 @@ def lay_baocao_thuong_congnhan_qc2(macongty,mst,ngay,chuyen):
             query += f" AND NHOM LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, NHOM ASC"
@@ -440,7 +521,7 @@ def lay_baocao_thuong_congnhan_qc2(macongty,mst,ngay,chuyen):
     except:
         return []
     
-def lay_baocao_thuong_congnhan_donggoi(macongty,mst,ngay,chuyen):
+def lay_baocao_thuong_congnhan_donggoi(macongty,mst,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_DONG_GOI_HANG_NGAY] WHERE 1=1" 
@@ -448,8 +529,23 @@ def lay_baocao_thuong_congnhan_donggoi(macongty,mst,ngay,chuyen):
             query += f" AND CHUYEN LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
@@ -459,7 +555,7 @@ def lay_baocao_thuong_congnhan_donggoi(macongty,mst,ngay,chuyen):
     except:
         return []
     
-def lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen):
+def lay_baocao_thuong_congnhan_ndc(macongty,mst,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_NDC_HANG_NGAY] WHERE 1=1" 
@@ -467,8 +563,23 @@ def lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen):
             query += f" AND CHUYEN LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, NHOM ASC"
@@ -479,7 +590,7 @@ def lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen):
     except:
         return []
     
-def lay_baocao_thuong_congnhan_phu(macongty,mst,ngay,chuyen):
+def lay_baocao_thuong_congnhan_phu(macongty,mst,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_CN_PHU_HANG_NGAY] WHERE 1=1" 
@@ -487,8 +598,23 @@ def lay_baocao_thuong_congnhan_phu(macongty,mst,ngay,chuyen):
             query += f" AND CHUYEN LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
@@ -499,7 +625,7 @@ def lay_baocao_thuong_congnhan_phu(macongty,mst,ngay,chuyen):
     except:
         return []
     
-def lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen):
+def lay_baocao_thuong_quanly(macongty,mst,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[INCENTIVE_QUANLY_HANG_NGAY] WHERE 1=1" 
@@ -507,31 +633,62 @@ def lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen):
             query += f" AND CHUYEN LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
-        # 
+        print(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
     except:
         return []
     
-def lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style):
+def lay_baocao_thuong_congnhan_nhommay(macongty,tungay,denngay,chuyen,style):
     try:
         conn = connect_db()
-        query = f"SELECT Workdate,Line,Sah,Total_hours,Eff,Style,TRANG_THAI,CHUYEN_MOI,OQL,GR_INCENTIVE,GR_INCENTIVE_TOPUP1,GR_INCENTIVE_TOPUP2,TONG_THUONG FROM [INCENTIVE].[dbo].[THUONG_NHOM_MAY_HANG_NGAY] WHERE 1=1"
+        query = f"SELECT WorkDate,Line,Sah,Total_hours,Eff,Style,TRANG_THAI,CHUYEN_MOI,OQL,GR_INCENTIVE,GR_INCENTIVE_TOPUP1,GR_INCENTIVE_TOPUP2,TONG_THUONG FROM [INCENTIVE].[dbo].[THUONG_NHOM_MAY_HANG_NGAY] WHERE 1=1"
         if macongty:
             query += f" AND Line LIKE '{macongty}%'"
-        if ngay:
-            query += f" AND Workdate='{ngay}'"
+        if tungay:
+            query += f" AND WorkDate >= '{tungay}'"
+        if denngay:
+            query += f" AND WorkDate <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( WorkDate < '{year}-{month}-1' AND WorkDate >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( WorkDate < '{year}-{month}-10' AND WorkDate >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND Line LIKE '%{chuyen}%'" 
         if style:
             query += f" AND Style LIKE '%{style}%'"
-        query += "ORDER BY Workdate DESC, Line ASC"
+        query += "ORDER BY WorkDate DESC, Line ASC"
+        print(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -539,14 +696,29 @@ def lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style):
         print(e)
         return []
     
-def lay_baocao_thuong_congnhan_nhomcat(macongty,ngay,chuyen):
+def lay_baocao_thuong_congnhan_nhomcat(macongty,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT NGAY,NHOM,SAH,SO_GIO,EFF,CAT_KE,NHA_MAY,UI,BE,BE_TOPUP1,TOP_UP1,TI_LE_LOI,AQL,THUONG_NHOM,KICH_CAU1,TONG_THUONG_NHOM FROM [INCENTIVE].[dbo].[THUONG_NHOM_CAT_HANG_NGAY] WHERE 1=1"
         if macongty:
             query += f" AND NHOM LIKE '{macongty}%'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'" 
         query += "ORDER BY NGAY DESC, NHOM ASC"
@@ -557,14 +729,29 @@ def lay_baocao_thuong_congnhan_nhomcat(macongty,ngay,chuyen):
         print(e)
         return []
     
-def lay_baocao_thuong_congnhan_nhomla(macongty,ngay,chuyen):
+def lay_baocao_thuong_congnhan_nhomla(macongty,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_LA_HANG_NGAY] WHERE 1=1"
         if macongty:
             query += f" AND CHUYEN LIKE '{macongty}%'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'" 
         query += "ORDER BY NGAY DESC, CHUYEN ASC"
@@ -575,14 +762,29 @@ def lay_baocao_thuong_congnhan_nhomla(macongty,ngay,chuyen):
         print(e)
         return []
     
-def lay_baocao_thuong_congnhan_nhomdonggoi(macongty,ngay,chuyen):
+def lay_baocao_thuong_congnhan_nhomdonggoi(macongty,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_DONG_GOI_HANG_NGAY] WHERE 1=1"
         if macongty:
             query += f" AND NHOM LIKE '{macongty}%'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'" 
         query += "ORDER BY NGAY DESC, NHOM ASC"
@@ -593,17 +795,33 @@ def lay_baocao_thuong_congnhan_nhomdonggoi(macongty,ngay,chuyen):
         print(e)
         return []
     
-def lay_baocao_thuong_congnhan_nhomndc(macongty,ngay,chuyen):
+def lay_baocao_thuong_congnhan_nhomndc(macongty,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_NDC_HANG_NGAY] WHERE 1=1"
         if macongty:
             query += f" AND NHOM LIKE '{macongty}%'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'" 
         query += "ORDER BY NGAY DESC, NHOM ASC"
+        print(query)
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -611,14 +829,29 @@ def lay_baocao_thuong_congnhan_nhomndc(macongty,ngay,chuyen):
         print(e)
         return []
     
-def lay_baocao_thuong_congnhan_nhomqc1(macongty,ngay,chuyen):
+def lay_baocao_thuong_congnhan_nhomqc1(macongty,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_QC1_HANG_NGAY] WHERE 1=1"
         if macongty:
             query += f" AND NHOM LIKE '{macongty}%'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'" 
         query += "ORDER BY NGAY DESC, NHOM ASC"
@@ -629,14 +862,29 @@ def lay_baocao_thuong_congnhan_nhomqc1(macongty,ngay,chuyen):
         print(e)
         return []
     
-def lay_baocao_thuong_congnhan_nhomqc2(macongty,ngay,chuyen):
+def lay_baocao_thuong_congnhan_nhomqc2(macongty,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[THUONG_NHOM_QC2_HANG_NGAY] WHERE 1=1"
         if macongty:
             query += f" AND NHOM LIKE '{macongty}%'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND NHOM LIKE '%{chuyen}%'" 
         query += "ORDER BY NGAY DESC, NHOM ASC"
@@ -647,7 +895,7 @@ def lay_baocao_thuong_congnhan_nhomqc2(macongty,ngay,chuyen):
         print(e)
         return []
     
-def lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen):
+def lay_baocao_sogio_lamviec(macongty,mst,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT MST,HO_TEN,CHUYEN,NGAY,SO_GIO,CHUC_VU FROM [INCENTIVE].[dbo].[TGLV_1] WHERE 1=1" 
@@ -655,8 +903,23 @@ def lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen):
             query += f" AND CHUYEN LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC"
@@ -668,7 +931,7 @@ def lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen):
         print(e)
         return []
     
-def lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen):
+def lay_baocao_sanluong_canhan(macongty,mst,tungay,denngay,chuyen):
     try:
         conn = connect_db()
         query = f"SELECT * FROM [INCENTIVE].[dbo].[SL_CA_NHAN_1] WHERE 1=1" 
@@ -676,12 +939,26 @@ def lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen):
             query += f" AND CHUYEN LIKE '{macongty}%'"
         if mst:
             query += f" AND MST='{mst}'"
-        if ngay:
-            query += f" AND NGAY='{ngay}'"
+        if tungay:
+            query += f" AND NGAY >= '{tungay}'"
+        if denngay:
+            query += f" AND NGAY <= '{denngay}'"
+        if not tungay and not denngay:
+            month = datetime.datetime.now().month
+            year = datetime.datetime.now().year
+            if month == 1:
+                old_month = 12
+                old_year = year - 1
+            else:
+                old_month = month -1
+                old_year = year
+            if datetime.datetime.now().day <= 10:
+                query += f" AND ( NGAY < '{year}-{month}-1' AND NGAY >= '{old_year}-{old_month}-1')"
+            else:
+                query += f" AND ( NGAY < '{year}-{month}-10' AND NGAY >= '{year}-{month}-1')"
         if chuyen:
             query += f" AND CHUYEN LIKE '%{chuyen}%'"
         query += " ORDER BY NGAY DESC, CHUYEN ASC, MST ASC"
-        # 
         rows = execute_query(conn, query).fetchall()
         close_db(conn)
         return rows
@@ -1166,9 +1443,10 @@ def baocao_cat():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_cat(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_cat(macongty,mst,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -1184,9 +1462,10 @@ def baocao_cat():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_cat(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_cat(macongty,mst,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -1250,9 +1529,10 @@ def baocao_may():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_may(macongty,mst,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -1268,9 +1548,10 @@ def baocao_may():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_may(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_may(macongty,mst,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -1331,9 +1612,10 @@ def baocao_la():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_la(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_la(macongty,mst,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -1349,9 +1631,10 @@ def baocao_la():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_la(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_la(macongty,mst,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -1415,9 +1698,10 @@ def baocao_qc1():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_qc1(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_qc1(macongty,mst,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -1433,9 +1717,10 @@ def baocao_qc1():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_qc1(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_qc1(macongty,mst,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -1499,9 +1784,10 @@ def baocao_qc2():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_qc2(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_qc2(macongty,mst,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -1517,9 +1803,10 @@ def baocao_qc2():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_qc2(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_qc2(macongty,mst,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -1583,9 +1870,10 @@ def baocao_donggoi():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_donggoi(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_donggoi(macongty,mst,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -1601,9 +1889,10 @@ def baocao_donggoi():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_donggoi(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_donggoi(macongty,mst,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -1667,9 +1956,10 @@ def baocao_ndc():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -1685,9 +1975,10 @@ def baocao_ndc():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_ndc(macongty,mst,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -1746,9 +2037,10 @@ def baocao_cn_phu():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_phu(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_phu(macongty,mst,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -1764,9 +2056,10 @@ def baocao_cn_phu():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_phu(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_phu(macongty,mst,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -1828,33 +2121,38 @@ def baocao_cn_phu():
             return redirect("/baocao_thuong_cnphu")
         
 @app.route("/baocao_thuong_quanly", methods=["GET","POST"])
+@login_required
 def baocao_quanly():
     if request.method == "GET":
-        if ((current_user.phanquyen=="sa" or current_user.phanquyen=="gd") or ("IE" in current_user.phongban and not "W" in current_user.capbac)):
-            try:
-                macongty = request.args.get("macongty")
-                mst = request.args.get("mst")
-                ngay = request.args.get("ngay")
-                chuyen = request.args.get("chuyen")
-                danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
-                page = request.args.get(get_page_parameter(), type=int, default=1)
-                per_page = 10
-                total = len(danhsach)
-                start = (page - 1) * per_page
-                end = start + per_page
-                paginated_rows = danhsach[start:end]
-                pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
-                return render_template("baocao_thuong_quanly.html", danhsach=paginated_rows,pagination=pagination)
-            except Exception as e:
-                print(e)
-                return render_template("baocao_thuong_quanly.html", danhsach=[])
-        else:
+        try:
+            if ((current_user.phanquyen=="sa" or current_user.phanquyen=="gd") or ("IE" in current_user.phongban and not "W" in current_user.capbac)):
+                try:
+                    macongty = request.args.get("macongty")
+                    mst = request.args.get("mst")
+                    ngay = request.args.get("ngay")
+                    chuyen = request.args.get("chuyen")
+                    danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
+                    page = request.args.get(get_page_parameter(), type=int, default=1)
+                    per_page = 10
+                    total = len(danhsach)
+                    start = (page - 1) * per_page
+                    end = start + per_page
+                    paginated_rows = danhsach[start:end]
+                    pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+                    return render_template("baocao_thuong_quanly.html", danhsach=paginated_rows,pagination=pagination)
+                except Exception as e:
+                    print(e)
+                    return render_template("baocao_thuong_quanly.html", danhsach=[])
+            else:
+                return redirect("/baocao_thuong_may")
+        except:
             return redirect("/baocao_thuong_may")
     elif request.method == "POST":
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.form.get("chuyen")
             danhsach = lay_baocao_thuong_quanly(macongty,mst,ngay,chuyen)
             data = []
@@ -1920,10 +2218,11 @@ def baocao_nhommay():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
             style = request.args.get("style")
-            danhsach = lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style)
+            danhsach = lay_baocao_thuong_congnhan_nhommay(macongty,tungay,denngay,chuyen,style)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -1938,10 +2237,11 @@ def baocao_nhommay():
     elif request.method == "POST":
         try:
             macongty = request.form.get("macongty")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
             style = request.form.get("style")
-            danhsach = lay_baocao_thuong_congnhan_nhommay(macongty,ngay,chuyen,style)
+            danhsach = lay_baocao_thuong_congnhan_nhommay(macongty,tungay,denngay,chuyen,style)
             data = []
             for row in danhsach:
                 data.append({
@@ -2007,9 +2307,10 @@ def baocao_nhomcat():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomcat(macongty,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomcat(macongty,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -2024,9 +2325,10 @@ def baocao_nhomcat():
     elif request.method == "POST":
         try:
             macongty = request.form.get("macongty")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomcat(macongty,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomcat(macongty,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -2100,9 +2402,10 @@ def baocao_nhomla():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomla(macongty,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomla(macongty,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -2117,9 +2420,10 @@ def baocao_nhomla():
     elif request.method == "POST":
         try:
             macongty = request.form.get("macongty")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomla(macongty,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomla(macongty,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -2199,9 +2503,10 @@ def baocao_nhomdonggoi():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomdonggoi(macongty,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomdonggoi(macongty,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -2216,9 +2521,10 @@ def baocao_nhomdonggoi():
     elif request.method == "POST":
         try:
             macongty = request.form.get("macongty")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomdonggoi(macongty,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomdonggoi(macongty,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -2285,9 +2591,10 @@ def baocao_nhomndc():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomndc(macongty,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomndc(macongty,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -2302,9 +2609,10 @@ def baocao_nhomndc():
     elif request.method == "POST":
         try:
             macongty = request.form.get("macongty")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomndc(macongty,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomndc(macongty,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -2366,9 +2674,10 @@ def baocao_nhomqc1():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomqc1(macongty,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomqc1(macongty,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -2383,9 +2692,10 @@ def baocao_nhomqc1():
     elif request.method == "POST":
         try:
             macongty = request.form.get("macongty")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomqc1(macongty,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomqc1(macongty,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -2459,9 +2769,10 @@ def baocao_nhomqc2():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomqc2(macongty,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomqc2(macongty,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -2476,9 +2787,10 @@ def baocao_nhomqc2():
     elif request.method == "POST":
         try:
             macongty = request.form.get("macongty")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_thuong_congnhan_nhomqc2(macongty,ngay,chuyen)
+            danhsach = lay_baocao_thuong_congnhan_nhomqc2(macongty,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -2553,9 +2865,10 @@ def baocao_sogio_lamviec():
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay") 
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_sogio_lamviec(macongty,mst,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -2571,9 +2884,10 @@ def baocao_sogio_lamviec():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.form.get("tungay")
+            denngay = request.form.get("denngay") 
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_sogio_lamviec(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_sogio_lamviec(macongty,mst,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({
@@ -2622,14 +2936,15 @@ def baocao_sogio_lamviec():
             return redirect("/baocao_sogio_lamviec")
     
 @app.route("/baocao_sanluong_canhan", methods=["GET","POST"])
-def baocao_sanluong_canhan():
+def sanluong_canhan():
     if request.method == "GET":
         try:
             macongty = request.args.get("macongty")
             mst = request.args.get("mst")
-            ngay = request.args.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.args.get("chuyen")
-            danhsach = lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_sanluong_canhan(macongty,mst,tungay,denngay,chuyen)
             page = request.args.get(get_page_parameter(), type=int, default=1)
             per_page = 10
             total = len(danhsach)
@@ -2645,9 +2960,10 @@ def baocao_sanluong_canhan():
         try:
             macongty = request.form.get("macongty")
             mst = request.form.get("mst")
-            ngay = request.form.get("ngay")
+            tungay = request.args.get("tungay")
+            denngay = request.args.get("denngay")
             chuyen = request.form.get("chuyen")
-            danhsach = lay_baocao_sanluong_canhan(macongty,mst,ngay,chuyen)
+            danhsach = lay_baocao_sanluong_canhan(macongty,mst,tungay,denngay,chuyen)
             data = []
             for row in danhsach:
                 data.append({

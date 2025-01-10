@@ -5,6 +5,7 @@
  <div id="filter">
     <form method="get">
         <div class="form-group">
+            <label for="macongty"><b>Mã công ty</b></label>
             <select type="text" name="macongty" class="form-control" id="macongty" value="{{ request.args.get('macongty','') }}" onchange="form.submit()">
                 {% if request.args.get('macongty')=='' %}
                 <option value="" selected>Tất cả</option>
@@ -24,15 +25,19 @@
             </select>
         </div>
         <div class="form-group">
+            <label for="macongty"><b>Năm</b></label>
             <input type="text" name="nam" class="form-control" id="nam" placeholder="Nam" onchange="form.submit()" value="{{ request.args.get('nam','') }}" >
         </div>
         <div class="form-group">
+            <label for="macongty"><b>Tháng</b></label>
             <input type="text" name="thang" class="form-control" id="thang" placeholder="Thang" onchange="form.submit()" value="{{ request.args.get('thang','') }}">
         </div>
         <div class="form-group">
+            <label for="macongty"><b>Mã số thẻ</b></label>
             <input type="text" name="mst" class="form-control" id="mst" placeholder="MST" value="{{ request.args.get('mst','') }}" onchange="form.submit()">
         </div>
         <div class="form-group">
+            <label for="macongty"><b>Chuyền</b></label>
             <input type="text" name="chuyen" class="form-control" id="chuyen" placeholder="Chuyền" value="{{ request.args.get('chuyen','') }}" onchange="form.submit()">
         </div>
     </form>

@@ -6,6 +6,7 @@
  <div id="filter">
     <form method="get">
         <div class="form-group">
+            <label for="macongty"><b>Mã công ty</b></label>
             <select type="text" name="macongty" class="form-control" id="macongty" value="{{ request.args.get('macongty','') }}" onchange="form.submit()">
                 {% if request.args.get('macongty')=='' %}
                 <option value="" selected>Tất cả</option>
@@ -25,13 +26,20 @@
             </select>
         </div>
         <div class="form-group">
+            <label for="mst"><b>Chuyền</b></label>
+            <input type="text" name="chuyen" class="form-control" id="chuyen" placeholder="Chuyền" value="{{ request.args.get('chuyen','') }}" onchange="form.submit()">
+        </div>
+        <div class="form-group">
+            <label for="mst"><b>Mã số thẻ</b></label>
             <input type="text" name="mst" class="form-control" id="mst" placeholder="MST" value="{{ request.args.get('mst','') }}" onchange="form.submit()">
         </div>
         <div class="form-group">
-            <input type="date" name="ngay" class="form-control" id="ngay" placeholder="Ngày" value="{{ request.args.get('ngay','') }}" onchange="form.submit()">
+            <label for="tungay"><b>Từ ngày</b></label>
+            <input type="date" name="tungay" class="form-control" id="tungay" placeholder="Ngày" value="{{ request.args.get('tungay','') }}" onchange="form.submit()">
         </div>
         <div class="form-group">
-            <input type="text" name="chuyen" class="form-control" id="chuyen" placeholder="Chuyền" value="{{ request.args.get('chuyen','') }}" onchange="form.submit()">
+            <label for="denngay"><b>Đến ngày</b></label>
+            <input type="date" name="denngay" class="form-control" id="denngay" placeholder="Ngày" value="{{ request.args.get('denngay','') }}" onchange="form.submit()">
         </div>
     </form>
     </div>
@@ -41,7 +49,8 @@
 <form method="post">
     <input type="hidden" name="macongty" value="{{ request.args.get('macongty','') }}">
     <input type="hidden" name="mst" value="{{ request.args.get('mst','') }}">
-    <input type="hidden" name="ngay" value="{{ request.args.get('ngay','') }}">
+    <input type="hidden" name="tungay" value="{{ request.args.get('tungay','') }}">
+    <input type="hidden" name="denngay" value="{{ request.args.get('denngay','') }}">
     <input type="hidden" name="chuyen" value="{{ request.args.get('chuyen','') }}">
     <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-fw fa-download"></i></button>
 </form>
