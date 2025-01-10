@@ -12,3 +12,4 @@ from .san_luong_qc1 import qc1
 from .san_luong_qc2 import qc2
 from .san_luong_ets import ets
 from .may_mac import maymac
+from .tru_tien_thuong import tienthuong
